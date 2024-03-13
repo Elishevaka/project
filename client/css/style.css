@@ -1,0 +1,16 @@
+#center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    width: 70%;
+}
+
+#addButton {
+    background-color: rgb(36, 166, 8);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 2px 2px rgb(34, 166, 8);
+    margin-bottom: auto;
+}
