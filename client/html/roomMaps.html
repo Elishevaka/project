@@ -1,50 +1,40 @@
 <!DOCTYPE html>
 <html lang="he">
+
 <head>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/js/roomMaps.js"></script>
-  
-    <title>Building Map</title>
-    <style>
-        /* Basic styling for the map */
-        #map {
-            width: 600px;
-            height: 400px;
-            background-color: #f0f0f0;
-            position: relative;
-        }
-
-        .building {
-            position: absolute;
-            cursor: pointer;
-        }
-    </style>
 </head>
-<body>
-    <!-- <div id = "rooms"> -->
-    <h1>Building Map</h1>
-    <div id="map">
-        <!-- Buildings -->
-        <div class="building" id="building1" style="left: 50px; top: 50px;">Building 1</div>
-        <div class="building" id="building2" style="left: 200px; top: 100px;">Building 2</div>
-        <div class="building" id="building3" style="left: 400px; top: 150px;">Building 3</div>
-    </div>
 
-    <!-- Hidden apartment list -->
-    <div id="apartment-list" style="display: none;">
-        <h2 id="building-name"></h2>
-        <ul id="apartments">
-            <!-- Apartment list will be populated dynamically -->
-        </ul>
+<body>
+    <div id="Buildings">
+        <h1>Building Map</h1>
+        <button id="building_btn1"  class="btn btn-success">בנין 1</button>
+        <button id="building_btn2"  class="btn btn-success">בנין 2</button>
+        <button id="gefen_btn"      class="btn btn-success">גפן</button>
+        <button id="dekel_btn"      class="btn btn-success">דקל</button>
+        <button id="brosh_btn"      class="btn btn-success">ברוש</button>
+        <button id="vered_btn"      class="btn btn-success">וורד</button>
+        <button id="alon_btn"       class="btn btn-success">אלון</button>
+        <button id="savion_btn"     class="btn btn-success">סביון</button>
+        <button id="calanit_btn"    class="btn btn-success">כלנית</button>
+        <button id="rimon_btn"      class="btn btn-success">רימון</button>
+        <button id="shaked_btn"     class="btn btn-success">שקד</button>
+        <button id="havatzelet_btn" class="btn btn-success">חבצלת</button>
+        <button id="tamar_btn"      class="btn btn-success">תמר</button>
     </div>
-         
-    <!-- </div> -->
 </body>
+
 </html>
