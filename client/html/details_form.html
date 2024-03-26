@@ -18,30 +18,21 @@
 </head>
 
 <body>
+    <h1>Room Details Form</h1>
+    <form id="roomForm">
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter name of the client">
+        <br>
+        <label for="email">Status:</label>
+        <input type="email" id="email" name="email" placeholder="Enter email:">
+
+        <!-- <button id="submit" onclick="add_func()" type="submit" class="btn btn-success">Submit</button> -->
+        <button id="submit" type="submit" class="btn btn-success">Submit</button>
+    </form>
 
 
 
-    <div class="container">
-
-        <form id="registrationForm">
-            <div class="form-group">
-                <label for="name">שם:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">אימיל:</label>
-                <input type="email" class="form-control" id="email" name="email">
-            </div>
-            <div class="form-group">
-                <label for="phone">פאלפון:</label>
-                <input type="tel" class="form-control" id="phone" name="phone" required>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">הגש</button>
-            </div>
-        </form>
-        <div id="registrationMessage"></div>
-    </div>
 </body>
 
 </html>

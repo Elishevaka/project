@@ -31,3 +31,11 @@
     position: absolute;
     cursor: pointer;
 }
+
+button.free {
+    background-color: green;
+}
+
+button.occupied {
+    background-color: red;
+}
