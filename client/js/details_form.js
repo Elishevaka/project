@@ -1,12 +1,19 @@
 $(document).ready(function () {
+    var urlParams = new URLSearchParams(window.location.search);
+    $('#roomId').val(urlParams.get('room'));
+    $('#buildingId').val(urlParams.get('building'));
+    $('#startDate').val(urlParams.get('date'));
+
     $('#roomForm').submit(function (event) {
         // Prevent the default form submission
         event.preventDefault();
 
         // Gather the form data
         var formData = {
+            clientId: $('#clientId').val(),
             name: $('#name').val(),
-            email: $('#email').val()
+            email: $('#email').val(),
+            phoneNumber: $('#phoneNumber').val()
         };
         // Send an AJAX POST request to the server
         $.ajax({
@@ -17,15 +24,13 @@ $(document).ready(function () {
             success: function (data) {
                 // Handle success response
                 console.log('Client data created:', data);
-                //$('#success-message').show();
                 alert("User successfully added to MongoDB!")
-                 window.location.href = '/main'; // Redirect to main page
+                window.location.href = '/main'; // Redirect to main page
             },
             error: function (xhr, status, error) {
                 // Handle error response
                 console.error('Error:', error);
-                // Optionally, you can display an error message to the user
-                // $('#error-message').text('An error occurred. Please try again.');
+                alert('this user is alrady exist( maybe id, email, or phone)');
             }
         });
     });

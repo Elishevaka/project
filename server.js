@@ -8,10 +8,11 @@ routers = require('./server/routes/routes.js');
 const app = express();
 const port = 3001;
 
+app.use('/login', express.static(path.join(__dirname, 'client/html/login.html')));
 app.use('/main', express.static(path.join(__dirname, 'client/html/index.html')));
 app.use('/roomMaps', express.static(path.join(__dirname, 'client/html/roomMaps.html')));
-app.use('/building1', express.static(path.join(__dirname, 'client/html/buildings/building1.html')));
-app.use('/building2', express.static(path.join(__dirname, 'client/html/buildings/building2.html')));
+app.use('/building1_building', express.static(path.join(__dirname, 'client/html/buildings/building1.html')));
+app.use('/building2_building', express.static(path.join(__dirname, 'client/html/buildings/building2.html')));
 app.use('/gefen_building', express.static(path.join(__dirname, 'client/html/buildings/gefen_building.html')));
 app.use('/dekel_building', express.static(path.join(__dirname, 'client/html/buildings/dekel_building.html')));
 app.use('/brosh_building', express.static(path.join(__dirname, 'client/html/buildings/brosh_building.html')));
@@ -27,7 +28,7 @@ app.use('/details_form', express.static(path.join(__dirname, 'client/html/detail
 app.use('/js', express.static(path.join(__dirname, 'client/js')));
 
 app.get('/', (req, res) => {
-    fs.readFile('client/html/index.html', (err, html) => {
+    fs.readFile('client/html/login.html', (err, html) => {
         if (err) {
             throw err;
         }
