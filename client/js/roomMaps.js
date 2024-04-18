@@ -1,49 +1,44 @@
+
 $(document).ready(function () {
+    let startDate, endDate;
 
-    $("#building_btn1").click(function () {
-        window.location.href = '/building1'
-    });
-    $('#building_btn2').click(function () {
-        window.location.href = '/building2'
-    });
-    $("#gefen_btn").click(function () {
-        window.location.href = '/gefen_building'
-    });
-    $('#dekel_btn').click(function () {
-        window.location.href = '/dekel_building'
-    });
+    startDate = sessionStorage.getItem('startDate');
+    endDate = sessionStorage.getItem('endDate');
+    // Display the selected dates
+    $("#dateDisplay").text("Selected Dates: " + startDate + " - " + endDate);
 
-    $("#brosh_btn").click(function () {
-        window.location.href = '/brosh_building'
-    });
-    $('#vered_btn').click(function () {
-        window.location.href = '/vered_building'
-    });
-// 
-    $("#alon_btn").click(function () {
-        window.location.href = '/alon_building'
-    });
-    $('#savion_btn').click(function () {
-        window.location.href = '/savion_building'
-    });
-    $("#calanit_btn").click(function () {
-        window.location.href = '/calanit_building'
-    });
-    $('#dekel_btn').click(function () {
-        window.location.href = '/dekel_building'
-    });
+    // Object containing building names and their corresponding routes
+    const buildings = {
+        'building1_building': '/building1_building',
+        'building2_building': '/building2_building',
+        'gefen_building': '/gefen_building',
+        'dekel_building': '/dekel_building',
+        'brosh_building': '/brosh_building',
+        'vered_building': '/vered_building',
+        'alon_building': '/alon_building',
+        'savion_building': '/savion_building',
+        'calanit_building': '/calanit_building',
+        'rimon_building': '/rimon_building',
+        'shaked_building': '/shaked_building',
+        'havatzelet_building': '/havatzelet_building',
+        'tamar_building': '/tamar_building'
+    };
 
-    $("#rimon_btn").click(function () {
-        window.location.href = '/rimon_building'
-    });
-    $('#shaked_btn').click(function () {
-        window.location.href = '/shaked_building'
-    });
-    $('#havatzelet_btn').click(function () {
-        window.location.href = '/havatzelet_building'
-    });
+    $('.building-btn').click(function () {
+        buildingName = $(this).attr('id').replace('_btn', '_building'); // Extract building name from button ID
+        //send to building the Items
+        sessionStorage.setItem('buildingName', buildingName);
+        sessionStorage.setItem('startDate', startDate);
+        sessionStorage.setItem('endDate', endDate);
 
-    $("#tamar_btn").click(function () {
-        window.location.href = '/tamar_building'
+        const route = buildings[buildingName]; // Get the corresponding route from the object
+        //alert(route+" route")
+        if (route) {
+            window.location.href = route; // Redirect to the selected building route
+        } else {
+            console.error('Route not found for building:', buildingName);
+        }
     });
 });
+
+

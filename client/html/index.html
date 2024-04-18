@@ -16,17 +16,19 @@
 </head>
 
 <body>
-  <div class="container">
-    <div id = "center" class="date">
-      <label for="datepicker">בחר תאריך :</label> <!-- write to the client "Choose a date:"-->
-      <input type="text" id="datepicker"> <!-- input to the date-->
-      <button id="submitDate" class="btn btn-primary">אישור</button><!-- after the client choose date and submit button-->
-      <div id="dateDisplay"></div>
-      <br><br>
-      <button id="addButton" class="btn btn-success">מפה</button>
-    </div>
+  <h1>Date Selection</h1>
+  <div>
+    <label for="datepickerStart">Start Date:</label>
+    <input type="text" id="datepickerStart" name="datepickerStart">
   </div>
-
+  <div>
+    <label for="datepickerEnd">End Date:</label>
+    <input type="text" id="datepickerEnd" name="datepickerEnd">
+  </div>
+  <div id="dateDisplay"></div>
+  <br><br>
+  <button id="selectDates">Select Dates</button>
+  <button id="addButton">map</button>
 </body>
 
 </html>

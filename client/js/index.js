@@ -1,18 +1,21 @@
 
-$(document).ready(function() {
-  
-  $("#datepicker").datepicker(); // function in jQuary that select a date from a popup or inline calendar
+$(document).ready(function () {
 
-  // Event listener for submit button
-  $("#submitDate").click(function() {
+  $("#datepickerStart").datepicker(); // Datepicker for start date
+  $("#datepickerEnd").datepicker(); // Datepicker for end date
+  $("#selectDates").click(function () {
 
-    const selectedDate = $("#datepicker").val();// selectedDate = to the choose date.
+    const startDate = $("#datepickerStart").val(); // Get start date
+    const endDate = $("#datepickerEnd").val(); // Get end date
 
-    $("#dateDisplay").text("Selected Date: " + selectedDate);//need to remove - after chose date and click submit, apeare the data- need to show the map by data
+    // Save start and end dates to sessionStorage
+    sessionStorage.setItem('startDate', startDate);
+    sessionStorage.setItem('endDate', endDate);
+
+    $("#dateDisplay").text("Selected Dates: " + startDate + " - " + endDate);
+    
   });
-
-  $("#addButton").click(function() {
+  $("#addButton").click(function () {
     window.location.href = "/roomMaps"
   });
-
 });

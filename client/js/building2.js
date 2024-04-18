@@ -1,4 +1,28 @@
 $(document).ready(function () {
+
+    var currentURL = window.location.href;
+    var buildingNameFromUrl = currentURL.split('/').pop().split('_')[0];
+    alert(buildingNameFromUrl)
+    // Data containing building information
+    const buildingData = {
+        buildingName: buildingNameFromUrl,
+    };
+    // Send a POST request to save building information
+    $.ajax({
+        type: 'POST',
+        url: '/saveBuildingInfo',
+        contentType: 'application/json',
+        data: JSON.stringify(buildingData),
+        success: function (response) {
+            console.log('Building data saved:', response);
+            // Handle success if needed
+        },
+        error: function (err) {
+            console.error('Error saving building data:', err);
+            // Handle error if needed
+        }
+    });
+
     // Navigate to the specific room page when a room button is clicked
     $("#bulding2_room1").click(function () {
         // window.location.href = "building1_room1.html";
@@ -22,7 +46,6 @@ $(document).ready(function () {
 
     //dekel rooms:
     $("#dekel_room1").click(function () {
-        alert("yapp");
         //window.location.href = "building1_room1.html";
     });
 
@@ -32,7 +55,6 @@ $(document).ready(function () {
 
     //gefen rooms:
     $("#gefen_room1").click(function () {
-        alert("yapp");
         // window.location.href = "building1_room1.html";
     });
 
@@ -112,4 +134,9 @@ $(document).ready(function () {
     $("#vered_room2").click(function () {
         // window.location.href = "building1_room2.html";
     });
+    // function getBuildingNameFromURL() {
+    //     var url = window.location.pathname;
+    //     return url;
+    // }
 });
+
