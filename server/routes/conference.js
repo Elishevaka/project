@@ -171,22 +171,22 @@ module.exports = {
             res.status(500).send('Error saving building data to MongoDB');
         }
     },
+
     SaveBuildingInfo: async function (req, res) {
         try {
-            const { buildingName } = req.body;
-            console.log(buildingName + " buildingName!!");
+            const { buildingName, numberOfRooms } = req.body;
             // Check if the building already exists
             const existingBuilding = await Building.findOne({ buildingName });
-
+    
             if (existingBuilding) {
                 console.log('Building already exists:', existingBuilding);
                 return res.status(200).json({ message: 'Building already exists' });
             }
-
+    
             // If building doesn't exist, create and save it
-            const building = new Building({ buildingName });
+            const building = new Building({ buildingName, numberOfRooms });
             await building.save();
-
+    
             console.log('Building data saved:', building);
             return res.status(201).json({ message: 'Building data saved successfully' });
         } catch (error) {

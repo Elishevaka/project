@@ -21,7 +21,12 @@ $(document).ready(function () {
         'rimon_building': '/rimon_building',
         'shaked_building': '/shaked_building',
         'havatzelet_building': '/havatzelet_building',
-        'tamar_building': '/tamar_building'
+        'duvdevan_building': '/duvdevan_building',
+        'hadas_building': '/hadas_building',
+        'zait_building': '/zait_building',
+        'nurit_building': '/nurit_building',
+        'rakefet_building': '/rakefet_building',
+        'tehena_building': '/tehena_building'
     };
 
     $('.building-btn').click(function () {

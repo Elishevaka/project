@@ -23,7 +23,12 @@ app.use('/calanit_building', express.static(path.join(__dirname, 'client/html/bu
 app.use('/rimon_building', express.static(path.join(__dirname, 'client/html/buildings/rimon_building.html')));
 app.use('/shaked_building', express.static(path.join(__dirname, 'client/html/buildings/sheked_building.html')));
 app.use('/havatzelet_building', express.static(path.join(__dirname, 'client/html/buildings/havatzelet_building.html')));
-app.use('/tamar_building', express.static(path.join(__dirname, 'client/html/buildings/tamar_building.html')));
+app.use('/duvdevan_building', express.static(path.join(__dirname, 'client/html/buildings/duvdevan_building.html')));
+app.use('/hadas_building', express.static(path.join(__dirname, 'client/html/buildings/hadas_building.html')));
+app.use('/zait_building', express.static(path.join(__dirname, 'client/html/buildings/zait_building.html')));
+app.use('/nurit_building', express.static(path.join(__dirname, 'client/html/buildings/nurit_building.html')));
+app.use('/rakefet_building', express.static(path.join(__dirname, 'client/html/buildings/rakefet_building.html')));
+app.use('/tehena_building', express.static(path.join(__dirname, 'client/html/buildings/tehena_building.html')));
 app.use('/details_form', express.static(path.join(__dirname, 'client/html/details_form.html')));
 app.use('/js', express.static(path.join(__dirname, 'client/js')));
 
