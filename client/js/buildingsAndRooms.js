@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    let startDate = 0, endDate = 0;
+
+    startDate = sessionStorage.getItem('startDate');
+    endDate = sessionStorage.getItem('endDate');
     var currentURL = window.location.href;
     var buildingNameFromUrl = currentURL.split('/').pop().split('_')[0];
 
