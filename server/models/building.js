@@ -17,7 +17,6 @@ var BuildingSchema = new Schema({
         required: true,
         trim: true
     }
-
 }
 );
 

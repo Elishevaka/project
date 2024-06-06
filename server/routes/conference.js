@@ -62,11 +62,8 @@ module.exports = {
     },
 
     CheckRoomStatus: function (req, res) {
-        console.log("1");
         const roomId = req.params.roomId;
         RoomStatus.findOne({ roomId: roomId }, function (err, roomId) {
-            console.log("roomId", req.params.roomId);
-            console.log("room.status", roomId.status);
             if (err) {
                 console.error('Error checking room status:', err);
                 return res.status(500).send('Internal Server Error');
@@ -97,8 +94,6 @@ module.exports = {
 
     CreateOrUpdateRoom: function (req, res) {
         const { roomId, buildingId } = req.body;
-        console.log("roomId", roomId);
-        console.log("buildingId", buildingId);
         // Check if a room with the same ID already exists
         RoomStatus.findOne({ roomId: roomId, buildingId: buildingId })
             .then(existingRoom => {
@@ -134,12 +129,9 @@ module.exports = {
     },
 
     FindBuildingId: async function (req, res) {
-        console.log("lala");
         try {
             const { buildingName } = req.body;
             const building = await Building.findOne({ buildingName: buildingName }).exec();
-            console.log("buildingName", buildingName);
-            console.log("building", building);
             if (building) {
                 res.json({ buildingId: building.buildingId });
             } else {
@@ -150,48 +142,59 @@ module.exports = {
             res.status(500).json({ error: 'Internal server error' });
         }
     },
-
-    SaveBuildingData: async function (req, res) {
-        console.log("SaveBuildingData");
-        const { buildingName } = req.body;
-        console.log("buildingName", buildingName);
-        try {
-            // Create a new instance of the Building model
-            const newBuilding = new Building({
-                buildingName: buildingName
-            });
-
-            // Save the new building to MongoDB
-            const savedBuilding = await newBuilding.save();
-
-            // Send back a response indicating success
-            res.status(200).send('Building data saved to MongoDB');
-        } catch (error) {
-            console.error('Error saving building data to MongoDB:', error);
-            res.status(500).send('Error saving building data to MongoDB');
-        }
-    },
-
     SaveBuildingInfo: async function (req, res) {
         try {
             const { buildingName, numberOfRooms } = req.body;
             // Check if the building already exists
             const existingBuilding = await Building.findOne({ buildingName });
-    
+
             if (existingBuilding) {
                 console.log('Building already exists:', existingBuilding);
                 return res.status(200).json({ message: 'Building already exists' });
             }
-    
+
             // If building doesn't exist, create and save it
             const building = new Building({ buildingName, numberOfRooms });
             await building.save();
-    
+
             console.log('Building data saved:', building);
             return res.status(201).json({ message: 'Building data saved successfully' });
         } catch (error) {
             console.error('Error saving building data:', error);
             return res.status(500).json({ error: 'Server error' });
+        }
+    },
+    GetOrCreateRooms: async function (req, res) {
+        try {
+            const { buildingName } = req.body;
+            const building = await Building.findOne({ buildingName });
+
+            if (!building) {
+                return res.status(404).json({ message: 'Building not found' });
+            }
+
+            let rooms = await Room.find({ buildingId: building._id });
+            if (rooms.length === 0) {
+                // If no rooms found, create them
+                const numberOfRooms = building.numberOfRooms;
+                for (let i = 1; i <= numberOfRooms; i++) {
+                    const newRoom = new Room({
+                        buildingId: building._id,
+                        roomNumber: i,
+                        buildingName: buildingName,
+                        numOfRooms: 1,
+                        numBeds: Math.floor(Math.random() * 4) + 1, // Example random number of beds
+                        floor: Math.floor(Math.random() * 4) + 1 // Example random floor number
+                    });
+                    await newRoom.save();
+                }
+                rooms = await Room.find({ buildingId: building._id });
+            }
+
+            res.status(200).json({ rooms });
+        } catch (error) {
+            console.error('Error fetching or creating rooms:', error);
+            res.status(500).json({ error: 'Server error' });
         }
     }
 };

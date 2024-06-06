@@ -37,7 +37,6 @@ $(document).ready(function () {
         sessionStorage.setItem('endDate', endDate);
 
         const route = buildings[buildingName]; // Get the corresponding route from the object
-        //alert(route+" route")
         if (route) {
             window.location.href = route; // Redirect to the selected building route
         } else {
