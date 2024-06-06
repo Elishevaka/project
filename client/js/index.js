@@ -1,27 +1,38 @@
-
 $(document).ready(function () {
-  //The start date will be less than or equal to the end date
+  sessionStorage.clear();// Clean sessionStorage
+  var startDate = 0;
+  var endDate = 0;
+
+  // Initialize the start date picker
   $("#datepickerStart").datepicker({
     dateFormat: 'dd/mm/yy',
     onSelect: function (selectedDate) {
-      var startDate = $.datepicker.parseDate('dd/mm/yy', selectedDate);
-      $("#datepickerEnd").datepicker("option", "minDate", startDate);
+      startDate = $.datepicker.parseDate('dd/mm/yy', selectedDate);
+      // Enable the end date picker and set the minDate option
+      $("#datepickerEnd").datepicker("option", "minDate", startDate).prop("disabled", false);
     }
   });
 
+  // Initialize the end date picker but disable it initially
   $("#datepickerEnd").datepicker({
     dateFormat: 'dd/mm/yy',
     beforeShow: function (input, inst) {
-      var startDate = $("#datepickerStart").datepicker("getDate");
-      if (startDate) {
-        $(this).datepicker("option", "minDate", startDate);
+      endDate = $("#datepickerStart").datepicker("getDate");
+      if (endDate) {
+        $(this).datepicker("option", "minDate", endDate);
       }
     }
-  });
+  }).prop("disabled", true);
+
   $("#selectDates").click(function () {
-    const startDate = $("#datepickerStart").val(); // Get start date
-    const endDate = $("#datepickerEnd").val(); // Get end date
-    
+    startDate = $("#datepickerStart").val(); // Get start date
+    endDate = $("#datepickerEnd").val(); // Get end date
+
+    if (!startDate || !endDate) {
+      alert("Please select both start and end dates.");
+      return;
+    }
+
     if (new Date(endDate.split('/').reverse().join('/')) <= new Date(startDate.split('/').reverse().join('/'))) {
       alert("End date must be greater than start date");
       return;
@@ -32,9 +43,16 @@ $(document).ready(function () {
     sessionStorage.setItem('endDate', endDate);
 
     $("#dateDisplay").text("Selected Dates: " + startDate + " - " + endDate);
+
+    $("#addButton").click(function () {
+      window.location.href = "/roomMaps";
+    });
   });
 
   $("#addButton").click(function () {
-    window.location.href = "/roomMaps";
+    if (0 === startDate || 0 == endDate) {
+      alert("please choose dates")
+    }
   });
+
 });

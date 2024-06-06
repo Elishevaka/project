@@ -1,6 +1,6 @@
 
 $(document).ready(function () {
-    let startDate, endDate;
+    let startDate = 0, endDate = 0;
 
     startDate = sessionStorage.getItem('startDate');
     endDate = sessionStorage.getItem('endDate');
