@@ -2,15 +2,24 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 var RoomSchema = new Schema({
-    roomId: {
+    _id: {
+        type: mongoose.Schema.Types.ObjectId, // Specify the type as ObjectId
+        auto: true // Let MongoDB generate the unique ID automatically
+    },
+    roomNumber: {
         type: Number,
         required: true
     },
     buildingId: {
-        type: Number,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'BuildingSchema', // Reference to the Building model
         required: true
     },
-    numRooms: {
+    buildingName: {
+        type: String,
+        required: true
+    },
+    numOfRooms: {
         type: Number,
         required: true
     },

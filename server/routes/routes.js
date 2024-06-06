@@ -10,8 +10,8 @@ router.get('/checkRoomStatus/:roomId', conferenceRoutes.CheckRoomStatus);
 router.get('/saveBuildingOnLoad', conferenceRoutes.SaveBuildingOnLoad);
 router.post('/createOrUpdateRoom', conferenceRoutes.CreateOrUpdateRoom);
 router.post('/findBuildingId', conferenceRoutes.FindBuildingId);
-router.post('/saveBuildingData', conferenceRoutes.SaveBuildingData);
 router.post('/saveBuildingInfo', conferenceRoutes.SaveBuildingInfo);
+router.post('/getOrCreateRooms', conferenceRoutes.GetOrCreateRooms);
 
 // Add route for handling login form submission
 router.post('/login', conferenceRoutes.LoginScript);

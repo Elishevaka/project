@@ -1,23 +1,30 @@
-#center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 50px;
-    width: 70%;
+.body {
+    margin: 0;
 }
 
-.btn-success{
-    background-color: rgb(36, 166, 8);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    /* box-shadow: 0px 0px 2px 2px rgb(34, 166, 8); */
-    margin-bottom: auto;
+.container {
+    max-width: 100%;
+    background-color: white;
+    padding: 8px;
 }
-.btn-danger{
+
+#rooms {
+    display: flexbox;
+}
+
+.room-btn {
+    margin-bottom: 10px;
+    margin: 5px; /* Add margin to create space between buttons */
+  }
+
+.btn-success {
+    background-color: rgb(36, 166, 8);
+}
+
+.btn-danger {
     color: #fff;
-    background-color: #dc3545; 
-    border-color: #dc3545; 
+    background-color: #dc3545;
+    border-color: #dc3545;
 }
 
 #map {
@@ -25,17 +32,4 @@
     height: 400px;
     background-color: #f0f0f0;
     position: relative;
-}
-
-.building {
-    position: absolute;
-    cursor: pointer;
-}
-
-button.free {
-    background-color: green;
-}
-
-button.occupied {
-    background-color: red;
 }

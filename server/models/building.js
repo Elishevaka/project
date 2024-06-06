@@ -11,8 +11,12 @@ var BuildingSchema = new Schema({
         type: String,
         required: true,
         trim: true
+    },
+    numberOfRooms: {
+        type: Number,
+        required: true,
+        trim: true
     }
-
 }
 );
 
