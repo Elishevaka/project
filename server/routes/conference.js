@@ -2,6 +2,7 @@ const Client = require('../models/client.js')
 const RoomStatus = require('../models/statusRoom.js')
 const Room = require('../models/room.js')
 const Building = require('../models/building.js')
+const Order = require('../models/order.js')
 
 function isValidURL(str) {//function to check url
     try {
@@ -28,38 +29,38 @@ module.exports = {
             res.status(401).json({ message: 'Invalid username or password' });
         }
     },
-    // CREATE
-    CreateClient: function (req, res) {
-        if (!req.body)
-            return res.status(400).send("No body");
-        else if (!req.body.clientId || !req.body.name || !req.body.phoneNumber)
-            return res.status(400).send("Missing parameters");
+    // // CREATE
+    // CreateClient: function (req, res) {
+    //     if (!req.body)
+    //         return res.status(400).send("No body");
+    //     else if (!req.body.clientId || !req.body.name || !req.body.phoneNumber)
+    //         return res.status(400).send("Missing parameters");
 
-        // Create a new client data object
-        const newClient = new Client({
-            clientId: req.body.clientId,
-            name: req.body.name,
-            email: req.body.email,
-            phoneNumber: req.body.phoneNumber
-        });
+    //     // Create a new client data object
+    //     const newClient = new Client({
+    //         clientId: req.body.clientId,
+    //         name: req.body.name,
+    //         email: req.body.email,
+    //         phoneNumber: req.body.phoneNumber
+    //     });
 
-        newClient.save()
-            .then(savedClient => {
-                // Check if a client with the same clientId already exists
-                Client.findOne({ clientId: savedClient.clientId })
-                    .then(existingClient => {
-                        res.status(201).send(savedClient);
-                    })
-                    .catch(err => {
-                        console.error('Error checking existing client:', err);
-                        res.status(500).send('Internal Server Error');
-                    });
-            })
-            .catch(err => {
-                console.error('Error creating client:', err);
-                res.status(500).send('Internal Server Error');
-            });
-    },
+    //     newClient.save()
+    //         .then(savedClient => {
+    //             // Check if a client with the same clientId already exists
+    //             Client.findOne({ clientId: savedClient.clientId })
+    //                 .then(existingClient => {
+    //                     res.status(201).send(savedClient);
+    //                 })
+    //                 .catch(err => {
+    //                     console.error('Error checking existing client:', err);
+    //                     res.status(500).send('Internal Server Error');
+    //                 });
+    //         })
+    //         .catch(err => {
+    //             console.error('Error creating client:', err);
+    //             res.status(500).send('Internal Server Error');
+    //         });
+    // },
 
     CheckRoomStatus: function (req, res) {
         const roomId = req.params.roomId;
@@ -190,11 +191,77 @@ module.exports = {
                 }
                 rooms = await Room.find({ buildingId: building._id });
             }
+            else {
+                console.log('The building and the rooms is already reserved.');
+            }
 
             res.status(200).json({ rooms });
         } catch (error) {
             console.error('Error fetching or creating rooms:', error);
             res.status(500).json({ error: 'Server error' });
+        }
+    },
+    SubmitOrder: async function (req, res) {
+        try {
+            const { buildingName, roomNumber, clientId, name, email, phoneNumber, startDate, endDate, guestsNum, nightNumbers, isFree } = req.body;
+            const building = await Building.findOne({ buildingName });
+
+            if (!building) {
+                return res.status(404).json({ message: 'Building not found' });
+            }
+            let buildingId = building._id;
+            let room = await Room.find({ buildingId, roomNumber });
+            let roomId = room[0]._id;
+
+            // Create or update client
+            let client = await Client.findOne({ clientId });
+            if (!client) {
+                client = new Client({
+                    clientId: clientId,
+                    name: name,
+                    email: email,
+                    phoneNumber: phoneNumber
+                });
+            }
+            // if (!client) {
+            //     console.log('Error: Client not found.');
+            // } else {
+            //     console.log('Client updated or created:', client);
+            //     await client.save(); // Save the client to the database
+            // }
+            // Create order
+            const newOrder = new Order({
+                clientId: clientId,
+                guestsNum: guestsNum,
+                startDate: startDate,
+                endDate: endDate,
+                nightNumbers: nightNumbers,
+                isFree,
+                email: email,
+                rooms: [{ roomId, buildingId }]
+            });
+
+            if (!newOrder || !client) {
+                console.log('\n----newOrder----\n', newOrder);
+                console.log('\n----client----\n', client);
+                console.log('Error: newOrder or client not found.');
+            } else {
+                console.log('sucseesfully to save the order and client');
+                await newOrder.save(); // Save the newOrder to the database
+                await client.save(); // Save the client to the database
+            }
+
+            // Update room status
+            // await RoomStatus.findOneAndUpdate(
+            //     { rooms: [room, building] },
+            //     { $set: { status: 'occupied', startDate: startDate, nightNumbers } },
+            //     { new: true, upsert: true }
+            // );
+
+            // res.status(200).send({ message: 'Order submitted successfully!' });
+        } catch (error) {
+            console.error('Error submitting order:', error);
+            res.status(500).send({ message: 'Failed to submit order. Please try again.' });
         }
     }
 };

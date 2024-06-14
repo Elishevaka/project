@@ -6,6 +6,7 @@ $(document).ready(function () {
     var currentURL = window.location.href;
     var buildingNameFromUrl = currentURL.split('/').pop().split('_')[0];
 
+    sessionStorage.setItem('buildingNameFromUrl', buildingNameFromUrl);
     // Define an object to store the number of rooms for each building
     const buildingRooms = {
         gefen: 30,
@@ -39,9 +40,7 @@ $(document).ready(function () {
         contentType: 'application/json',
         data: JSON.stringify(buildingData),
         success: function (response) {
-            console.log('Building data saved:', response);
-            // Handle success if needed
-            // Fetch or create room data for the building
+            console.log(response.message);
             $.ajax({
                 type: 'POST',
                 url: '/getOrCreateRooms',
@@ -63,11 +62,16 @@ $(document).ready(function () {
         }
     });
 
-    $('#rooms_in_buildings').click(function () {
-
-        for (let i = 1; i <= buildingData.numberOfRooms; i++) {
-            window.location.href = 'details_form'
-        }
+    // $('#rooms_in_buildings').click(function () {// check if i press on room1 so i == 1 is need to send
+    //     for (let i = 1; i <= buildingData.numberOfRooms; i++) {
+    //         window.location.href = 'details_form'
+    //     }
+    // });
+    // Event listener for dynamically created room buttons
+    $('#rooms_in_buildings').on('click', '.room-btn', function () {
+        var roomNumber = $(this).attr('id').split('_room')[1];
+        sessionStorage.setItem("roomNumber", roomNumber);
+        window.location.href = 'details_form';
     });
 
 
