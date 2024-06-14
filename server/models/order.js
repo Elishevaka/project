@@ -3,20 +3,21 @@ const Schema = mongoose.Schema;
 
 const RoomSchema = new Schema({
     roomId: {
-        type: Number,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'roomSchema', // Reference to the Room model
         required: true
     },
     buildingId: {
-        type: Number,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'BuildingSchema', // Reference to the Building model
         required: true
     }
 });
 
 var OrderSchema = new Schema({
-    orderId: {
-        type: Number,
-        required: true,
-        unique: true
+    _id: {
+        type: mongoose.Schema.Types.ObjectId, // Specify the type as ObjectId
+        auto: true // Let MongoDB generate the unique ID automatically
     },
     clientId: {
         type: Number,
@@ -30,6 +31,10 @@ var OrderSchema = new Schema({
         type: Date,
         required: true
     },
+    endDate: {
+        type: Date,
+        required: true
+    },
     nightNumbers: {
         type: Number,
         required: true
@@ -37,6 +42,10 @@ var OrderSchema = new Schema({
     isFree: {// need to pay or get free
         type: Boolean,
         required: true
+    },
+    email: {
+        type: String,
+        match: [/.+@.+\..+/, 'Please enter a valid email address']
     },
     rooms: [RoomSchema]
 }, { timestamps: true }
