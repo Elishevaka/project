@@ -109,7 +109,6 @@ module.exports = {
     },
     GetAllRooms: async function (req, res) {
         try {
-            // Fetch all rooms and populate the associated building information (if you need the full building details)
             const rooms = await Room.find().populate('buildingId', 'buildingName'); // Only populate buildingName
             return res.status(200).json(rooms); // Return rooms with building info
         } catch (error) {
