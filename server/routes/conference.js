@@ -1,8 +1,9 @@
 const Client = require('../models/client.js')
-const RoomStatus = require('../models/statusRoom.js')
+const RoomStatus = require('../models/roomBooking.js')
 const Room = require('../models/room.js')
 const Building = require('../models/building.js')
 const Order = require('../models/order.js')
+const Login = require('../models/login.js');
 
 function isValidURL(str) {//function to check url
     try {
@@ -16,252 +17,176 @@ function isValidURL(str) {//function to check url
 
 module.exports = {
 
-    LoginScript: function (req, res) {
+    LoginScript: async function (req, res) {
         const { username, password } = req.body;
-
-        // Your authentication logic here
-        // Example: Check if username and password match a user in the database
-        if (username === 'exampleUser' && password === 'examplePassword') {
-            // Authentication successful
-            res.status(200).json({ message: 'Login successful' });
-        } else {
-            // Authentication failed
-            res.status(401).json({ message: 'Invalid username or password' });
-        }
-    },
-    // // CREATE
-    // CreateClient: function (req, res) {
-    //     if (!req.body)
-    //         return res.status(400).send("No body");
-    //     else if (!req.body.clientId || !req.body.name || !req.body.phoneNumber)
-    //         return res.status(400).send("Missing parameters");
-
-    //     // Create a new client data object
-    //     const newClient = new Client({
-    //         clientId: req.body.clientId,
-    //         name: req.body.name,
-    //         email: req.body.email,
-    //         phoneNumber: req.body.phoneNumber
-    //     });
-
-    //     newClient.save()
-    //         .then(savedClient => {
-    //             // Check if a client with the same clientId already exists
-    //             Client.findOne({ clientId: savedClient.clientId })
-    //                 .then(existingClient => {
-    //                     res.status(201).send(savedClient);
-    //                 })
-    //                 .catch(err => {
-    //                     console.error('Error checking existing client:', err);
-    //                     res.status(500).send('Internal Server Error');
-    //                 });
-    //         })
-    //         .catch(err => {
-    //             console.error('Error creating client:', err);
-    //             res.status(500).send('Internal Server Error');
-    //         });
-    // },
-
-    CheckRoomStatus: function (req, res) {
-        const roomId = req.params.roomId;
-        RoomStatus.findOne({ roomId: roomId }, function (err, roomId) {
-            if (err) {
-                console.error('Error checking room status:', err);
-                return res.status(500).send('Internal Server Error');
-            }
-            if (!roomId) {
-                return res.status(404).send('Room not found');
-            }
-            res.json({ status: roomId.status }); // Return room status
-        });
-    },
-
-    SaveBuildingOnLoad: function (req, res) {
-        if (!req.body) res.status(400).send("no body");
-        else if (!req.body.buildingName || !req.body.buildingId) res.status(400).send("Missing parameters")
-        else {
-            const new_building = {
-                "buildingName": req.body.buildingName,
-                "buildingId": req.body.buildingId,
-            };
-            const building = new Building(new_building);
-            building.save().then(building =>
-                res.status(201).send(building)
-            ).catch(e => {
-                res.status(400).send(e)
-            })
-        }
-    },
-
-    CreateOrUpdateRoom: function (req, res) {
-        const { roomId, buildingId } = req.body;
-        // Check if a room with the same ID already exists
-        RoomStatus.findOne({ roomId: roomId, buildingId: buildingId })
-            .then(existingRoom => {
-                if (existingRoom) {
-                    // Room already exists, update its information if needed
-                    console.log('Room already exists:', existingRoom);
-                    // Perform any necessary updates here
-                    res.status(200).send(existingRoom); // Sending existing room details
-                } else {
-                    // Room doesn't exist, create a new one
-                    const newRoomStatus = new RoomStatus({
-                        roomId: roomId,
-                        buildingId: buildingId,
-                        status: 'free'
-                    });
-
-                    // Save the new room status to MongoDB
-                    newRoomStatus.save()
-                        .then(newRoom => {
-                            console.log('New room created:', newRoom);
-                            res.status(201).send(newRoom); // Sending newly created room details
-                        })
-                        .catch(err => {
-                            console.error('Error creating new room:', err);
-                            res.status(500).send('Internal Server Error');
-                        });
-                }
-            })
-            .catch(err => {
-                console.error('Error finding room:', err);
-                res.status(500).send('Internal Server Error');
-            });
-    },
-
-    FindBuildingId: async function (req, res) {
         try {
-            const { buildingName } = req.body;
-            const building = await Building.findOne({ buildingName: buildingName }).exec();
+            // Find the user by username
+            const userDB = await Login.findOne({ username });
+
+            if (!userDB) {
+                return res.status(401).json({ message: 'Invalid username or password' });
+            }
+
+            if (password === userDB.password) {
+                // Authentication successful
+                return res.status(200).json({ message: 'Login successful' });
+            } else {
+                // Authentication failed
+                return res.status(401).json({ message: 'Invalid username or password' });
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Server error, please try again later.' });
+        }
+    },
+
+    //////////////////////////////////////////////////////////// start
+    AddRoom: async function (req, res) {
+        const { roomNumber, buildingName, numOfRooms, numBeds, floor } = req.body;
+
+        try {
+            // Check if the building exists by name
+            let building = await Building.findOne({ buildingName: buildingName.trim() });
+
             if (building) {
-                res.json({ buildingId: building.buildingId });
-            } else {
-                res.status(404).json({ error: 'Building not found' });
-            }
-        } catch (error) {
-            console.error('Error finding building:', error);
-            res.status(500).json({ error: 'Internal server error' });
-        }
-    },
-    SaveBuildingInfo: async function (req, res) {
-        try {
-            const { buildingName, numberOfRooms } = req.body;
-            // Check if the building already exists
-            const existingBuilding = await Building.findOne({ buildingName });
-
-            if (existingBuilding) {
-                console.log('Building already exists:', existingBuilding);
-                return res.status(200).json({ message: 'Building already exists' });
-            }
-
-            // If building doesn't exist, create and save it
-            const building = new Building({ buildingName, numberOfRooms });
-            await building.save();
-
-            console.log('Building data saved:', building);
-            return res.status(201).json({ message: 'Building data saved successfully' });
-        } catch (error) {
-            console.error('Error saving building data:', error);
-            return res.status(500).json({ error: 'Server error' });
-        }
-    },
-    GetOrCreateRooms: async function (req, res) {
-        try {
-            const { buildingName } = req.body;
-            const building = await Building.findOne({ buildingName });
-
-            if (!building) {
-                return res.status(404).json({ message: 'Building not found' });
-            }
-
-            let rooms = await Room.find({ buildingId: building._id });
-            if (rooms.length === 0) {
-                // If no rooms found, create them
-                const numberOfRooms = building.numberOfRooms;
-                for (let i = 1; i <= numberOfRooms; i++) {
-                    const newRoom = new Room({
-                        buildingId: building._id,
-                        roomNumber: i,
-                        buildingName: buildingName,
-                        numOfRooms: 1,
-                        numBeds: Math.floor(Math.random() * 4) + 1, // Example random number of beds
-                        floor: Math.floor(Math.random() * 4) + 1 // Example random floor number
-                    });
-                    await newRoom.save();
-                }
-                rooms = await Room.find({ buildingId: building._id });
-            }
-            else {
-                console.log('The building and the rooms is already reserved.');
-            }
-
-            res.status(200).json({ rooms });
-        } catch (error) {
-            console.error('Error fetching or creating rooms:', error);
-            res.status(500).json({ error: 'Server error' });
-        }
-    },
-    SubmitOrder: async function (req, res) {
-        try {
-            const { buildingName, roomNumber, clientId, name, email, phoneNumber, startDate, endDate, guestsNum, nightNumbers, isFree } = req.body;
-            const building = await Building.findOne({ buildingName });
-
-            if (!building) {
-                return res.status(404).json({ message: 'Building not found' });
-            }
-            let buildingId = building._id;
-            let room = await Room.find({ buildingId, roomNumber });
-            let roomId = room[0]._id;
-
-            // Create or update client
-            let client = await Client.findOne({ clientId });
-            if (!client) {
-                client = new Client({
-                    clientId: clientId,
-                    name: name,
-                    email: email,
-                    phoneNumber: phoneNumber
+                // Check if the room already exists in the building
+                const existingRoom = await Room.findOne({
+                    roomNumber: roomNumber,
+                    buildingId: building._id
                 });
-            }
-            // if (!client) {
-            //     console.log('Error: Client not found.');
-            // } else {
-            //     console.log('Client updated or created:', client);
-            //     await client.save(); // Save the client to the database
-            // }
-            // Create order
-            const newOrder = new Order({
-                clientId: clientId,
-                guestsNum: guestsNum,
-                startDate: startDate,
-                endDate: endDate,
-                nightNumbers: nightNumbers,
-                isFree,
-                email: email,
-                rooms: [{ roomId, buildingId }]
-            });
+                // if (!existingRoom) {                    
+                //     building.numberOfRooms += 1;
+                //     await building.save();
+                // }
 
-            if (!newOrder || !client) {
-                console.log('\n----newOrder----\n', newOrder);
-                console.log('\n----client----\n', client);
-                console.log('Error: newOrder or client not found.');
+                if (existingRoom) {
+                    return res.status(400).json({ error: 'Room already exists in this building.' });
+                }
+
+                // Add new room to the existing building
+                const newRoom = new Room({
+                    roomNumber: roomNumber,
+                    buildingId: building._id,
+                    buildingName: building.buildingName,
+                    numOfRooms: numOfRooms,
+                    numBeds: numBeds,
+                    floor: floor
+                });
+
+                await newRoom.save();
+                building.numberOfRooms += 1;
+                await building.save();
+                return res.status(200).json({ message: `Room ${roomNumber} added to ${buildingName} successfully!` });
+
             } else {
-                console.log('sucseesfully to save the order and client');
-                await newOrder.save(); // Save the newOrder to the database
-                await client.save(); // Save the client to the database
+                // Create new building if it doesn't exist
+                const newBuilding = new Building({
+                    buildingName: buildingName.trim(),
+                    numberOfRooms: numOfRooms
+                });
+
+                await newBuilding.save();
+
+                // Add the new room to the newly created building
+                const newRoom = new Room({
+                    roomNumber: roomNumber,
+                    buildingId: newBuilding._id,
+                    buildingName: newBuilding.buildingName,
+                    numOfRooms: numOfRooms,
+                    numBeds: numBeds,
+                    floor: floor
+                });
+
+                await newRoom.save();
+                return res.status(200).json({ message: `Building ${buildingName} and room ${roomNumber} created successfully!` });
             }
 
-            // Update room status
-            // await RoomStatus.findOneAndUpdate(
-            //     { rooms: [room, building] },
-            //     { $set: { status: 'occupied', startDate: startDate, nightNumbers } },
-            //     { new: true, upsert: true }
-            // );
-
-            // res.status(200).send({ message: 'Order submitted successfully!' });
         } catch (error) {
-            console.error('Error submitting order:', error);
-            res.status(500).send({ message: 'Failed to submit order. Please try again.' });
+            console.error(error);
+            res.status(500).json({ error: 'Server error, please try again later.' });
         }
-    }
+    },
+    GetAllRooms: async function (req, res) {
+        try {
+            const rooms = await Room.find().populate('buildingId', 'buildingName'); // Only populate buildingName
+            return res.status(200).json(rooms); // Return rooms with building info
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Error fetching rooms.' });
+        }
+    },
+    DeleteRoom: async function (req, res) {
+        const { roomId } = req.params;
+
+        try {
+            // Find the room by its ID
+            const room = await Room.findById(roomId);
+
+            if (!room) {
+                return res.status(404).json({ error: 'Room not found.' });
+            }
+
+            // Find the associated building and decrement its numberOfRooms
+            const building = await Building.findById(room.buildingId);
+
+            if (building) {
+                building.numberOfRooms -= 1;
+                await building.save();
+            }
+
+            // Delete the room from the database
+            await Room.findByIdAndDelete(roomId);
+
+            res.status(200).json({ message: `Room ${room.roomNumber} from ${room.buildingName} deleted successfully!` });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+    // Update Room
+    UpdateRoom: async function (req, res) {
+        const roomId = req.params.id;
+        const { roomNumber, numBeds, floor, numOfRooms } = req.body;
+
+        try {
+            // Find the room and update it
+            const updatedRoom = await Room.findByIdAndUpdate(roomId, {
+                roomNumber,
+                numBeds,
+                floor,
+                numOfRooms
+            }, { new: true });
+
+            if (!updatedRoom) {
+                return res.status(404).json({ error: 'Room not found' });
+            }
+
+            res.status(200).json({ message: 'Room updated successfully', updatedRoom });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+    updateRoom: async function (req, res) {
+        const { id } = req.params;
+        const { roomNumber, numBeds, floor, numOfRooms } = req.body;
+
+        try {
+            const updatedRoom = await Room.findByIdAndUpdate(
+                id,
+                { roomNumber, numBeds, floor, numOfRooms },
+                { new: true }
+            );
+            if (!updatedRoom) {
+                return res.status(404).json({ error: 'Room not found.' });
+            }
+            res.status(200).json({ message: 'Room updated successfully' });
+        } catch (error) {
+            console.error('Error updating room:', error);
+            res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+
+    ///////////////////////////////
 };
