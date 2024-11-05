@@ -37,5 +37,3 @@ var RoomSchema = new Schema({
 const Room = mongoose.model('roomSchema', RoomSchema);
 
 module.exports = Room
-
-//nestJs

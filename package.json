@@ -16,6 +16,7 @@
     "kit"
   ],
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.18.3",
     "bootstrap-table": "^1.21.2",
     "cors": "^2.8.5",

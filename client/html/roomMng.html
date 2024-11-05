@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/js/roomMng.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Manage Buildings and Rooms</h2>
+        <!-- Add Room Button -->
+        <div class="mb-3">
+            <button class="btn btn-success" id="addRoom">Add Room</button>
+        </div>
+        <div id="roomTable">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Building Name</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="roomList">
+                    <!-- Dynamic content will be injected here by homePage.js -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>
