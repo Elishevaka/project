@@ -7,7 +7,7 @@ $(document).ready(function () {
 
         
     $('#RoomReservations').click(function () {
-        window.location.href = '/roomReservations';
+        window.location.href = '/pickDate';
     });
 
 });

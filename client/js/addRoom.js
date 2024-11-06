@@ -21,7 +21,7 @@ $(document).ready(function () {
             }),
             success: function (response) {
                 alert(response.message);
-                window.location.href = "/home";
+                window.location.href = "/roomMng";
 
             },
             error: function (xhr) {

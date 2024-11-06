@@ -1,49 +1,43 @@
 
 $(document).ready(function () {
-    sessionStorage.clear();// Clean sessionStorage
-    var startDate = 0;
-    var endDate = 0;
+    const startDate = sessionStorage.getItem('startDate');
+    const endDate = sessionStorage.getItem('endDate');
 
-    // Initialize the start date picker
-    $("#datepickerStart").datepicker({
-        dateFormat: 'dd/mm/yy',
-        onSelect: function (selectedDate) {
-            startDate = $.datepicker.parseDate('dd/mm/yy', selectedDate);
-            // Enable the end date picker and set the minDate option
-            $("#datepickerEnd").datepicker("option", "minDate", startDate).prop("disabled", false);
+    if (!startDate || !endDate) {
+        alert("No dates selected. Please go back and select dates.");
+        window.location.href = "/pickDate"; 
+        return;
+    }
+
+    // Display the selected dates
+    $("#selectedDates").text(`Selected Dates: ${startDate} - ${endDate}`);
+
+
+    // Fetch available rooms based on dates
+    $.ajax({
+        url: "/api/getAvailableRooms",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ startDate, endDate }),
+        success: function (rooms) {
+            // Populate table with available rooms
+            const table = $("#availableRoomsTable tbody");
+            table.empty(); // Clear existing rows
+
+            rooms.forEach(room => {
+                const row = `<tr>
+                    <td>${room.roomNumber}</td>
+                    <td>${room.buildingName}</td>
+                    <td>${room.numBeds}</td>
+                    <td>${room.floor}</td>
+                </tr>`;
+                table.append(row);
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching available rooms:", error);
+            alert("Failed to load available rooms. Please try again later.");
         }
     });
 
-    // Initialize the end date picker but disable it initially
-    $("#datepickerEnd").datepicker({
-        dateFormat: 'dd/mm/yy',
-        beforeShow: function (input, inst) {
-            endDate = $("#datepickerStart").datepicker("getDate");
-            if (endDate) {
-                $(this).datepicker("option", "minDate", endDate);
-            }
-        }
-    }).prop("disabled", true);
-
-    $("#selectDates").click(function () {
-        startDate = $("#datepickerStart").val(); // Get start date
-        endDate = $("#datepickerEnd").val(); // Get end date
-
-        if (!startDate || !endDate) {
-            alert("Please select both start and end dates.");
-            return;
-        }
-
-        if (new Date(endDate.split('/').reverse().join('/')) <= new Date(startDate.split('/').reverse().join('/'))) {
-            alert("End date must be greater than start date");
-            return;
-        }
-
-        // Save start and end dates to sessionStorage
-        sessionStorage.setItem('startDate', startDate);
-        sessionStorage.setItem('endDate', endDate);
-
-        $("#dateDisplay").text("Selected Dates: " + startDate + " - " + endDate);
-        
-    });
 });
