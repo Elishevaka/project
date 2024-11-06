@@ -145,4 +145,8 @@ $(document).ready(function () {
     $('#addRoom').click(function () {
         window.location.href = "/addRoom"; // Redirect to the add room page
     });
+    // go back to home page button
+    $('#menu').click(function () {
+        window.location.href = "/home";
+    });
 });
