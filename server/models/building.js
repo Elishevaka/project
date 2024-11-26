@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const id_validator = require('mongoose-id-validator');
+//const id_validator = require('mongoose-id-validator');
 
 var BuildingSchema = new Schema({
     _id: {
@@ -20,7 +20,7 @@ var BuildingSchema = new Schema({
 }
 );
 
-BuildingSchema.plugin(id_validator);//This plugin is used to validate ObjectIds.
+//BuildingSchema.plugin(id_validator);//This plugin is used to validate ObjectIds.
 
 const Building = mongoose.model('BuildingSchema', BuildingSchema);
 module.exports = Building

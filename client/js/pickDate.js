@@ -30,16 +30,18 @@ $(document).ready(function () {
         endDate = $("#datepickerEnd").val(); // Get end date
 
         if (!startDate || !endDate) {
-            alert("Please select both start and end dates.");
+            alert("אנא בחר תאריך התחלה וסיום.");
             return;
         }
-
 
         // Save start and end dates to sessionStorage
         sessionStorage.setItem('startDate', startDate);
         sessionStorage.setItem('endDate', endDate);
 
-        $("#dateDisplay").text("Selected Dates: " + startDate + " - " + endDate);
+        $("#dateDisplay").text("תאריכים שנבחרו: " + startDate + " - " + endDate);
         window.location.href = "/roomReservations";
+    });
+    $('#menu').click(function () {
+        window.location.href = "/home";
     });
 });

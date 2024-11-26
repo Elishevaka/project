@@ -13,6 +13,7 @@ app.use('/addRoom', express.static(path.join(__dirname, 'client/html/addRoom.htm
 app.use('/roomMng', express.static(path.join(__dirname, 'client/html/roomMng.html')));
 app.use('/roomReservations', express.static(path.join(__dirname, 'client/html/roomReservations.html')));
 app.use('/pickDate', express.static(path.join(__dirname, 'client/html/pickDate.html')));
+app.use('/guestDetails', express.static(path.join(__dirname, 'client/html/guestDetails.html')));
 
 ////////////////////////////////////////////////////////////////////////////////
 app.use('/login', express.static(path.join(__dirname, 'client/html/login.html')));

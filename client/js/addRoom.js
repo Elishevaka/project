@@ -1,7 +1,7 @@
 
 $(document).ready(function () {
 
-    $('.addRoom').click(function () {
+    $('#addRoom').click(function () {
         const buildingName = $('#buildingName').val();
         const roomNumber = $('#roomNumber').val();
         const numOfRooms = $('#numOfRooms').val();
@@ -28,5 +28,8 @@ $(document).ready(function () {
                 alert(xhr.responseJSON.error);
             }
         });
+    });
+    $('#menu').click(function () {
+        window.location.href = "/home";
     });
 });

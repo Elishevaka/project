@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 var ClientSchema = new Schema({
+    _id: {
+        type: mongoose.Schema.Types.ObjectId, // Specify the type as ObjectId
+        auto: true // Let MongoDB generate the unique ID automatically
+    },
     clientId: {
         type: Number,
         required: true,
@@ -20,7 +24,7 @@ var ClientSchema = new Schema({
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'] // Validate email format
     },
     phoneNumber: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     }
