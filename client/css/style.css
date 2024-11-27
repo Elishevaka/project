@@ -1,11 +1,14 @@
 .body {
     margin: 0;
+    direction: rtl; /* Set overall direction to RTL */
+    text-align: right;
 }
 
 .container {
     max-width: 100%;
     background-color: white;
     padding: 8px;
+    text-align: right;
 }
 
 #rooms {
@@ -39,5 +42,33 @@
     margin-right: 10px;
 }
 
+.btn-group {
+    float: right;
+}
 
+.table {
+    margin-left: auto;
+    margin-right: 0;
+}
 
+#addRoomForm input {
+    text-align: right; /* Align input text to the right */
+}
+
+label, input {
+    display: inline-block;
+    text-align: right;
+    margin-bottom: 10px;
+}
+/*  *//*  *//*  *//*  *//*  */
+#dateDisplay {
+    text-align: right; /* Align text display for selected dates to the right */
+}
+
+#datepickerStart, #datepickerEnd, #numRoom {
+    text-align: right; /* Align text inside inputs to the right */
+}
+
+#guestForm{
+    text-align: right;
+}

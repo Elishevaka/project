@@ -1,41 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="he" dir="rtl">
 
 <head>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="/js/RoomReservations.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/js/roomReservations.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <div>
-            <h2 id="selectedDates">Selected Dates:</h2>
-            <table id="availableRoomsTable" border="1">
-                <thead>
-                    <tr>
-                        <th>Room Number</th>
-                        <th>Building Name</th>
-                        <th>Number of Beds</th>
-                        <th>Floor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Rows will be populated by JavaScript -->
-                </tbody>
-            </table>
-        </div>
+        <h2>חדרים פנויים להזמנה:</h2>
+        <p id="selectedDates"></p>
+        <button class="btn btn-primary" id="menu"> עמוד הבית</button>
+
+        <table class="table table-striped" id="availableRoomsTable">
+            <thead>
+                <tr>
+                    <th>שם בניין</th>
+                    <th>מספר חדר</th>
+                    <th>מספר מיטות</th>
+                    <th>קומה</th>
+                    <th>הזמן</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic content will be injected here by roomReservations.js -->
+            </tbody>
+        </table>
     </div>
 </body>
 

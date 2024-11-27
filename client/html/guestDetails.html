@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <script src="/js/guestDetails.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2 style="text-align: right;">פרטי אורח <span id="roomNumber"></span></h2>
+        <p style="text-align: right;">בניין: <span id="buildingName"></span></p>
+        <p style="text-align: right;">תאריכים נבחרים: <span id="bookingDates"></span></p>
+
+        <form id="guestForm">
+            <div class="form-group">
+                <label for="guestName">שם אורח:</label>
+                <input type="text" class="form-control" id="guestName" required>
+            </div>
+            <div class="form-group">
+                <label for="guestId">תעודת זהות:</label>
+                <input type="number" class="form-control" id="guestId" required>
+            </div>
+            <div class="form-group">
+                <label for="guestEmail">אימייל אורח:</label>
+                <input type="email" style="text-align: left;"  class="form-control" id="guestEmail">
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber ">פאלפון:</label>
+                <input type="phone" class="form-control" id="phoneNumber" required>
+            </div>
+            <button type="submit" class="btn btn-success">אישור הזמנה</button>
+            <button class="btn btn-primary" id="menu">עמוד הבית</button>
+
+        </form>
+    </div>
+</body>
+
+</html>

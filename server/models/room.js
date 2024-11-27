@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 var RoomSchema = new Schema({
-    _id: {
-        type: mongoose.Schema.Types.ObjectId, // Specify the type as ObjectId
-        auto: true // Let MongoDB generate the unique ID automatically
-    },
+    // _id: {
+    //     type: mongoose.Schema.Types.ObjectId, // Specify the type as ObjectId
+    //     auto: true // Let MongoDB generate the unique ID automatically
+    // },
     roomNumber: {
         type: Number,
         required: true
@@ -31,8 +31,7 @@ var RoomSchema = new Schema({
         type: Number,
         required: true
     }
-}
-);
+});
 
 const Room = mongoose.model('roomSchema', RoomSchema);
 
