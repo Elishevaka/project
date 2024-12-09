@@ -55,7 +55,7 @@ const RoomBookingSchema = new Schema({
     },
     clientId: {
         type: Number,
-        unique: true, // Reference to Client schema
+        //unique: true, // Reference to Client schema
         required: true
     },
     orderId: {

@@ -14,6 +14,7 @@ router.put('/updateRoom/:id', conferenceRoutes.UpdateRoom);
 router.post('/api/getAvailableRooms', conferenceRoutes.GetAvailableRooms);
 router.post('/api/bookRoom', conferenceRoutes.BookRoom);
 router.post('/api/sendMail', conferenceRoutes.SendMail);
+router.post('/api/getDailyOccupancy', conferenceRoutes.GetDailyOccupancy);
 
 // Add route for handling login form submission
 router.post('/login', conferenceRoutes.LoginScript);

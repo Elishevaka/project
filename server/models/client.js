@@ -19,14 +19,14 @@ var ClientSchema = new Schema({
     email: {
         type: String,
         trim: true,
-        unique: true, // Ensure email is unique
+        //unique: true, // Ensure email is unique
         lowercase: true, // Convert email to lowercase before saving
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'] // Validate email format
     },
     phoneNumber: {
         type: String,
         required: true,
-        unique: true
+        //unique: true
     }
 }, { timestamps: true }
 );

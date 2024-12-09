@@ -14,20 +14,22 @@
         <p id="selectedDates"></p>
         <button class="btn btn-primary" id="menu"> עמוד הבית</button>
 
-        <table class="table table-striped" id="availableRoomsTable">
-            <thead>
-                <tr>
-                    <th>שם בניין</th>
-                    <th>מספר חדר</th>
-                    <th>מספר מיטות</th>
-                    <th>קומה</th>
-                    <th>הזמן</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Dynamic content will be injected here by roomReservations.js -->
-            </tbody>
-        </table>
+        <div id="roomTable">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>שם הבנין</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="roomList">
+                    <!-- Dynamic content will be injected here by home.js -->
+                </tbody>
+            </table>
+            <div>
+                <button id="reserveSelectedRooms" class="btn btn-primary">בחר חדרים</button>
+            </div>
+        </div>
     </div>
 </body>
 

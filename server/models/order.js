@@ -11,11 +11,18 @@ var OrderSchema = new Schema({
         required: true,
         unique: true
     },
-    roomId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'roomSchema', // Reference to the Room model
-        required: true
-    },
+    // roomId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'roomSchema', // Reference to the Room model
+    //     required: true
+    // },
+    roomIds: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'roomSchema', // Reference to the Room model
+            required: true,
+        },
+    ],
     // guestsNum: {
     //     type: Number,
     //     required: true
