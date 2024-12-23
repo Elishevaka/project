@@ -21,15 +21,17 @@ var RoomSchema = new Schema({
     },
     numOfRooms: {
         type: Number,
-        required: true
+        default: 1
+        //required: true
     },
     numBeds: {
         type: Number,
-        required: true
+        required: true,
     },
     floor: {
         type: Number,
-        required: true
+        //required: true,
+        default: 1
     }
 });
 

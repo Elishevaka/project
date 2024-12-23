@@ -1,55 +1,64 @@
-//const { SendMail } = require("../../server/routes/conference");
-
 $(document).ready(function () {
-    const roomId = sessionStorage.getItem('roomId');
-    const roomNumber = sessionStorage.getItem('roomNumber');
-    const buildingName = sessionStorage.getItem('buildingName');
+    // Retrieve room details from sessionStorage (can now handle multiple rooms)
+    const selectedRooms = JSON.parse(sessionStorage.getItem('selectedRooms') || '[]');
     const startDate = sessionStorage.getItem('startDate');
     const endDate = sessionStorage.getItem('endDate');
 
-    // Display selected room and dates
-    $("#roomNumber").text(roomNumber);
-    $("#buildingName").text(buildingName);
+    // Display selected rooms and dates
+    const roomList = $("#roomList");
+    selectedRooms.forEach(room => {
+        const roomInfo = `<li>Room Number: ${room.roomNumber}, Building: ${room.buildingName}</li>`;
+        roomList.append(roomInfo);
+    });
+
     $("#bookingDates").text(`${startDate} - ${endDate}`);
 
     // Handle form submission
     $("#guestForm").submit(function (event) {
         event.preventDefault();
+
+        // Collect guest details
         const guestDetails = {
             guestName: $("#guestName").val(),
             guestId: $("#guestId").val(),
             guestEmail: $("#guestEmail").val(),
             phoneNumber: $("#phoneNumber").val(),
-            roomId: roomId,
+            roomIds: selectedRooms.map(room => room.roomId), // Send an array of room IDs
             startDate: startDate,
             endDate: endDate
         };
 
+        // Create email content dynamically for multiple rooms
+        let roomDetails = '';
+        selectedRooms.forEach(room => {
+            roomDetails += `<p>Room Number: ${room.roomNumber}, Building: ${room.buildingName}</p>`;
+        });
+
         const emailContent = `
         <div style="direction: rtl; text-align: right;">
-            <p>לכבוד ${guestDetails.guestName},</p>
-            <p>החדר שלך הוזמן!</p>
-            <p>חדר מספר ${roomNumber} בבניין ${buildingName}</p>
-            <p>בתאריכים: ${startDate} - ${endDate}</p>
-            <p>תודה שבחרת בנו!</p>
-            <p>צוות גבעת וושינגטון</p>
+            <p>Dear ${guestDetails.guestName},</p>
+            <p>Your rooms have been booked!</p>
+            ${roomDetails}
+            <p>Dates: ${startDate} - ${endDate}</p>
+            <p>Thank you for choosing us!</p>
+            <p>Washington Hill Team</p>
         </div>
         `;
 
         const mailData = {
             recipientEmail: guestDetails.guestEmail,
-            subject: "אישור הזמנה",
-            //html: `from ${guestDetails.guestName}\nYour room booking is confirmed!\nRoom Number: ${roomNumber}\n Building: ${buildingName}\nDates: ${startDate} - ${endDate} \nThank you for choosing us!`
+            subject: "Booking Confirmation",
             html: emailContent
-            };
-        // Send booking data to server
+        };
+
+        // Send booking data to the server
         $.ajax({
             url: "/api/bookRoom",
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify(guestDetails),
             success: function () {
-                alert("Room successfully booked!");
+                alert("Rooms successfully booked!");
                 // Send email after successful booking
                 $.ajax({
                     url: "/api/sendMail",
@@ -62,19 +71,19 @@ $(document).ready(function () {
                     },
                     error: function (error) {
                         console.error("Error sending email:", error);
-                        alert("Room booked, but failed to send confirmation email.");
+                        alert("Rooms booked, but failed to send confirmation email.");
                         window.location.href = "/roomReservations";
                     }
                 });
-
                 window.location.href = "/roomReservations";
             },
             error: function (error) {
-                console.error("Error booking room:", error);
-                alert("Failed to book room. Please try again.");
+                console.error("Error booking rooms:", error);
+                alert("Failed to book rooms. Please try again.");
             }
         });
     });
+
     $('#menu').click(function () {
         window.location.href = "/home";
     });

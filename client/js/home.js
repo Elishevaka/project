@@ -10,5 +10,9 @@ $(document).ready(function () {
         window.location.href = '/pickDate';
     });
 
+    $('#dailyOccupancy').click(function () {
+        window.location.href = '/dailyOccupancy';
+    });
+
 });
 

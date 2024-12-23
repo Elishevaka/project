@@ -14,7 +14,7 @@ var BuildingSchema = new Schema({
     },
     numberOfRooms: {
         type: Number,
-        required: true,
+        //required: true,
         trim: true
     }
 }

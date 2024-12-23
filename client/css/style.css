@@ -5,6 +5,7 @@
 }
 
 .container {
+    margin-top: 20px;
     max-width: 100%;
     background-color: white;
     padding: 8px;
@@ -71,4 +72,8 @@ label, input {
 
 #guestForm{
     text-align: right;
+}
+
+#datepicker2 {
+    display: none;
 }
