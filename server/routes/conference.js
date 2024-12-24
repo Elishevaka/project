@@ -6,6 +6,8 @@ const Order = require('../models/order.js')
 const Login = require('../models/login.js');
 
 const nodemailer = require("nodemailer");
+const XLSX = require('xlsx');
+
 
 // function isValidURL(str) {//function to check url
 //     try {
@@ -69,22 +71,6 @@ module.exports = {
                 building.numberOfRooms += 1;
                 await building.save();
 
-                // // Add initial RoomBooking entry marking room as 'free'
-                // const startDate = new Date();
-                // startDate.setUTCHours(0, 0, 0, 0);
-
-                // const endDate = new Date();
-                // endDate.setFullYear(endDate.getFullYear() + 1);
-                // endDate.setUTCHours(0, 0, 0, 0);
-
-                // const initialRoomBooking = new RoomBooking({
-                //     roomId: newRoom._id,
-                //     startDate,
-                //     endDate,
-                //     status: 'free'
-                // });
-                // await initialRoomBooking.save();
-
                 return res.status(200).json({ message: `Room ${roomNumber} added to ${buildingName} successfully!` });
 
             } else {
@@ -104,19 +90,6 @@ module.exports = {
                     floor
                 });
                 await newRoom.save();
-
-                // // Add initial RoomBooking entry marking room as 'free'
-                // const startDate = new Date();
-                // const endDate = new Date();
-                // endDate.setFullYear(endDate.getFullYear() + 1);
-
-                // const initialRoomBooking = new RoomBooking({
-                //     roomId: newRoom._id,
-                //     startDate,
-                //     endDate,
-                //     status: 'free'
-                // });
-                // await initialRoomBooking.save();
 
                 return res.status(200).json({ message: `Building ${buildingName} and room ${roomNumber} created successfully!` });
             }
@@ -186,7 +159,6 @@ module.exports = {
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
     },
-
     GetAvailableRooms: async function (req, res) {
         const { startDate, endDate } = req.body;
 
@@ -222,80 +194,6 @@ module.exports = {
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
     },
-
-    // BookRoom: async function (req, res) {
-    //     const { roomId, startDate, endDate, guestName, guestEmail, guestId, phoneNumber } = req.body;
-
-    //     if (!roomId || !startDate || !endDate || !guestName || !guestId || !phoneNumber) {
-    //         return res.status(400).json({ error: 'Room ID, dates, and guest details are required.' });
-    //     }
-
-    //     try {
-    //         // Parse dates
-    //         const start = parseDateString(startDate);
-    //         const end = parseDateString(endDate);
-
-    //         if (start >= end) {
-    //             return res.status(400).json({ error: 'End date must be after start date.' });
-    //         }
-
-    //         // Check room availability
-    //         const conflictingBooking = await RoomBooking.findOne({
-    //             roomId,
-    //             $or: [
-    //                 { startDate: { $lt: end }, endDate: { $gt: start } }
-    //             ],
-    //             status: 'booked'
-    //         });
-
-    //         if (conflictingBooking) {
-    //             return res.status(400).json({ error: 'Room is already booked within the selected date range.' });
-    //         }
-
-    //         // Create or find the client
-    //         let client = await Client.findOne({ clientId: guestId });
-
-    //         if (!client) {
-    //             client = new Client({
-    //                 clientId: guestId,
-    //                 name: guestName,
-    //                 email: guestEmail,
-    //                 phoneNumber
-    //             });
-    //             await client.save();
-    //         }
-
-    //         let order = await Order.findOne({ roomId: roomId });
-    //         if (!order) {
-    //             // Create an order
-    //             order = new Order({
-    //                 clientId: guestId,
-    //                 roomId: roomId,
-    //                 startDate: start,
-    //                 endDate: end,
-    //                 amount: 1000, // Example amount, adjust as needed
-    //             });
-    //             await order.save();
-    //         }
-    //         // Create the booking
-    //         const newBooking = new RoomBooking({
-    //             roomId: roomId,
-    //             startDate: start,
-    //             endDate: end,
-    //             status: 'booked',
-    //             clientId: guestId,
-    //             orderId: order._id
-    //         });
-
-    //         await newBooking.save();
-
-
-    //         res.status(200).json({ message: 'Room successfully booked!', booking: newBooking });
-    //     } catch (error) {
-    //         console.error("Error booking room:", error);
-    //         res.status(500).json({ error: 'Server error, please try again later.' });
-    //     }
-    // },
     BookRoom: async function (req, res) {
         const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber } = req.body;
 
@@ -373,43 +271,7 @@ module.exports = {
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
     },
-    // Function to send email
-    //SendMail: async function (req, res) {
-    //try {
-    //const { recipientEmail, subject, html } = req.body;
-    // } catch (err) {
-    //     console.error("Failed to send email", err);
-    //     res.status(500).send("Error sending email");
-    // }
-    //const { recipientEmail, subject, html } = req.body;
 
-    // if (!recipientEmail || !subject || !html) {
-    //     return res.status(400).json({ error: 'Recipient email, subject, and HTML content are required.' });
-    // }
-
-    // try {
-    //     // Replace with your EmailJS service ID, template ID, and public key
-    //     const serviceId = 'service_ed4tpfg';
-    //     const templateId = 'template_iwmknp6';
-    //     const publicKey = 'VOafZzbM22Bf_wp3c';
-
-    //     // Prepare email parameters
-    //     const emailParams = {
-    //         to_email: recipientEmail,
-    //         subject: subject,
-    //         message_html: html,
-    //     };
-
-    //     // Send email using EmailJS
-    //     const response = await emailjs.send(serviceId, templateId, emailParams, publicKey);
-
-    //     console.log('Email sent successfully:', response);
-    //     res.status(200).json({ message: 'Email sent successfully!', response });
-    // } catch (error) {
-    //     console.error('Error sending email:', error);
-    //     res.status(500).json({ error: 'Failed to send email. Please try again later.' });
-    // }
-    // }
     SendMail: async function (req, res) {
         const { recipientEmail, subject, html } = req.body;
         //text = "hiiiii"
@@ -445,16 +307,16 @@ module.exports = {
     GetDailyOccupancy: async function (req, res) {
         const { date } = req.body;
         //console.log(date);
-        
+
         if (!date) {
             return res.status(400).json({ error: 'Date is required' });
         }
 
         try {
             //console.log("date: ", date);
-           queryDate  = new Date(date);
+            queryDate = new Date(date);
             //const queryDate = parseDateString(date);
-            console.log("lalalala:::  \n date: ", date , " queryDate: ", queryDate);
+            console.log("lalalala:::  \n date: ", date, " queryDate: ", queryDate);
 
             const occupancyData = await RoomBooking.aggregate([
                 {
@@ -482,11 +344,11 @@ module.exports = {
                         rooms: "$roomDetails"
                     }
                 }
-            ]);           
+            ]);
 
             // Inside the GetDailyOccupancy function:
             const totalRooms = await Room.find({}).countDocuments(); // Counts all rooms in the database
-           
+
             const response = {
                 date: queryDate,
                 occupiedCount: occupancyData[0] ? occupancyData[0].occupiedCount : 0,
@@ -501,11 +363,207 @@ module.exports = {
             console.error("Error generating daily occupancy data:", error);
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
-        
-    }
 
-    
-    
+    },
+
+    GetReports: async function (req, res) {
+        try {
+            const { type } = req.query;  // 'type' could be used to specify different types of reports
+
+            if (!type) {
+                return res.status(400).json({ error: 'Report type is required.' });
+            }
+
+            // Generate different reports based on the 'type' query parameter
+            if (type === 'roomAvailability') {
+                // Report on rooms and their availability
+                const rooms = await Room.find();
+                const roomBookings = await RoomBooking.find();
+
+                const report = rooms.map(room => {
+                    const bookings = roomBookings.filter(booking => booking.roomId.toString() === room._id.toString());
+                    const bookingStatus = bookings.length > 0 ? 'Booked' : 'Available';
+                    return {
+                        roomNumber: room.roomNumber,
+                        buildingName: room.buildingName,
+                        floor: room.floor,
+                        status: bookingStatus
+                    };
+                });
+
+                return res.status(200).json({
+                    message: 'Room availability report generated successfully.',
+                    data: report
+                });
+
+            } else if (type === 'bookingSummary') {
+                // Report on all bookings made within a specific time frame (e.g., past month)
+                const startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 1);  // Start of last month
+                const endDate = new Date();  // Current date
+
+                const bookings = await RoomBooking.find({
+                    startDate: { $gte: startDate },
+                    endDate: { $lte: endDate },
+                }).populate('roomId').populate('clientId');
+
+                const report = bookings.map(booking => {
+                    return {
+                        roomNumber: booking.roomId.roomNumber,
+                        buildingName: booking.roomId.buildingName,
+                        startDate: booking.startDate,
+                        endDate: booking.endDate,
+                        guestName: booking.clientId.guestName,
+                        guestEmail: booking.clientId.guestEmail
+                    };
+                });
+
+                return res.status(200).json({
+                    message: 'Booking summary report generated successfully.',
+                    data: report
+                });
+
+            } else {
+                return res.status(400).json({ error: 'Invalid report type.' });
+            }
+
+        } catch (error) {
+            console.error("Error generating report:", error);
+            return res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+    GetBuildingReport: async function (req, res) {
+        try {
+            // Get building ID from request query or body
+            const { buildingId } = req.query;  // Or req.body for POST request
+
+            if (!buildingId) {
+                return res.status(400).json({ error: 'Building ID is required.' });
+            }
+
+            // Fetch building from database by ID
+            const building = await Building.findById(buildingId);
+            if (!building) {
+                return res.status(404).json({ error: 'Building not found.' });
+            }
+
+            // Fetch rooms for the selected building
+            const rooms = await Room.find({ buildingId: building._id });
+
+            // Get the total number of rooms in the building
+            const totalRooms = rooms.length;
+
+            // Find bookings for each room in the building
+            const bookings = await RoomBooking.find({
+                roomId: { $in: rooms.map(room => room._id) },
+            });
+
+            // Calculate the number of booked rooms
+            const bookedRooms = bookings.filter(booking => booking.status === 'booked').length;
+
+            // Calculate the occupancy rate
+            const occupancyRate = totalRooms > 0 ? (bookedRooms / totalRooms) * 100 : 0;
+
+            // Return the building report
+            return res.status(200).json({
+                message: 'Building report generated successfully.',
+                data: {
+                    buildingName: building.buildingName,
+                    totalRooms,
+                    bookedRooms,
+                    occupancyRate: occupancyRate.toFixed(2),
+                }
+            });
+
+        } catch (error) {
+            console.error("Error generating building report:", error);
+            return res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+
+    },
+    GetBuildingList: async function (req, res) {
+        try {
+            const buildings = await Building.find(); // Fetch all buildings
+            res.status(200).json(buildings);
+        } catch (error) {
+            console.error("Error fetching buildings:", error);
+            res.status(500).json({ error: 'Error fetching buildings' });
+        }
+    },
+    GetBuildingListById: async function (req, res) {
+        try {
+            // Extract buildingId from the query parameters
+            const { buildingId } = req.query;
+            console.log("3");
+            console.log("buildingId: ", buildingId);
+
+            if (!buildingId) {
+                return res.status(400).json({ error: 'buildingId is required' });
+            }
+
+            // Fetch data and generate the report (existing logic here)
+            const roomReports = await getRoomReportsForBuilding(buildingId); // Example function call
+            const buildingName = await getBuildingNameById(buildingId); // Example function call
+
+            // Ensure the `reports` directory exists
+            const reportsDir = path.join(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir);
+            }
+            // Generate Excel file
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.json_to_sheet(roomReports);
+            // Set the worksheet's properties for RTL direction
+            worksheet['!cols'] = worksheet['!cols'] || []; // Ensure there is a column definition
+            for (let i = 0; i < roomReports.length; i++) {
+                const row = roomReports[i];
+                // Set each cell to have a RTL text alignment (for Hebrew)
+                for (const key in row) {
+                    if (row.hasOwnProperty(key)) {
+                        const cell = worksheet[XLSX.utils.encode_cell({ r: i, c: Object.keys(row).indexOf(key) })];
+                        if (cell && typeof cell.v === 'string') {
+                            // Add RTL alignment to each cell with Hebrew text
+                            if (/[א-ת]/.test(cell.v)) {
+                                if (!cell.s) {
+                                    cell.s = {};
+                                }
+                                cell.s.alignment = { horizontal: 'right', vertical: 'center' };
+                            }
+                        }
+                    }
+                }
+            }
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Room Report");
+
+            const filePath = path.join(reportsDir, `${buildingId}_Report.xlsx`);
+            XLSX.writeFile(workbook, filePath);
+
+            console.log("filePath: \n");
+            console.log(filePath);
+            // Respond with the file URL
+            res.status(200).json({ fileUrl: `/reports/${buildingId}_RoomReport.xlsx`, buildingName });
+        } catch (error) {
+            console.error("Error generating building report:", error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+    DownloadFile: async function (req, res) {
+        const { fileName } = req.params;
+        const filePath = path.join(__dirname, 'reports', fileName);
+
+        // Check if the file exists
+        if (fs.existsSync(filePath)) {
+            res.download(filePath, fileName, (err) => {
+                if (err) {
+                    console.error('Error downloading file:', err);
+                    res.status(500).json({ error: 'Error downloading the file' });
+                }
+            });
+        } else {
+            res.status(404).json({ error: 'File not found' });
+        }
+    }
 };
 function parseDateString(dateString) {
     const [day, month, year] = dateString.split('/').map(Number);
@@ -513,5 +571,43 @@ function parseDateString(dateString) {
     if (!day || !month || !year) throw new Error('Invalid date format');
     return new Date(Date.UTC(year, month - 1, day)); // Month is zero-indexed
 }
+const getRoomReportsForBuilding = async (buildingId) => {
+    try {
+        // Fetch all rooms for the given building
+        const rooms = await Room.find({ buildingId });
 
+        // For each room, fetch bookings and calculate stats
+        const roomReports = await Promise.all(
+            rooms.map(async (room) => {
+                const bookings = await RoomBooking.find({ roomId: room._id });
+                const bookedCount = bookings.filter(b => b.status === 'booked').length;
 
+                return {
+                    'מספר חדר': room.roomNumber, // Hebrew for "Room Number"
+                    'מספר מיטות': room.numBeds, // Hebrew for "Number of Beds"
+                    'מספר הזמנות': bookedCount, // Hebrew for "Booking Count"
+                };
+            })
+        );
+
+        return roomReports;
+    } catch (error) {
+        console.error('Error fetching room reports:', error);
+        throw error;
+    }
+};
+
+const getBuildingNameById = async (buildingId) => {
+    try {
+        const building = await Building.findById(buildingId);
+
+        if (!building) {
+            throw new Error('Building not found');
+        }
+
+        return building.buildingName;
+    } catch (error) {
+        console.error('Error fetching building name:', error);
+        throw error;
+    }
+};

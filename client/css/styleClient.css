@@ -1,0 +1,66 @@
+
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align content to the top */
+    height: calc(100vh - 20px); /* Adjust height to account for padding */
+    margin: 0;
+    padding-top: 20px; /* Add space at the top */
+}
+
+.container {
+    text-align: right;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 500px;
+}
+
+h2 {
+    font-size: 26px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.form-control {
+    font-size: 16px;
+    padding: 10px;
+}
+
+.btn-custom {
+    width: 100%;
+    font-size: 18px;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+button#menu {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    color: white;
+}
+
+button[type="submit"] {
+    background: linear-gradient(to right, #11998e, #38ef7d);
+    border: none;
+    color: white;
+}
+.form-check-label {
+    margin-right: 20px; /* Adds space to the right of the checkbox */
+}

@@ -30,12 +30,12 @@ $(document).ready(function () {
                             <table class="table table-sm table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Room Number</th>
-                                        <th>Number of Beds</th>
-                                        <th>Floor</th>
-                                        <th>Number of Rooms</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
+                                        <th>חדר מספר</th>
+                                        <th>מספר מיטות</th>
+                                        <th>קומה</th>
+                                        <th>מספר חדרים בחדר זה</th>
+                                        <th>ערוך</th>
+                                        <th>מחק</th>
                                     </tr>
                                 </thead>
                                 <tbody id="roomDetails-${buildingName}">

@@ -1,0 +1,59 @@
+
+.container {
+    text-align: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 400px;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.btn-custom {
+    width: 100%;
+    font-size: 18px;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+#RoomManager {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    border: none;
+    color: white;
+}
+
+#dailyOccupancy {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    color: white;
+}
+
+#RoomReservations {
+    background: linear-gradient(to right, #11998e, #38ef7d);
+    border: none;
+    color: white;
+}
+
+#Reports {
+    background: linear-gradient(to right, #ff512f, #dd2476); /* Customize gradient colors for the Reports button */
+    border: none;
+    color: white;
+}
+
+.btn-custom i {
+    margin-left: 10px;
+}
