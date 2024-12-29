@@ -6,7 +6,10 @@ const Order = require('../models/order.js')
 const Login = require('../models/login.js');
 
 const nodemailer = require("nodemailer");
+const ExcelJS = require('exceljs');
 const XLSX = require('xlsx');
+const fs = require('fs');
+const path = require('path');
 
 
 // function isValidURL(str) {//function to check url
@@ -195,13 +198,14 @@ module.exports = {
         }
     },
     BookRoom: async function (req, res) {
-        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber } = req.body;
+        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber, extraMattresses, babyBed } = req.body;
 
         if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0 || !startDate || !endDate || !guestName || !guestId || !phoneNumber) {
             return res.status(400).json({ error: 'Room IDs, dates, and guest details are required.' });
         }
 
         try {
+
             // Parse dates
             const start = parseDateString(startDate);
             const end = parseDateString(endDate);
@@ -209,7 +213,6 @@ module.exports = {
             if (start >= end) {
                 return res.status(400).json({ error: 'End date must be after start date.' });
             }
-
             // Check availability for all rooms
             const conflictingBookings = await RoomBooking.find({
                 roomId: { $in: roomIds },
@@ -225,7 +228,6 @@ module.exports = {
                     conflictingRooms: conflictingBookings.map(booking => booking.roomId)
                 });
             }
-
             // Create or find the client
             let client = await Client.findOne({ clientId: guestId });
 
@@ -238,7 +240,6 @@ module.exports = {
                 });
                 await client.save();
             }
-
             // Create a single order
             const order = new Order({
                 clientId: guestId,
@@ -251,12 +252,20 @@ module.exports = {
 
             // Create bookings for all rooms
             const bookings = roomIds.map(roomId => ({
+                // roomId,
+                // startDate: start,
+                // endDate: end,
+                // status: 'booked',
+                // clientId: guestId,
+                // orderId: order._id
                 roomId,
                 startDate: start,
                 endDate: end,
                 status: 'booked',
                 clientId: guestId,
-                orderId: order._id
+                orderId: order._id,
+                extraMattresses: extraMattresses || 0,
+                babyBed: babyBed || false
             }));
 
             await RoomBooking.insertMany(bookings);
@@ -274,7 +283,6 @@ module.exports = {
 
     SendMail: async function (req, res) {
         const { recipientEmail, subject, html } = req.body;
-        //text = "hiiiii"
         try {
             // Create a transporter object with your email service credentials
             const transporter = nodemailer.createTransport({
@@ -284,7 +292,6 @@ module.exports = {
                     pass: 'svbu njya mldf tlbq', // Your email password or app password
                 },
             });
-            //console.log("recipientEmail", recipientEmail);
 
             //Email options
             const mailOptions = {
@@ -298,25 +305,23 @@ module.exports = {
             // Send the email
             const info = await transporter.sendMail(mailOptions);
             console.log(`Email sent: ${info.response}`);
-            return { success: true, message: 'Email sent successfully.' };
+            //return { success: true, message: 'Email sent successfully.' };
+            res.status(200).json(info.response);
         } catch (error) {
             console.error('Error sending email:', error);
-            return { success: false, error: error.message };
+            res.status(500).json({ error: 'Error sending email.' });
         }
     },
     GetDailyOccupancy: async function (req, res) {
         const { date } = req.body;
-        //console.log(date);
 
         if (!date) {
             return res.status(400).json({ error: 'Date is required' });
         }
 
         try {
-            //console.log("date: ", date);
             queryDate = new Date(date);
             //const queryDate = parseDateString(date);
-            console.log("lalalala:::  \n date: ", date, " queryDate: ", queryDate);
 
             const occupancyData = await RoomBooking.aggregate([
                 {
@@ -355,7 +360,6 @@ module.exports = {
                 totalRooms: totalRooms,
                 rooms: occupancyData[0] ? occupancyData[0].rooms : [] // Use rooms from the aggregation result
             };
-            console.log("response: lc: ", response);
 
             res.status(200).json(response);
             //res.status(200).json(occupancyData);
@@ -490,59 +494,122 @@ module.exports = {
             res.status(500).json({ error: 'Error fetching buildings' });
         }
     },
+    // GetBuildingListById: async function (req, res) {
+    //     try {
+    //         // Extract buildingId from the query parameters
+    //         const { buildingId } = req.query;
+
+    //         if (!buildingId) {
+    //             return res.status(400).json({ error: 'buildingId is required' });
+    //         }
+
+    //         // Fetch data and generate the report (existing logic here)
+    //         const roomReports = await getRoomReportsForBuilding(buildingId); // Example function call
+    //         const buildingName = await getBuildingNameById(buildingId); // Example function call
+
+    //         // Ensure the `reports` directory exists
+    //         const reportsDir = path.join(__dirname, 'reports');
+    //         if (!fs.existsSync(reportsDir)) {
+    //             fs.mkdirSync(reportsDir);
+    //         }
+    //         // Generate Excel file
+    //         const workbook = XLSX.utils.book_new();
+    //         const worksheet = XLSX.utils.json_to_sheet(roomReports);
+    //         // Set the worksheet's properties for RTL direction
+    //         worksheet['!cols'] = worksheet['!cols'] || []; // Ensure there is a column definition
+    //         for (let i = 0; i < roomReports.length; i++) {
+    //             const row = roomReports[i];
+    //             // Set each cell to have a RTL text alignment (for Hebrew)
+    //             for (const key in row) {
+    //                 if (row.hasOwnProperty(key)) {
+    //                     const cell = worksheet[XLSX.utils.encode_cell({ r: i, c: Object.keys(row).indexOf(key) })];
+    //                     if (cell && typeof cell.v === 'string') {
+    //                         // Add RTL alignment to each cell with Hebrew text
+    //                         if (/[א-ת]/.test(cell.v)) {
+    //                             if (!cell.s) {
+    //                                 cell.s = {};
+    //                             }
+    //                             cell.s.alignment = { horizontal: 'right', vertical: 'center' };
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+    //         XLSX.utils.book_append_sheet(workbook, worksheet, "Room Report");
+
+    //         const filePath = path.join(reportsDir, `${buildingId}_Report.xlsx`);
+    //         XLSX.writeFile(workbook, filePath);
+
+    //         console.log("filePath: \n");
+    //         console.log(filePath);
+    //         // Respond with the file URL
+    //         res.status(200).json({ fileUrl: `/reports/${buildingId}_RoomReport.xlsx`, buildingName });
+    //     } catch (error) {
+    //         console.error("Error generating building report:", error);
+    //         res.status(500).json({ error: 'Internal Server Error' });
+    //     }
+    // },
     GetBuildingListById: async function (req, res) {
         try {
-            // Extract buildingId from the query parameters
-            const { buildingId } = req.query;
-            console.log("3");
-            console.log("buildingId: ", buildingId);
+            const { buildingId, reportDate } = req.query;
 
-            if (!buildingId) {
-                return res.status(400).json({ error: 'buildingId is required' });
+            if (!buildingId || !reportDate) {
+                return res.status(400).json({ error: 'buildingId and reportDate are required' });
             }
 
-            // Fetch data and generate the report (existing logic here)
-            const roomReports = await getRoomReportsForBuilding(buildingId); // Example function call
-            const buildingName = await getBuildingNameById(buildingId); // Example function call
+            // Validate the date format (assuming YYYY-MM-DD format)
+            if (!Date.parse(reportDate)) {
+                return res.status(400).json({ error: 'Invalid date format' });
+            }
+            console.log("reportDate: \n ", reportDate);
+
+            // Fetch the report data for the given building and date
+            const roomReports = await getRoomReportsForBuildingAndDate(buildingId, reportDate);
+            const buildingName = await getBuildingNameById(buildingId);
+            //console.log("buildingId:\n ", buildingId);
+            console.log("roomReports:\n ", roomReports);
+            //console.log("buildingName:\n ", buildingName);
 
             // Ensure the `reports` directory exists
-            const reportsDir = path.join(__dirname, 'reports');
+            const reportsDir = path.resolve(__dirname, 'reports');
             if (!fs.existsSync(reportsDir)) {
-                fs.mkdirSync(reportsDir);
+                fs.mkdirSync(reportsDir, { recursive: true });
             }
+
             // Generate Excel file
-            const workbook = XLSX.utils.book_new();
-            const worksheet = XLSX.utils.json_to_sheet(roomReports);
-            // Set the worksheet's properties for RTL direction
-            worksheet['!cols'] = worksheet['!cols'] || []; // Ensure there is a column definition
-            for (let i = 0; i < roomReports.length; i++) {
-                const row = roomReports[i];
-                // Set each cell to have a RTL text alignment (for Hebrew)
-                for (const key in row) {
-                    if (row.hasOwnProperty(key)) {
-                        const cell = worksheet[XLSX.utils.encode_cell({ r: i, c: Object.keys(row).indexOf(key) })];
-                        if (cell && typeof cell.v === 'string') {
-                            // Add RTL alignment to each cell with Hebrew text
-                            if (/[א-ת]/.test(cell.v)) {
-                                if (!cell.s) {
-                                    cell.s = {};
-                                }
-                                cell.s.alignment = { horizontal: 'right', vertical: 'center' };
-                            }
-                        }
-                    }
-                }
-            }
+            //const workbook = XLSX.utils.book_new();
+            //const worksheet = XLSX.utils.json_to_sheet(roomReports);
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Room Report", {
+                views: [{ rightToLeft: true }]
+            });
 
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Room Report");
+            worksheet.columns = [
+                { header: 'מספר חדר', key: 'roomNumber', width: 15 },
+                { header: 'שם האורח', key: 'guestName', width: 20 },
+                { header: 'מזרונים נוספים', key: 'extraMattresses', width: 15 },
+                { header: 'מיטת תינוק', key: 'babyBed', width: 15 },
+                { header: 'זמן צ׳ק-אין', key: 'checkInTime', width: 20 },
+                { header: 'זמן צ׳ק-אאוט', key: 'checkOutTime', width: 20 },
+                { header: 'סטטוס ההזמנה', key: 'bookingStatus', width: 15 }
+            ];
 
-            const filePath = path.join(reportsDir, `${buildingId}_Report.xlsx`);
-            XLSX.writeFile(workbook, filePath);
+            roomReports.forEach(report => {
+                worksheet.addRow(report);
+            });
 
-            console.log("filePath: \n");
-            console.log(filePath);
-            // Respond with the file URL
-            res.status(200).json({ fileUrl: `/reports/${buildingId}_RoomReport.xlsx`, buildingName });
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const filePath = path.join(reportsDir, `${buildingId}_Report_${reportDate}.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+            //XLSX.utils.book_append_sheet(workbook, worksheet, "Room Report");
+
+            // const filePath = path.join(reportsDir, `${buildingId}_Report_${reportDate}.xlsx`);
+            // XLSX.writeFile(workbook, filePath);
+
+            res.status(200).json({ fileUrl: `/reports/${buildingId}_Report_${reportDate}.xlsx`, buildingName });
         } catch (error) {
             console.error("Error generating building report:", error);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -565,12 +632,7 @@ module.exports = {
         }
     }
 };
-function parseDateString(dateString) {
-    const [day, month, year] = dateString.split('/').map(Number);
 
-    if (!day || !month || !year) throw new Error('Invalid date format');
-    return new Date(Date.UTC(year, month - 1, day)); // Month is zero-indexed
-}
 const getRoomReportsForBuilding = async (buildingId) => {
     try {
         // Fetch all rooms for the given building
@@ -611,3 +673,64 @@ const getBuildingNameById = async (buildingId) => {
         throw error;
     }
 };
+
+async function getRoomReportsForBuildingAndDate(buildingId, reportDate) {
+    try {
+
+        //Fetch all roomIds for the given buildingId
+        const rooms = await Room.find({ buildingId }); 
+        const roomMap = new Map(rooms.map(room => [room._id.toString(), room.roomNumber]));
+        const roomIds = rooms.map(room => room._id.toString());
+
+        if (roomIds.length === 0) {
+            console.log("No rooms found for the building.");
+            return [];
+        }
+        reportDate = new Date(reportDate);
+        const roomBookings = await RoomBooking.find({
+            roomId: { $in: roomIds },
+            $or: [
+                { startDate: { $lte: reportDate }, endDate: { $gte: reportDate } }
+            ],
+            status: "booked"
+        });
+
+        const clientIds = [...new Set(roomBookings.map(booking => booking.clientId))];
+        const clients = await Client.find({ clientId: { $in: clientIds } });
+        const clientMap = new Map(clients.map(client => [client.clientId, client]));
+
+        const roomReports = roomBookings.map(booking => {
+            const client = clientMap.get(booking.clientId);
+            const hebrewBabyBed = booking.babyBed ? "כן": "לא"
+            let bookingStatus = '';
+            if (booking.startDate < reportDate && booking.endDate > reportDate) {
+                bookingStatus = 'נשארים'; // Guest stays on the report date
+            } else if (booking.endDate <= reportDate) {
+                bookingStatus = 'עוזבים היום'; // Guest leaves before or on the report date
+            } else if (booking.startDate >= reportDate) {
+                bookingStatus = 'נכנסים היום'; // Guest arrives on or after the report date
+            }
+           
+            return {
+                roomNumber: roomMap.get(booking.roomId.toString()),
+                guestName: client?.name,
+                extraMattresses: booking.extraMattresses,
+                babyBed: hebrewBabyBed,
+                checkInTime: booking.startDate,
+                checkOutTime: booking.endDate,
+                bookingStatus
+            }
+        });
+
+        return roomReports;
+    } catch (error) {
+        console.error("Error fetching room reports:", error);
+        throw error;
+    }
+};
+function parseDateString(dateString) {
+    const [day, month, year] = dateString.split('/').map(Number);
+
+    if (!day || !month || !year) throw new Error('Invalid date format');
+    return new Date(Date.UTC(year, month - 1, day)); // Month is zero-indexed
+}

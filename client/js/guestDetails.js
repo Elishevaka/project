@@ -95,6 +95,9 @@ $(document).ready(function () {
     const selectedRooms = JSON.parse(sessionStorage.getItem('selectedRooms') || '[]');
     const startDate = sessionStorage.getItem('startDate');
     const endDate = sessionStorage.getItem('endDate');
+    const extraMattresses = parseInt((selectedRooms.map(room => room.extraMattresses)));
+    const hasBabyBed = selectedRooms.map(room => room.babyBed);
+    const babyBed = hasBabyBed.some(value => value === true);
 
     // Display selected rooms and dates
     const roomList = $("#roomList");
@@ -122,7 +125,8 @@ $(document).ready(function () {
             roomIds: selectedRooms.map(room => room.roomId), // Send an array of room IDs
             startDate: startDate,
             endDate: endDate,
-            babyBed: $("#babyBed").is(":checked") // Include baby bed option
+            extraMattresses: extraMattresses,
+            babyBed: babyBed
         };
 
         // Create email content dynamically for multiple rooms
@@ -137,7 +141,6 @@ $(document).ready(function () {
             <p>Your rooms have been booked!</p>
             ${roomDetails}
             <p>Dates: ${startDate} - ${endDate}</p>
-            <p>Baby Bed: ${guestDetails.babyBed ? "Yes" : "No"}</p>
             <p>City: ${guestDetails.city}, Zip Code: ${guestDetails.zipCode}</p>
             <p>Address: ${guestDetails.address}</p>
             <p>Special Requests: ${guestDetails.specialRequests}</p>
@@ -151,7 +154,8 @@ $(document).ready(function () {
             subject: "Booking Confirmation",
             html: emailContent
         };
-
+        console.log("I here");
+        
         // Send booking data to the server
         $.ajax({
             url: "/api/bookRoom",
@@ -166,14 +170,16 @@ $(document).ready(function () {
                     method: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(mailData),
-                    success: function () {
+
+                    success: function (response) {
+                        console.log(response);
                         alert("Confirmation email sent!");
                         window.location.href = "/roomReservations";
+        
                     },
                     error: function (error) {
-                        console.error("Error sending email:", error);
+                        console.log(error);
                         alert("Rooms booked, but failed to send confirmation email.");
-                        window.location.href = "/roomReservations";
                     }
                 });
             },

@@ -41,47 +41,6 @@ $(document).ready(function () {
             Object.keys(groupedRooms).forEach(function (buildingName) {
                 const buildingRooms = groupedRooms[buildingName];
 
-                // Add the row for the building
-                //     $('#roomList').append(`
-                //         <tr class="building-row" data-toggle="rooms-${buildingName}">
-                //             <td><span class="toggle-arrow">&#9654;</span> ${buildingName}</td>
-                //             <td></td>
-                //         </tr>
-                //         <tr id="rooms-${buildingName}" class="room-details" style="display: none;">
-                //             <td colspan="6">
-                //                 <table class="table table-sm table-bordered">
-                //                     <thead>
-                //                         <tr>
-                //                             <th>Room Number</th>
-                //                             <th>Number of Beds</th>
-                //                             <th>Floor</th>
-                //                             <th>Number of Rooms</th>
-                //                             <th>Reserve</th>
-                //                         </tr>
-                //                     </thead>
-                //                     <tbody id="roomDetails-${buildingName}">
-                //                         ${buildingRooms.map(room => `
-                //                             <tr>
-                //                                 <td class="roomNumber">${room.roomNumber}</td>
-                //                                 <td class="numBeds">${room.numBeds}</td>
-                //                                 <td class="floor">${room.floor}</td>
-                //                                 <td class="numOfRooms">${room.numOfRooms}</td>
-                //                                 <td>
-                //                                     <button class="btn btn-primary reserveRoom" 
-                //                                             data-room-id="${room._id}" 
-                //                                             data-room-number="${room.roomNumber}" 
-                //                                             data-building-name="${room.buildingName}">
-                //                                         בחר
-                //                                     </button>
-                //                                 </td>
-                //                             </tr>
-                //                         `).join('')}
-                //                     </tbody>
-                //                 </table>
-                //             </td>
-                //         </tr>
-                //     `);
-                // });
                 $('#roomList').append(`
                     <tr class="building-row" data-toggle="rooms-${buildingName}">
                         <td><span class="toggle-arrow">&#9654;</span> ${buildingName}</td>
@@ -97,6 +56,8 @@ $(document).ready(function () {
                                         <th>Number of Beds</th>
                                         <th>Floor</th>
                                         <th>Number of Rooms</th>
+                                        <th>Extra Mattresses</th>
+                                        <th>Baby Bed</th>
                                     </tr>
                                 </thead>
                                 <tbody id="roomDetails-${buildingName}">
@@ -105,11 +66,19 @@ $(document).ready(function () {
                                             <td><input type="checkbox" class="select-room" 
                                                 data-room-id="${room._id}" 
                                                 data-room-number="${room.roomNumber}" 
-                                                data-building-name="${room.buildingName}"></td>
+                                                data-building-name="${room.buildingName}">
                                             <td>${room.roomNumber}</td>
                                             <td>${room.numBeds}</td>
                                             <td>${room.floor}</td>
                                             <td>${room.numOfRooms}</td>
+                                            <td>
+                                                <input type="number" class="extra-mattress"
+                                                   value="${room.extraMattresses || 0}" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" class="baby-bed"
+                                                    ${room.babyBed ? 'checked' : false}>
+                                            </td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -126,27 +95,17 @@ $(document).ready(function () {
                 arrow.html(arrow.html() === '&#9654;' ? '&#9660;' : '&#9654;');
             });
 
-            // Handle Reserve button click
-            // $('.reserveRoom').click(function () {
-            //     const roomId = $(this).data('room-id');
-            //     const roomNumber = $(this).data('room-number');
-            //     const buildingName = $(this).data('building-name');
-
-            //     // Store room details in session storage for later use
-            //     sessionStorage.setItem('roomId', roomId);
-            //     sessionStorage.setItem('roomNumber', roomNumber);
-            //     sessionStorage.setItem('buildingName', buildingName);
-
-            //     // Navigate to guest details page
-            //     window.location.href = "/guestDetails";
-            // });
             $('#reserveSelectedRooms').click(function () {
+                //const $row = $(this).closest('td'); // Get the closest <tr> for the checked checkbox
                 const selectedRooms = [];
                 $('.select-room:checked').each(function () {
                     selectedRooms.push({
                         roomId: $(this).data('room-id'),
                         roomNumber: $(this).data('room-number'),
                         buildingName: $(this).data('building-name'),
+                        // Capture extra mattress and baby bed selection for each room
+                        extraMattresses: parseInt($(this).closest('tr').find('.extra-mattress').val()) || 0,
+                        babyBed: $(this).closest('tr').find('.baby-bed').is(':checked') ? true : false
                     });
                 });
 

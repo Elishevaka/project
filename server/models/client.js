@@ -43,10 +43,6 @@ var ClientSchema = new Schema({
     specialRequests: {
         type: String,
         trim: true
-    },
-    babyBed: {
-        type: Boolean,
-        default: false // Default to false if not specified
     }
 }, { timestamps: true }
 );
