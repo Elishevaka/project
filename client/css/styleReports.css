@@ -25,16 +25,13 @@ h1 {
 }
 
 .btn-custom {
-    width: 100%;
+    width: 50%;
     font-size: 18px;
     padding: 15px;
     margin: 10px 0;
     border-radius: 30px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(to right, #ff7e5f, #feb47b);
-    border: none;
-    color: white;
 }
 
 .btn-custom:hover {
@@ -42,8 +39,14 @@ h1 {
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
+
 #buildingListContainer {
     margin-top: 20px;
+}
+#chooseBuildingBtn {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    border: none;
+    color: white;
 }
 
 select,
@@ -55,7 +58,7 @@ input[type="date"] {
     border-radius: 8px;
     border: 1px solid #ddd;
 }
-
+/* 
 button {
     font-size: 16px;
     cursor: pointer;
@@ -97,3 +100,36 @@ button {
     transform: translateY(0);
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
+
+.btn-custom {
+    width: 50%;
+    font-size: 18px;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    background: linear-gradient(to right, #ff512f, #dd2476);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.btn-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-custom:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+} */
+ 
+button#menu {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    color: white;
+}
+

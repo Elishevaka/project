@@ -120,4 +120,7 @@ $(document).ready(function () {
             }
         });
     });
+    $('#menu').click(function () {
+        window.location.href = "/home";
+    });
 });

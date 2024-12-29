@@ -48,7 +48,7 @@ module.exports = {
         }
     },
     AddRoom: async function (req, res) {
-        const { roomNumber, buildingName, numOfRooms, numBeds, floor } = req.body;
+        const { roomNumber, buildingName, numOfRooms, numBeds, floor, price} = req.body;
 
         try {
             // Check if the building exists by name
@@ -68,7 +68,8 @@ module.exports = {
                     buildingName: building.buildingName,
                     numOfRooms: numOfRooms,
                     numBeds: numBeds,
-                    floor: floor
+                    floor: floor,
+                    price: price
                 });
                 await newRoom.save();
                 building.numberOfRooms += 1;
@@ -90,7 +91,8 @@ module.exports = {
                     buildingName: newBuilding.buildingName,
                     numOfRooms,
                     numBeds,
-                    floor
+                    floor,
+                    price
                 });
                 await newRoom.save();
 
@@ -141,7 +143,7 @@ module.exports = {
     // Update Room
     UpdateRoom: async function (req, res) {
         const roomId = req.params.id;
-        const { roomNumber, numBeds, floor, numOfRooms } = req.body;
+        const { roomNumber, numBeds, floor, numOfRooms, price } = req.body;
 
         try {
             // Find the room and update it
@@ -149,7 +151,8 @@ module.exports = {
                 roomNumber,
                 numBeds,
                 floor,
-                numOfRooms
+                numOfRooms,
+                price
             }, { new: true });
 
             if (!updatedRoom) {
@@ -674,11 +677,64 @@ const getBuildingNameById = async (buildingId) => {
     }
 };
 
+// async function getRoomReportsForBuildingAndDate(buildingId, reportDate) {
+//     try {
+
+//         //Fetch all roomIds for the given buildingId
+//         const rooms = await Room.find({ buildingId }); 
+//         const roomMap = new Map(rooms.map(room => [room._id.toString(), room.roomNumber]));
+//         const roomIds = rooms.map(room => room._id.toString());
+
+//         if (roomIds.length === 0) {
+//             console.log("No rooms found for the building.");
+//             return [];
+//         }
+//         reportDate = new Date(reportDate);
+//         const roomBookings = await RoomBooking.find({
+//             roomId: { $in: roomIds },
+//             $or: [
+//                 { startDate: { $lte: reportDate }, endDate: { $gte: reportDate } }
+//             ],
+//             status: "booked"
+//         });
+
+//         const clientIds = [...new Set(roomBookings.map(booking => booking.clientId))];
+//         const clients = await Client.find({ clientId: { $in: clientIds } });
+//         const clientMap = new Map(clients.map(client => [client.clientId, client]));
+
+//         const roomReports = roomBookings.map(booking => {
+//             const client = clientMap.get(booking.clientId);
+//             const hebrewBabyBed = booking.babyBed ? "כן": "לא"
+//             let bookingStatus = '';
+//             if (booking.startDate < reportDate && booking.endDate > reportDate) {
+//                 bookingStatus = 'נשארים'; // Guest stays on the report date
+//             } else if (booking.endDate <= reportDate) {
+//                 bookingStatus = 'עוזבים היום'; // Guest leaves before or on the report date
+//             } else if (booking.startDate >= reportDate) {
+//                 bookingStatus = 'נכנסים היום'; // Guest arrives on or after the report date
+//             }
+           
+//             return {
+//                 roomNumber: roomMap.get(booking.roomId.toString()),
+//                 guestName: client?.name,
+//                 extraMattresses: booking.extraMattresses,
+//                 babyBed: hebrewBabyBed,
+//                 checkInTime: booking.startDate,
+//                 checkOutTime: booking.endDate,
+//                 bookingStatus
+//             }
+//         });
+
+//         return roomReports;
+//     } catch (error) {
+//         console.error("Error fetching room reports:", error);
+//         throw error;
+//     }
+// };
 async function getRoomReportsForBuildingAndDate(buildingId, reportDate) {
     try {
-
-        //Fetch all roomIds for the given buildingId
-        const rooms = await Room.find({ buildingId }); 
+        // Fetch all rooms for the given buildingId
+        const rooms = await Room.find({ buildingId });
         const roomMap = new Map(rooms.map(room => [room._id.toString(), room.roomNumber]));
         const roomIds = rooms.map(room => room._id.toString());
 
@@ -686,6 +742,7 @@ async function getRoomReportsForBuildingAndDate(buildingId, reportDate) {
             console.log("No rooms found for the building.");
             return [];
         }
+
         reportDate = new Date(reportDate);
         const roomBookings = await RoomBooking.find({
             roomId: { $in: roomIds },
@@ -695,30 +752,52 @@ async function getRoomReportsForBuildingAndDate(buildingId, reportDate) {
             status: "booked"
         });
 
+        // Get unique client IDs from bookings and fetch client data
         const clientIds = [...new Set(roomBookings.map(booking => booking.clientId))];
         const clients = await Client.find({ clientId: { $in: clientIds } });
         const clientMap = new Map(clients.map(client => [client.clientId, client]));
 
-        const roomReports = roomBookings.map(booking => {
-            const client = clientMap.get(booking.clientId);
-            const hebrewBabyBed = booking.babyBed ? "כן": "לא"
-            let bookingStatus = '';
-            if (booking.startDate < reportDate && booking.endDate > reportDate) {
-                bookingStatus = 'נשארים'; // Guest stays on the report date
-            } else if (booking.endDate <= reportDate) {
-                bookingStatus = 'עוזבים היום'; // Guest leaves before or on the report date
-            } else if (booking.startDate >= reportDate) {
-                bookingStatus = 'נכנסים היום'; // Guest arrives on or after the report date
-            }
-           
-            return {
-                roomNumber: roomMap.get(booking.roomId.toString()),
-                guestName: client?.name,
-                extraMattresses: booking.extraMattresses,
-                babyBed: hebrewBabyBed,
-                checkInTime: booking.startDate,
-                checkOutTime: booking.endDate,
-                bookingStatus
+        // Map room bookings to a quick lookup structure
+        const bookingsByRoomId = new Map();
+        roomBookings.forEach(booking => {
+            bookingsByRoomId.set(booking.roomId.toString(), booking);
+        });
+
+        // Prepare the final report
+        const roomReports = rooms.map(room => {
+            const booking = bookingsByRoomId.get(room._id.toString());
+            if (booking) {
+                const client = clientMap.get(booking.clientId);
+                const hebrewBabyBed = booking.babyBed ? "כן" : "לא";
+                let bookingStatus = '';
+                if (booking.startDate < reportDate && booking.endDate > reportDate) {
+                    bookingStatus = 'נשארים'; // Guest stays on the report date
+                } else if (booking.endDate <= reportDate) {
+                    bookingStatus = 'עוזבים היום'; // Guest leaves before or on the report date
+                } else if (booking.startDate >= reportDate) {
+                    bookingStatus = 'נכנסים היום'; // Guest arrives on or after the report date
+                }
+
+                return {
+                    roomNumber: room.roomNumber,
+                    guestName: client?.name || "לא זמין",
+                    extraMattresses: booking.extraMattresses,
+                    babyBed: hebrewBabyBed,
+                    checkInTime: booking.startDate,
+                    checkOutTime: booking.endDate,
+                    bookingStatus
+                };
+            } else {
+                // Room is available (no bookings on the report date)
+                return {
+                    roomNumber: room.roomNumber,
+                    guestName: null, // Available in Hebrew
+                    extraMattresses: null,
+                    babyBed: null,
+                    checkInTime: null,
+                    checkOutTime: null,
+                    bookingStatus: "פנוי" // Available in Hebrew
+                };
             }
         });
 
@@ -727,7 +806,8 @@ async function getRoomReportsForBuildingAndDate(buildingId, reportDate) {
         console.error("Error fetching room reports:", error);
         throw error;
     }
-};
+}
+
 function parseDateString(dateString) {
     const [day, month, year] = dateString.split('/').map(Number);
 

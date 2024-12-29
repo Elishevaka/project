@@ -34,6 +34,7 @@ $(document).ready(function () {
                                         <th>מספר מיטות</th>
                                         <th>קומה</th>
                                         <th>מספר חדרים בחדר זה</th>
+                                        <th>מחיר ללילה</th>
                                         <th>ערוך</th>
                                         <th>מחק</th>
                                     </tr>
@@ -45,6 +46,7 @@ $(document).ready(function () {
                                             <td class="numBeds">${room.numBeds}</td>
                                             <td class="floor">${room.floor}</td>
                                             <td class="numOfRooms">${room.numOfRooms}</td>
+                                            <td class="price">${room.price}</td>
                                             <td>
                                                 <span class="icon editRoom" data-room-id="${room._id}">
                                                     <i class="fas fa-edit" title="Edit Room"></i>
@@ -84,11 +86,13 @@ $(document).ready(function () {
                 const numBeds = row.find('.numBeds').text();
                 const floor = row.find('.floor').text();
                 const numOfRooms = row.find('.numOfRooms').text();
-
+                const price = row.find('.price').text();
+                
                 row.find('.roomNumber').html(`<input type="text" class="form-control roomNumberInput" value="${roomNumber}">`);
                 row.find('.numBeds').html(`<input type="number" class="form-control numBedsInput" value="${numBeds}">`);
                 row.find('.floor').html(`<input type="number" class="form-control floorInput" value="${floor}">`);
                 row.find('.numOfRooms').html(`<input type="number" class="form-control numOfRoomsInput" value="${numOfRooms}">`);
+                row.find('.price').html(`<input type="number" class="form-control priceInput" value="${price}">`);
 
                 // Replace edit icon with save button
                 $(this).replaceWith(`<span class="icon saveRoom" data-room-id="${roomId}"><i class="fas fa-save" title="Save Room"></i></span>`);
@@ -99,7 +103,8 @@ $(document).ready(function () {
                         roomNumber: row.find('.roomNumberInput').val(),
                         numBeds: row.find('.numBedsInput').val(),
                         floor: row.find('.floorInput').val(),
-                        numOfRooms: row.find('.numOfRoomsInput').val()
+                        numOfRooms: row.find('.numOfRoomsInput').val(),
+                        price: row.find('.priceInput').val()
                     };
 
                     // Update room in the database
