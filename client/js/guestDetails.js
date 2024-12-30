@@ -122,6 +122,7 @@ $(document).ready(function () {
             zipCode: $("#zipCode").val(),
             address: $("#address").val(),
             specialRequests: $("#specialRequests").val(),
+            payment: $('#payment').val(), // Get the selected payment method
             roomIds: selectedRooms.map(room => room.roomId), // Send an array of room IDs
             startDate: startDate,
             endDate: endDate,

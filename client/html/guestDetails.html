@@ -87,7 +87,15 @@
                 <label for="address">כתובת:</label>
                 <textarea class="form-control" id="address" rows="2"></textarea>
             </div>
-
+            <div class="form-group">
+                <label for="payment">אופן תשלום:</label>
+                <select class="form-control" id="payment" required>
+                    <option value="No payment">בלי תשלום (קרוב משפחה או צדקה)</option>
+                    <option value="Credit">אשראי</option>
+                    <option value="Check">צ׳ק</option>
+                    <option value="Cash">מזומן</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label for="specialRequests">בקשות מיוחדות:</label>
                 <textarea class="form-control" id="specialRequests" rows="3"></textarea>

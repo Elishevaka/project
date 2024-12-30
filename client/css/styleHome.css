@@ -54,6 +54,11 @@ h2 {
     color: white;
 }
 
+#Client {
+    background: linear-gradient(to right, #b8e565, #d6aa2f); /* Customize gradient colors for the Reports button */
+    border: none;
+    color: white;
+}
 .btn-custom i {
     margin-left: 10px;
 }

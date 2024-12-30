@@ -9,7 +9,7 @@ var OrderSchema = new Schema({
     clientId: {
         type: Number,
         required: true,
-        unique: true
+        //unique: true
     },
     // roomId: {
     //     type: mongoose.Schema.Types.ObjectId,
@@ -38,6 +38,11 @@ var OrderSchema = new Schema({
     amount: {
         type: Number,
         required: true
+    },
+    paymentBy: {
+        type: String,
+        enum: ['No payment', 'Credit', 'Check', 'Cash'], // Enumerated options
+        default: 'No payment' // Default value
     }
 }, { timestamps: true }
 );

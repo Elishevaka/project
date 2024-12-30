@@ -6,6 +6,7 @@ var router = express.Router();
 router.post('/addRoom', conferenceRoutes.AddRoom);
 
 router.get('/getAllRooms', conferenceRoutes.GetAllRooms);
+router.get('/api/clients', conferenceRoutes.GetClients);
 router.get('/reports/download/:fileName', conferenceRoutes.DownloadFile);
 router.delete('/deleteRoom/:roomId', conferenceRoutes.DeleteRoom);
 

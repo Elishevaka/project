@@ -17,5 +17,9 @@ $(document).ready(function () {
         window.location.href = '/reports';
     });
 
+    $('#Client').click(function () {
+        window.location.href = '/getAllClients';
+    });
+
 });
 

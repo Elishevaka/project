@@ -200,11 +200,28 @@ module.exports = {
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
     },
+    GetClients: async function (req, res) {
+        try {
+            console.log("lol");
+            
+            // Fetch all clients
+            const clients = await Client.find();
+            console.log("clients: \n", clients);
+            
+            res.status(200).json(clients);
+        } catch (error) {
+            console.error("Error fetching clients:", error);
+            res.status(500).json({ error: 'Error fetching clients' });
+        }
+    },
     BookRoom: async function (req, res) {
-        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber, extraMattresses, babyBed } = req.body;
+        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber, extraMattresses, babyBed, payment, specialRequests } = req.body;
 
         if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0 || !startDate || !endDate || !guestName || !guestId || !phoneNumber) {
             return res.status(400).json({ error: 'Room IDs, dates, and guest details are required.' });
+        }
+        if (!payment || !['No payment', 'Credit', 'Check', 'Cash'].includes(payment)) {
+            return res.status(400).json({ error: 'Invalid payment option selected.' });
         }
 
         try {
@@ -249,7 +266,8 @@ module.exports = {
                 roomIds, // Store all room IDs in this order
                 startDate: start,
                 endDate: end,
-                amount: roomIds.length * 1000 // Example amount calculation, adjust as needed
+                amount: roomIds.length * 1000, // Example amount calculation, adjust as needed
+                paymentBy: payment
             });
             await order.save();
 
@@ -268,7 +286,8 @@ module.exports = {
                 clientId: guestId,
                 orderId: order._id,
                 extraMattresses: extraMattresses || 0,
-                babyBed: babyBed || false
+                babyBed: babyBed || false,
+                specialRequests: specialRequests
             }));
 
             await RoomBooking.insertMany(bookings);
@@ -595,7 +614,8 @@ module.exports = {
                 { header: 'מיטת תינוק', key: 'babyBed', width: 15 },
                 { header: 'זמן צ׳ק-אין', key: 'checkInTime', width: 20 },
                 { header: 'זמן צ׳ק-אאוט', key: 'checkOutTime', width: 20 },
-                { header: 'סטטוס ההזמנה', key: 'bookingStatus', width: 15 }
+                { header: 'סטטוס ההזמנה', key: 'bookingStatus', width: 15 },
+                { header: 'בקשות מיוחדות', key: 'specialRequests', width: 40 }
             ];
 
             roomReports.forEach(report => {
@@ -785,7 +805,8 @@ async function getRoomReportsForBuildingAndDate(buildingId, reportDate) {
                     babyBed: hebrewBabyBed,
                     checkInTime: booking.startDate,
                     checkOutTime: booking.endDate,
-                    bookingStatus
+                    bookingStatus,
+                    specialRequests: booking.specialRequests
                 };
             } else {
                 // Room is available (no bookings on the report date)

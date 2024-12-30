@@ -1,6 +1,26 @@
 
 $(document).ready(function () {
     // Initialize jQuery UI datepickers
+    // $("#datepicker1").datepicker({
+    //     dateFormat: "dd/mm/yy"
+    // });
+
+    // $("#datepicker2").datepicker({
+    //     dateFormat: "dd/mm/yy",
+    //     onSelect: function (dateText) {
+    //         $("#dateDisplay").text(`Selected End Date: ${dateText}`);
+    //     }
+    // });
+
+    // Show or hide the second date picker based on option selection
+    // $("#dateOption").change(function () {
+    //     const option = $(this).val();
+    //     if (option === "range") {
+    //         $("#datepicker2").show();
+    //     } else {
+    //         $("#datepicker2").hide();
+    //     }
+    // });
     $("#datepicker1").datepicker({
         dateFormat: "dd/mm/yy"
     });
@@ -11,17 +31,20 @@ $(document).ready(function () {
             $("#dateDisplay").text(`Selected End Date: ${dateText}`);
         }
     });
-
-    // Show or hide the second date picker based on option selection
-    $("#dateOption").change(function () {
-        const option = $(this).val();
+    function toggleEndDateVisibility() {
+        const option = $("#dateOption").val();
         if (option === "range") {
+            $("#endDateContainer").show();
             $("#datepicker2").show();
-        } else {
-            $("#datepicker2").hide();
-        }
-    });
 
+        } else {
+            $("#endDateContainer").hide();
+        }
+    }
+    toggleEndDateVisibility();
+    $("#dateOption").change(function () {
+        toggleEndDateVisibility();
+    });
     // Confirm date button
     $("#selectDate").click(function () {
         const option = $("#dateOption").val();

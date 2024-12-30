@@ -39,10 +39,6 @@ var ClientSchema = new Schema({
     address: {
         type: String,
         trim: true
-    },
-    specialRequests: {
-        type: String,
-        trim: true
     }
 }, { timestamps: true }
 );

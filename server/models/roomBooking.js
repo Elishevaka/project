@@ -69,6 +69,10 @@ const RoomBookingSchema = new Schema({
     babyBed: {
         type: Boolean,
         default: false
+    },
+    specialRequests: {
+        type: String,
+        trim: true
     }
 }, { timestamps: true });
 
