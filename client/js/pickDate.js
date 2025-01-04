@@ -1,5 +1,5 @@
 
-$(document).ready(function () {
+$(function() {
     sessionStorage.clear();// Clean sessionStorage
     var startDate = 0;
     var endDate = 0;
@@ -26,6 +26,7 @@ $(document).ready(function () {
     }).prop("disabled", true);
 
     $("#selectDates").click(function () {
+        // Recommended
         startDate = $("#datepickerStart").val(); // Get start date
         endDate = $("#datepickerEnd").val(); // Get end date
 

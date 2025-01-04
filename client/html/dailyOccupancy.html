@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Occupancy Percentage</title>
+    <title>אחוז תפוסה</title>
     <link rel="stylesheet" type="text/css" href="css/styleDailyOccupancy.css" />
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -20,25 +20,25 @@
 
 <body>
     <div class="container">
-        <h2>Check Room Occupancy</h2>
+        <h2>בדיקת תפוסת החדרים</h2>
         <form id="dateForm">
             <div class="mb-3">
-                <label for="dateOption" class="form-label">Select Date Option:</label>
+                <label for="dateOption" class="form-label">בחר אפשרות:</label>
                 <select id="dateOption" class="form-select">
-                    <option value="single">Single Date</option>
-                    <option value="range">Date Range</option>
+                    <option value="single">תאריך בודד</option>
+                    <option value="range">טווח תאריכים</option>
                 </select>
             </div>
             <div class="mb-3">
-                <label for="datepicker1" class="form-label">Start Date:</label>
-                <input type="text" id="datepicker1" class="form-control" placeholder="Select a start date">
+                <label for="datepicker1" class="form-label">בחר תאריך:</label>
+                <input type="text" id="datepicker1" class="form-control" placeholder="בחר תאריך">
             </div>
             <div class="mb-3" id="endDateContainer">
-                <label for="datepicker2" class="form-label">End Date:</label>
-                <input type="text" id="datepicker2" class="form-control" placeholder="Select an end date">
+                <label for="datepicker2" class="form-label">עד תאריך:</label>
+                <input type="text" id="datepicker2" class="form-control" placeholder="בחר תאריך סיום">
             </div>
-            <button type="button" id="selectDate" class="btn btn-primary">Check Occupancy</button>
-            <button type="button" id="menu" class="btn btn-secondary">Home</button>
+            <button type="button" id="selectDate" class="btn btn-primary">בדיקת תפוסה</button>
+            <button type="button" id="menu" class="btn btn-secondary">בית</button>
         </form>
     </div>
     <!-- Placeholder for dynamic content -->

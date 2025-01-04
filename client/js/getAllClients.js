@@ -1,70 +1,116 @@
-// $(document).ready(function () {
-//     $.ajax({
-//         url: '/api/clients',
-//         method: 'GET',
-//         success: function (data) {
-//             const tableBody = $('#clientTable tbody');
-//             data.forEach(client => {
-//                 const row = `
-//                     <tr>
-//                         <td>${client.name}</td>
-//                         <td>${client.clientId}</td>
-//                         <td>${client.email}</td>
-//                         <td>${client.phoneNumber}</td>
-//                         <td>${client.City}</td>
-//                         <td>${client.Address}</td>
-//                         <td>${client.ZipCode}</td>
-//                     </tr>
-//                 `;
-//                 tableBody.append(row);
-//             });
-//         },
-//         error: function (error) {
-//             alert('Error fetching client data.');
-//             console.error(error);
-//         }
-//     });
-// });
-
-$(document).ready(function () {
+$(function () {
     $.ajax({
-        url: '/api/clients',
-        method: 'GET',
-        success: function (data) {
-            const tableBody = $('#clientTable tbody');
-            data.forEach(client => {
-                const row = `
-                    <tr>
+        url: '/getAllCustomers', // Fetch all customers
+        type: 'GET',
+        success: function (customers) {
+            // Clear the table
+            $('#customerList').empty();
+            customers.forEach(function (customer) {
+
+                // Add the row for the customer
+                $('#customerList').append(`
+                    <tr id="customer-${customer._id}">
+                        <td>${customer.name}</td>
+                        <td>${customer.clientId}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phoneNumber}</td>
+                        <td>${customer.city}</td>
+                        <td>${customer.address}</td>
+                        <td>${customer.zipCode}</td>
                         <td>
-                            <a href="#" class="client-name" data-id="${client.clientId}">
-                                ${client.name}
-                            </a>
+                            <span class="icon editCustomer" data-customer-id="${customer._id}">
+                                <i class="fas fa-edit" title="Edit Customer"></i>
+                            </span>
                         </td>
-                        <td>${client.clientId}</td>
+                         <!-- <td>
+                              <span class="icon deleteCustomer" data-customer-id="${customer._id}">
+                                <i class="fas fa-trash" title="Delete Customer"></i>
+                             </span>
+                          </td>-->
                     </tr>
-                    <tr class="details-row" id="details-${client.clientId}" style="display: none;">
-                        <td colspan="2">
-                            <strong>Email:</strong> ${client.email}<br>
-                            <strong>Phone Number:</strong> ${client.phoneNumber}<br>
-                            <strong>City:</strong> ${client.City}<br>
-                            <strong>Address:</strong> ${client.Address}<br>
-                            <strong>Zip Code:</strong> ${client.ZipCode}
-                        </td>
-                    </tr>
-                `;
-                tableBody.append(row);
+                `);
             });
 
-            // Toggle the display of details when the client name is clicked
-            $('.client-name').on('click', function (e) {
-                e.preventDefault();
-                const clientId = $(this).data('id');
-                $(`#details-${clientId}`).toggle();
+            // Edit customer action
+            $('.editCustomer').click(function () {
+                const _id = $(this).data('customer-id');
+                console.log('Customer ID:', _id); // Check if this logs the correct ID
+                const row = $(this).closest('tr');
+                // Convert cells to input fields
+                const name = row.find('td:nth-child(1)').text();
+                const clientId = row.find('td:nth-child(2)').text();
+                const email = row.find('td:nth-child(3)').text();
+                const phone = row.find('td:nth-child(4)').text();
+                const city = row.find('td:nth-child(5)').text();
+                const address = row.find('td:nth-child(6)').text();
+                const zipCode = row.find('td:nth-child(7)').text();
+
+                row.find('td:nth-child(1)').html(`<input type="text" class="form-control nameInput" value="${name}">`);
+                row.find('td:nth-child(2)').html(`<input type="number" class="form-control clientIdInput" value="${clientId}">`);
+                row.find('td:nth-child(3)').html(`<input type="email" class="form-control emailInput" value="${email}">`);
+                row.find('td:nth-child(4)').html(`<input type="tel" class="form-control phoneInput" value="${phone}">`);
+                row.find('td:nth-child(5)').html(`<input type="text" class="form-control cityInput" value="${city}">`);
+                row.find('td:nth-child(6)').html(`<input type="text" class="form-control addressInput" value="${address}">`);
+                row.find('td:nth-child(7)').html(`<input type="text" class="form-control zipCodeInput" value="${zipCode}">`);
+
+                // Replace edit icon with save button
+                $(this).replaceWith(`<span class="icon saveCustomer" data-customer-id="${_id}"><i class="fas fa-save" title="Save Customer"></i></span>`);
+
+                // Save customer action
+                $('.saveCustomer').off('click').click(function () {
+                    const updatedCustomerData = {
+                        name: row.find('.nameInput').val(),
+                        clientId: row.find('.clientIdInput').val(),
+                        email: row.find('.emailInput').val(),
+                        phone: row.find('.phoneInput').val(),
+                        city: row.find('.cityInput').val(),
+                        address: row.find('.addressInput').val(),
+                        zipCode: row.find('.zipCodeInput').val()
+                    };
+                    console.log("updatedCustomerData\n", updatedCustomerData);
+                    
+                    // Update customer in the database
+                    $.ajax({
+                        url: `/updateCustomer/${_id}`,
+                        type: 'PUT',
+                        data: updatedCustomerData,
+                        success: function () {
+                            alert('הלקוח עודכן בהצלחה');
+                            location.reload();
+                        },
+                        error: function (xhr) {
+                            alert('שגיאה בעדכון הלקוח: ' + xhr.responseJSON.error);
+                        }
+                    });
+                });
             });
+
+            // Delete customer action
+            // $('.deleteCustomer').click(function () {
+            //     const _id = $(this).data('customer-id');
+            //     if (confirm('האם אתה בטוח שברצונך למחוק את הלקוח הזה?')) {
+            //         $.ajax({
+            //             url: `/deleteCustomer/${_id}`,
+            //             type: 'DELETE',
+            //             success: function (response) {
+            //                 alert('הלקוח נמחק בהצלחה');
+            //                 location.reload(); // Reload the page to refresh the table
+            //             },
+            //             error: function (xhr) {
+            //                 alert('שגיאה במחיקת הלקוח:' + xhr.responseJSON.error);
+            //             }
+            //         });
+            //     }
+            // });
         },
-        error: function (error) {
-            alert('Error fetching client data.');
-            console.error(error);
+        error: function () {
+            //alert('שגיאה באחזור לקוחות:' + xhr.responseJSON.error);
+            alert("שגיאה באחזור לקוחות")
         }
+    });
+
+    // Go back to home page button
+    $('#menu').click(function () {
+        window.location.href = "/home";
     });
 });

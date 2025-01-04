@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
     $.ajax({
         url: '/getAllRooms', // Fetch all rooms and buildings from MongoDB
         type: 'GET',
@@ -79,15 +79,13 @@ $(document).ready(function () {
                 const row = $(this).closest('tr');
                 const roomId = $(this).data('room-id');
 
-                alert(roomId, " -roomId");
-                
                 // Convert cells to input fields
                 const roomNumber = row.find('.roomNumber').text();
                 const numBeds = row.find('.numBeds').text();
                 const floor = row.find('.floor').text();
                 const numOfRooms = row.find('.numOfRooms').text();
                 const price = row.find('.price').text();
-                
+
                 row.find('.roomNumber').html(`<input type="text" class="form-control roomNumberInput" value="${roomNumber}">`);
                 row.find('.numBeds').html(`<input type="number" class="form-control numBedsInput" value="${numBeds}">`);
                 row.find('.floor').html(`<input type="number" class="form-control floorInput" value="${floor}">`);
@@ -113,11 +111,11 @@ $(document).ready(function () {
                         type: 'PUT',
                         data: updatedRoomData,
                         success: function () {
-                            alert('Room updated successfully');
+                            alert('החדר עודכן בהצלחה');
                             location.reload();
                         },
                         error: function (xhr) {
-                            alert('Error updating room: ' + xhr.responseJSON.error);
+                            alert('שגיאה בעדכון החדר: ' + xhr.responseJSON.error);
                         }
                     });
                 });
@@ -126,23 +124,23 @@ $(document).ready(function () {
             // Delete room action
             $('.deleteRoom').click(function () {
                 const roomId = $(this).data('room-id');
-                if (confirm('Are you sure you want to delete this room?')) {
+                if (confirm('האם אתה בטוח שברצונך למחוק את החדר הזה?')) {
                     $.ajax({
                         url: `/deleteRoom/${roomId}`,
                         type: 'DELETE',
                         success: function (response) {
-                            alert('Room deleted successfully');
+                            alert('החדר נמחק בהצלחה');
                             location.reload(); // Reload the page to refresh the table
                         },
                         error: function (xhr) {
-                            alert('Error deleting room: ' + xhr.responseJSON.error);
+                            alert('שגיאה במחיקת חדר:' + xhr.responseJSON.error);
                         }
                     });
                 }
             });
         },
         error: function (xhr) {
-            alert('Error fetching rooms: ' + xhr.responseJSON.error);
+            alert('שגיאה באחזור חדרים:' + xhr.responseJSON.error);
         }
     });
 

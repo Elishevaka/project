@@ -59,6 +59,12 @@ h2 {
     border: none;
     color: white;
 }
+
+#DiningRoom {
+    background: linear-gradient(to right, #a47af1, #b21ae4); /* Customize gradient colors for the Reports button */
+    border: none;
+    color: white;
+}
 .btn-custom i {
     margin-left: 10px;
 }

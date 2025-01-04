@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function() {
     // Enable form validation feedback
     (function () {
         'use strict';
@@ -28,7 +28,7 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify({ username, password }), // Send username and password
             success: function (data) {
-                alert("Login successful!");
+                alert("הכניסה מוצלחת!");
                 window.location.href = '/home'; // Redirect to home page on success
             },
             error: function (xhr, textStatus, error) {

@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
     const startDate = sessionStorage.getItem('startDate');
     const endDate = sessionStorage.getItem('endDate');
 
@@ -17,7 +17,7 @@ $(document).ready(function () {
         return;
     }
 
-    $("#selectedDates").text(`בחר תאריכים: ${startDate} - ${endDate}`);
+    $("#selectedDates").text(`תאריכים שנבחרו: ${startDate} - ${endDate}`);
 
     // Fetch available rooms based on dates
     $.ajax({

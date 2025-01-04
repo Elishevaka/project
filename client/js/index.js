@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function() {
   sessionStorage.clear();// Clean sessionStorage
   var startDate = 0;
   var endDate = 0;

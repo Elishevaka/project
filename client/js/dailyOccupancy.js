@@ -1,26 +1,6 @@
 
-$(document).ready(function () {
-    // Initialize jQuery UI datepickers
-    // $("#datepicker1").datepicker({
-    //     dateFormat: "dd/mm/yy"
-    // });
-
-    // $("#datepicker2").datepicker({
-    //     dateFormat: "dd/mm/yy",
-    //     onSelect: function (dateText) {
-    //         $("#dateDisplay").text(`Selected End Date: ${dateText}`);
-    //     }
-    // });
-
-    // Show or hide the second date picker based on option selection
-    // $("#dateOption").change(function () {
-    //     const option = $(this).val();
-    //     if (option === "range") {
-    //         $("#datepicker2").show();
-    //     } else {
-    //         $("#datepicker2").hide();
-    //     }
-    // });
+$(function() {
+    
     $("#datepicker1").datepicker({
         dateFormat: "dd/mm/yy"
     });
@@ -28,7 +8,7 @@ $(document).ready(function () {
     $("#datepicker2").datepicker({
         dateFormat: "dd/mm/yy",
         onSelect: function (dateText) {
-            $("#dateDisplay").text(`Selected End Date: ${dateText}`);
+            $("#dateDisplay").text(`בחר תאריך סיום: ${dateText}`);
         }
     });
     function toggleEndDateVisibility() {
@@ -52,17 +32,16 @@ $(document).ready(function () {
         const endDate = $("#datepicker2").val();
 
         if (option === "single" && !startDate) {
-            alert("Please select a date first!");
+            alert("חייב לבחור תאריך התחלה");
             return;
         } else if (option === "range" && (!startDate || !endDate)) {
-            alert("Please select both start and end dates!");
+            alert("חייב לבחור תאריך התחלה וסוף");
             return;
         }
         // Prepare the data object based on the selection
-        //let requestData = option === "single" ? { date: startDate } : { startDate: startDate, endDate: endDate };
         if (option === "single") {
             const start = parseDateString(startDate);
-            alert("start: " + start + " and startDate: " + startDate)
+
             $.ajax({
                 url: "/api/getDailyOccupancy",
                 method: "POST",
@@ -73,15 +52,15 @@ $(document).ready(function () {
                     // Option 1: Display only the occupancy percentage as a number
                     const { date, occupiedCount, totalRooms } = data;
                     if (totalRooms === 0) {
-                        alert("No rooms available for this date.");
+                        alert("אין חדרים זמינים לתאריך זה");
                         return;
                     }
 
                     const occupancyPercentage = ((occupiedCount / totalRooms) * 100).toFixed(2);
-                    alert(`On ${date}, the occupancy percentage is ${occupancyPercentage}%`);
+                    alert(`בתאריך ${date}, אחוז התפוסה הוא ${occupancyPercentage}%`);
                 },
                 error: function (err) {
-                    console.error("Error fetching occupancy:", err);
+                    console.error("שגיאה בהבאת תפוסה:", err);
                 }
             });
         }
@@ -91,7 +70,7 @@ $(document).ready(function () {
             const percentages = [];
             const start = parseDateString(startDate);
             const end = parseDateString(endDate);
-            alert("start: " + start)
+
             for (let currentDate = start; currentDate <= end; currentDate.setDate(currentDate.getDate() + 1)) {
                 const formattedDate = currentDate.toISOString().split('T')[0];
                 labels.push(formattedDate);
@@ -107,13 +86,11 @@ $(document).ready(function () {
                         percentages.push(occupancyPercentage);
                     },
                     error: function (err) {
-                        console.error(`Error fetching occupancy for ${formattedDate}:`, err);
+                        console.error(`שגיאה בהבאת תפוסה עבור: ${formattedDate}:`, err);
                         percentages.push(0); // Push 0 if there's an error
                     }
                 });
             }
-            console.log("labels: ", labels);
-            console.log("percentages: ", percentages);
 
             // Render Bar Chart
             document.body.innerHTML = "";
@@ -122,7 +99,7 @@ $(document).ready(function () {
             container.innerHTML = `
                 <h3>אחוז תפוסה בין התאריכים:</h3>
                 <canvas id="occupancyChartRange" width="800" height="400"></canvas>
-                <button type="button" id="menu" class="btn btn-secondary">Home</button>
+                <button type="button" id="menu" class="btn btn-secondary">בית</button>
 
             `;
             document.body.appendChild(container);

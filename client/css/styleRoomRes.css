@@ -1,0 +1,105 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+}
+
+.container {
+    text-align: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 90%;
+    max-width: 600px;
+    margin: 50px auto;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+#roomTable {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    text-align: right;
+    padding: 12px;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+table th {
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+}
+
+table tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+table tr:hover {
+    background: #e9f4ff;
+}
+
+.btn {
+    font-size: 16px;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(to right, #11998e, #38ef7d);
+    border: none;
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+#roomList {
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+#roomList td button {
+    font-size: 14px;
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+#roomList td .edit-btn {
+    background: #ffc107;
+}
+
+#roomList td .delete-btn {
+    background: #dc3545;
+}

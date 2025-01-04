@@ -25,7 +25,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 30px 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 900px;
             margin: 50px auto;
         }
 
@@ -49,7 +49,8 @@
             font-size: 16px;
         }
 
-        table th, table td {
+        table th,
+        table td {
             text-align: right;
             padding: 12px;
             border: 1px solid #ddd;
@@ -63,37 +64,35 @@
         table tr:hover {
             background: #e9f4ff;
         }
+
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            border: none;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Clients Who Visited the Hotel</h1>
-        <!-- <table id="clientTable">
+    <div class="container mt-5">
+        <h2>רשימת לקוחות</h2>
+        <button class="btn btn-primary" id="menu"> עמוד הבית</button>
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Client ID</th>
-                    <th>Email</th>
-                    <th>City</th>
-                    <th>Address</th>
-                    <th>ZipCode</th>
-                    <th>SpecialRequests</th>
+                    <th>שם הלקוח</th>
+                    <th>תעודת זהות</th>
+                    <th>אימייל</th>
+                    <th>טלפון</th>
+                    <th>עיר</th>
+                    <th>כתובת</th>
+                    <th>מיקוד</th>
+                    <th>ערוך</th>
+                    <!-- <th>מחק</th> -->
                 </tr>
             </thead>
-            <tbody> -->
-                <!-- Client rows will be dynamically added here -->
-            <!-- </tbody>
-        </table> -->
-        <table id="clientTable" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Client Name</th>
-                    <th>Client ID</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Client rows will be dynamically added here -->
+            <tbody id="customerList">
+                <!-- Customer rows will be appended here -->
             </tbody>
         </table>
     </div>

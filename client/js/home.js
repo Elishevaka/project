@@ -1,6 +1,5 @@
 
-$(document).ready(function () {
-    
+$(function() {  
     $('#RoomManager').click(function () {
         window.location.href = '/roomMng';
     });
@@ -21,5 +20,8 @@ $(document).ready(function () {
         window.location.href = '/getAllClients';
     });
 
+    $('#DiningRoom').click(function () {
+        window.location.href = '/diningRoom';
+    });
 });
 
