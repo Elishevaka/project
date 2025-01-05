@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
     function fetchBuildingList() {
         $.ajax({
             url: '/api/reports/building-list', // Backend endpoint to fetch buildings
@@ -94,8 +94,6 @@ $(function() {
         });
     });
 
-
-    
     // Generate report by client
     $('#generateClientReportBtn').click(function () {
         const clientId = $('#clientList').val();
@@ -124,8 +122,62 @@ $(function() {
         });
     });
 
-    //$('#menu').click(function () {
-    $('#menu').on('click', function() {
+
+     // Show/hide the order search container
+     $('#chooseOrderBtn').click(function () {
+        $('#orderListContainer').toggle();
+        fetchOrderList(); // Fetch the order list
+    });
+
+    // Fetch order list from backend
+    function fetchOrderList() {
+        $.ajax({
+            url: '/api/reports/order-list', // Adjusted endpoint to fetch all orders
+            method: 'GET',
+            success: function (data) {
+                $('#orderList').empty().append('<option value="">בחר הזמנה</option>');
+                data.forEach(order => {
+                    $('#orderList').append(
+                        `<option value="${order._id}">${order.clientName} - ${order._id} - ${order.clientId}</option>`
+                    );
+                });
+            },
+            error: function (error) {
+                alert('שגיאה באחזור רשימת ההזמנות. אנא נסה שוב.');
+                console.error(error);
+            }
+        });
+    }
+
+    // Generate report for selected order
+    $('#generateOrderReportBtn').click(function () {
+        const orderId = $('#orderList').val();
+        if (!orderId) {
+            alert('אנא בחר הזמנה.');
+            return;
+        }
+
+        $.ajax({
+            url: `/api/reports/order`, // Adjusted route for generating order report
+            method: 'GET',
+            data: { orderId },
+            success: function (data) {
+                alert('הדוח נוצר בהצלחה!');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = data.fileUrl;
+                downloadLink.download = `Order_Report_${orderId}.xlsx`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            },
+            error: function (error) {
+                alert('שגיאה ביצירת דוח. אנא נסה שוב.');
+                console.error(error);
+            }
+        });
+    });
+
+    $('#menu').on('click', function () {
         window.location.href = "/home";
     });
 });

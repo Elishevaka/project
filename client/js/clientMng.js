@@ -31,6 +31,24 @@ $(function () {
                 `);
             });
 
+            $('#clientSearch').on('input', function () {
+                let searchValue = $(this).val().toLowerCase();
+                $('#customerList tr').each(function () {
+                    const name = $(this).find('td:nth-child(1)').text().toLowerCase();
+                    const clientId = $(this).find('td:nth-child(2)').text().toLowerCase();
+                    const email = $(this).find('td:nth-child(3)').text().toLowerCase();
+                    const phone = $(this).find('td:nth-child(4)').text().toLowerCase();
+            
+                    // Show row if any field matches the search input
+                    $(this).toggle(
+                        name.includes(searchValue) ||
+                        clientId.includes(searchValue) ||
+                        email.includes(searchValue) ||
+                        phone.includes(searchValue)
+                    );
+                });
+            });
+
             // Edit customer action
             $('.editCustomer').click(function () {
                 const _id = $(this).data('customer-id');
@@ -84,24 +102,6 @@ $(function () {
                     });
                 });
             });
-
-            // Delete customer action
-            // $('.deleteCustomer').click(function () {
-            //     const _id = $(this).data('customer-id');
-            //     if (confirm('האם אתה בטוח שברצונך למחוק את הלקוח הזה?')) {
-            //         $.ajax({
-            //             url: `/deleteCustomer/${_id}`,
-            //             type: 'DELETE',
-            //             success: function (response) {
-            //                 alert('הלקוח נמחק בהצלחה');
-            //                 location.reload(); // Reload the page to refresh the table
-            //             },
-            //             error: function (xhr) {
-            //                 alert('שגיאה במחיקת הלקוח:' + xhr.responseJSON.error);
-            //             }
-            //         });
-            //     }
-            // });
         },
         error: function () {
             //alert('שגיאה באחזור לקוחות:' + xhr.responseJSON.error);

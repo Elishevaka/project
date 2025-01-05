@@ -17,7 +17,11 @@ $(function() {
     });
 
     $('#Client').click(function () {
-        window.location.href = '/getAllClients';
+        window.location.href = '/clientMng';
+    });
+
+    $('#Order').click(function () {
+        window.location.href = '/orderMng';
     });
 
     $('#DiningRoom').click(function () {

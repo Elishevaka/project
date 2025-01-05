@@ -57,12 +57,20 @@ input:focus {
     background: linear-gradient(to right, #38ef7d, #11998e);
     border: none;
     color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 15px;
 }
 
 .btn-primary {
     background: linear-gradient(to right, #6a11cb, #2575fc);
     border: none;
     color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 15px;
 }
 
 .btn:hover {

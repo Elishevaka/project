@@ -1,4 +1,16 @@
-$(function() {
+$(function () {
+
+    const fullNamePattern = /^[א-ת]+( [א-ת]+)+$/;
+
+    // Function to validate the full name
+    function validateFullName(name) {
+        if (!fullNamePattern.test(name)) {
+            alert("השם לא תקני. יש להכניס שם פרטי ושם משפחה בלבד.");
+            return false;
+        }
+        return true;
+    }
+
     // Retrieve room details from sessionStorage (can now handle multiple rooms)
     const selectedRooms = JSON.parse(sessionStorage.getItem('selectedRooms') || '[]');
     const startDate = sessionStorage.getItem('startDate');
@@ -16,13 +28,45 @@ $(function() {
 
     $("#bookingDates").text(`${startDate} - ${endDate}`);
 
+    // Create loader element
+    const loader = $('<div id="loader" style="display:none;"><div class="spinner"></div><p>שולח מייל, אנא המתן...</p></div>');
+    $('body').append(loader);
+
+    // Add loader CSS
+    $('<style>').prop('type', 'text/css').html(`
+        #loader {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            text-align: center;
+        }
+        .spinner {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    `).appendTo('head');
+
     // Handle form submission
     $("#guestForm").submit(function (event) {
         event.preventDefault();
+        const guestName = $("#guestName").val();
 
-        // Collect guest details
+        if (!validateFullName(guestName)) {
+            return;
+        }
+
         const guestDetails = {
-            guestName: $("#guestName").val(),
+            guestName: guestName,
             guestId: $("#guestId").val(),
             guestEmail: $("#guestEmail").val(),
             phoneNumber: $("#phoneNumber").val(),
@@ -30,20 +74,20 @@ $(function() {
             zipCode: $("#zipCode").val(),
             address: $("#address").val(),
             specialRequests: $("#specialRequests").val(),
-            payment: $('#payment').val(), // Get the selected payment method
-            roomIds: selectedRooms.map(room => room.roomId), // Send an array of room IDs
+            payment: $('#payment').val(),
+            roomIds: selectedRooms.map(room => room.roomId),
             startDate: startDate,
             endDate: endDate,
             extraMattresses: extraMattresses,
             babyBed: babyBed
         };
-        // Validate ID format
+
         const idPattern = /^\d{9}$/;
         if (!idPattern.test(guestDetails.guestId)) {
             alert("פורמט תעודת זהות לא חוקי. אנא הזן תעודת זהות תקין בן 9 ספרות.");
             return;
         }
-        // Create email content dynamically for multiple rooms
+
         let roomDetails = '';
         selectedRooms.forEach(room => {
             roomDetails += `<p>Room Number: ${room.roomNumber}, Building: ${room.buildingName}</p>`;
@@ -68,38 +112,35 @@ $(function() {
             subject: "Booking Confirmation",
             html: emailContent
         };
-        console.log("I here");
-        
-        // Send booking data to the server
+
+        $('#loader').show();
+
         $.ajax({
             url: "/api/bookRoom",
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify(guestDetails),
             success: function () {
-                alert("חדרים הוזמנו בהצלחה!");
-                // Send email after successful booking
+                //alert("חדרים הוזמנו בהצלחה!");
                 $.ajax({
                     url: "/api/sendMail",
                     method: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(mailData),
-
                     success: function (response) {
-                        console.log(response);
-                        alert("מייל אישור נשלח!");
+                        //alert("מייל אישור נשלח!");
+                        $('#loader').hide();
                         window.location.href = "/home";
-        
                     },
                     error: function (error) {
-                        console.log(error);
                         alert("החדרים הוזמנו, אך לא הצליחו לשלוח דוא'ל אישור.");
+                        $('#loader').hide();
                     }
                 });
             },
             error: function (error) {
-                console.error("שגיאה בהזמנת חדרים:", error);
                 alert("הזמנת החדרים נכשלה. אנא נסה שוב.");
+                $('#loader').hide();
             }
         });
     });

@@ -60,6 +60,12 @@ h2 {
     color: white;
 }
 
+#Order {
+    background: linear-gradient(to right, #bd489a, #350124); /* Customize gradient colors for the Reports button */
+    border: none;
+    color: white;
+}
+
 #DiningRoom {
     background: linear-gradient(to right, #a47af1, #b21ae4); /* Customize gradient colors for the Reports button */
     border: none;

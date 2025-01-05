@@ -1,5 +1,4 @@
 
-//$(document).ready(function () {
 $(function() {
     $('#addRoom').click(function () {
         const buildingName = $('#buildingName').val();

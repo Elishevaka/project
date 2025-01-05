@@ -62,22 +62,29 @@ table tr:hover {
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+.btn-success {
+    background: linear-gradient(to right, #38ef7d, #11998e);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 15px;
+}
 
 .btn-primary {
     background: linear-gradient(to right, #6a11cb, #2575fc);
     border: none;
     color: white;
-}
-
-.btn-success {
-    background: linear-gradient(to right, #11998e, #38ef7d);
-    border: none;
-    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 15px;
 }
 
 .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+transform: translateY(-3px);
+box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 #roomList {

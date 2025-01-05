@@ -9,9 +9,11 @@ router.get('/getAllRooms', conferenceRoutes.GetAllRooms);
 router.get('/getAllCustomers', conferenceRoutes.GetClients);
 router.get('/reports/download/:fileName', conferenceRoutes.DownloadFile);
 router.delete('/deleteRoom/:roomId', conferenceRoutes.DeleteRoom);
+router.delete('/deleteOrder/:id', conferenceRoutes.DeleteOrder);
 
 router.put('/updateRoom/:id', conferenceRoutes.UpdateRoom);
 router.put('/updateCustomer/:id', conferenceRoutes.UpdateCustomer);
+router.put('/updateOrder/:id', conferenceRoutes.UpdateOrder);
 // router.put('/deleteCustomer/:id', conferenceRoutes.DeleteCustomer);
 
 /////////////////////////////////////////////
@@ -21,9 +23,12 @@ router.post('/api/sendMail', conferenceRoutes.SendMail);
 router.post('/api/getDailyOccupancy', conferenceRoutes.GetDailyOccupancy);
 router.get('/api/reports', conferenceRoutes.GetReports);
 router.get('/api/reports/building-list', conferenceRoutes.GetBuildingList);
-router.get('/api/reports/client-list', conferenceRoutes.GetClientList);
 router.get('/api/reports/building', conferenceRoutes.GetBuildingListById);
+router.get('/api/reports/client-list', conferenceRoutes.GetClientList);
 router.get('/api/reports/client', conferenceRoutes.GetClientReportById);
+router.get('/api/reports/order-list', conferenceRoutes.GetOrderList);
+router.get('/api/reports/order', conferenceRoutes.GetOrderReportById);
+router.get('/orders', conferenceRoutes.OrdersByDates);
 
 // Add route for handling login form submission
 router.post('/login', conferenceRoutes.LoginScript);

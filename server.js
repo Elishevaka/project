@@ -16,8 +16,9 @@ app.use('/roomMng', express.static(path.join(__dirname, 'client/html/roomMng.htm
 app.use('/roomReservations', express.static(path.join(__dirname, 'client/html/roomReservations.html')));
 app.use('/pickDate', express.static(path.join(__dirname, 'client/html/pickDate.html')));
 app.use('/guestDetails', express.static(path.join(__dirname, 'client/html/guestDetails.html')));
-app.use('/getAllClients', express.static(path.join(__dirname, 'client/html/getAllClients.html')));
+app.use('/clientMng', express.static(path.join(__dirname, 'client/html/clientMng.html')));
 app.use('/diningRoom', express.static(path.join(__dirname, 'client/html/diningRoom.html')));
+app.use('/orderMng', express.static(path.join(__dirname, 'client/html/orderMng.html')));
 
 ////////////////////////////////////////////////////////////////////////////////
 app.use('/login', express.static(path.join(__dirname, 'client/html/login.html')));

@@ -1,6 +1,6 @@
 
-$(function() {
-    
+$(function () {
+
     $("#datepicker1").datepicker({
         dateFormat: "dd/mm/yy"
     });
@@ -38,26 +38,21 @@ $(function() {
             alert("חייב לבחור תאריך התחלה וסוף");
             return;
         }
-        // Prepare the data object based on the selection
         if (option === "single") {
             const start = parseDateString(startDate);
-
             $.ajax({
                 url: "/api/getDailyOccupancy",
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({ date: start }),
                 success: function (data) {
-                    //if (option === "single") {
-                    // Option 1: Display only the occupancy percentage as a number
-                    const { date, occupiedCount, totalRooms } = data;
-                    if (totalRooms === 0) {
-                        alert("אין חדרים זמינים לתאריך זה");
-                        return;
-                    }
-
+                    const { occupiedCount, totalRooms } = data;
                     const occupancyPercentage = ((occupiedCount / totalRooms) * 100).toFixed(2);
-                    alert(`בתאריך ${date}, אחוז התפוסה הוא ${occupancyPercentage}%`);
+                    
+                    // Update only the content inside #dynamicContent without clearing the entire page
+                    $("#dynamicContent").html(`
+                        <h2 style="font-size: 1rem; color: red;">בתאריך: ${startDate} אחוז התפוסה הוא: ${occupancyPercentage}%</h2>
+                    `);
                 },
                 error: function (err) {
                     console.error("שגיאה בהבאת תפוסה:", err);
@@ -99,7 +94,7 @@ $(function() {
             container.innerHTML = `
                 <h3>אחוז תפוסה בין התאריכים:</h3>
                 <canvas id="occupancyChartRange" width="800" height="400"></canvas>
-                <button type="button" id="menu" class="btn btn-secondary">בית</button>
+                <button type="button" id="menu" class="btn btn-primary">עמוד הבית</button>
 
             `;
             document.body.appendChild(container);
