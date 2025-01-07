@@ -10,6 +10,7 @@ const port = 3001;
 
 app.use('/home', express.static(path.join(__dirname, 'client/html/home.html')));
 app.use('/addRoom', express.static(path.join(__dirname, 'client/html/addRoom.html')));
+app.use('/addTable', express.static(path.join(__dirname, 'client/html/addTable.html')));
 app.use('/reports', express.static(path.join(__dirname, 'client/html/reports.html')));
 app.use('/dailyOccupancy', express.static(path.join(__dirname, 'client/html/dailyOccupancy.html')));
 app.use('/roomMng', express.static(path.join(__dirname, 'client/html/roomMng.html')));

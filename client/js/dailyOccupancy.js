@@ -94,7 +94,7 @@ $(function () {
             container.innerHTML = `
                 <h3>אחוז תפוסה בין התאריכים:</h3>
                 <canvas id="occupancyChartRange" width="800" height="400"></canvas>
-                <button type="button" id="menu" class="btn btn-primary">עמוד הבית</button>
+                <button type="button" id="menu" class="btn btn-primary"><i class="fas fa-home"></i>עמוד הבית</button>
 
             `;
             document.body.appendChild(container);

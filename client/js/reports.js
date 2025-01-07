@@ -122,9 +122,43 @@ $(function () {
         });
     });
 
+    // Show/hide the date range container for all customers
+    $('#chooseAllCustomersBtn').click(function () {
+        $('#allCustomersReportContainer').toggle();
+    });
 
-     // Show/hide the order search container
-     $('#chooseOrderBtn').click(function () {
+    // Generate report for all customers within the selected date range
+    $('#generateAllCustomersReportBtn').click(function () {
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+
+        if (!startDate || !endDate) {
+            alert('אנא בחר טווח תאריכים.');
+            return;
+        }
+
+        $.ajax({
+            url: '/api/reports/all-customers', // New endpoint for fetching report
+            method: 'GET',
+            data: { startDate, endDate }, // Sending date range for filtering
+            success: function (data) {
+                alert('הדוח נוצר בהצלחה!');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = data.fileUrl;
+                downloadLink.download = `All_Customers_Report_${startDate}_to_${endDate}.xlsx`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            },
+            error: function (error) {
+                alert('שגיאה ביצירת דוח. אנא נסה שוב.');
+                console.error(error);
+            }
+        });
+    });
+
+    // Show/hide the order search container
+    $('#chooseOrderBtn').click(function () {
         $('#orderListContainer').toggle();
         fetchOrderList(); // Fetch the order list
     });
@@ -176,8 +210,60 @@ $(function () {
             }
         });
     });
+    ////
+    // When clicking the "Rooms Entering" button, show the date input
+    $('#enteringOnDateBtn').click(function () {
+        $('#dateSelectionContainer').show();
+        $('#generateReportDateBtn').off('click').on('click', function () {
+            generateReport('entering');
+        });
+    });
 
+    // When clicking the "Rooms Leaving" button, show the date input
+    $('#leavingOnDateBtn').click(function () {
+        $('#dateSelectionContainer').show();
+        $('#generateReportDateBtn').off('click').on('click', function () {
+            generateReport('leaving');
+        });
+    });
+
+    // Generate report based on the selected date and the report type
+    function generateReport(reportType) {
+        const selectedDate = $('#reportDate1').val();
+        if (!selectedDate) {
+            alert('אנא בחר תאריך');
+            return;
+        }
+
+        let url = '';
+        if (reportType === 'entering') {
+            url = `/api/reports/entering-on-date`;
+        } else if (reportType === 'leaving') {
+            url = `/api/reports/leaving-on-date`;
+        }
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: { selectedDate },
+            success: function (data) {
+                alert('הדוח נוצר בהצלחה!');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = data.fileUrl;
+                downloadLink.download = `Rooms_${reportType.charAt(0).toUpperCase() + reportType.slice(1)}_${selectedDate}_Report.xlsx`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            },
+            error: function (error) {
+                alert('שגיאה ביצירת דוח. אנא נסה שוב.');
+                console.error(error);
+            }
+        });
+    }
+
+    ///
     $('#menu').on('click', function () {
         window.location.href = "/home";
     });
 });
+

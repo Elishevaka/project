@@ -4,36 +4,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dining Rooms</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <title>ניהול שולחנות בחדרי אוכל</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script src="/js/diningRoom.js"></script>
+
     <style>
-        .table {
-            width: 100px;
-            height: 100px;
-            border: 1px solid black;
-            display: inline-block;
-            text-align: center;
-            line-height: 100px;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: calc(100vh - 20px);
+            margin: 0;
+            padding-top: 20px;
+        }
+
+        .container {
+            text-align: right;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            width: 90%;
+        }
+
+        h2 {
+            font-size: 26px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        label,
+        select,
+        input[type="number"] {
+            font-size: 16px;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        .btn {
+            font-size: 16px;
+            padding: 10px 15px;
             margin: 5px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .btn-success {
+            background: linear-gradient(to right, #38ef7d, #11998e);
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th {
+            text-align: right;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            padding: 12px;
+        }
+
+        table td {
+            text-align: right;
+            padding: 12px;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        table tr:hover {
+            background: #e9f4ff;
+        }
+
+        #tableList {
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .icon {
+            cursor: pointer;
+        }
+
+        .saveTable {
+            background-color: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .editTable {
+            background-color: #ffc107;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .btn-success {
+            background: linear-gradient(to right, #38ef7d, #11998e);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
 
 <body>
-    <h1>Dining Rooms</h1>
+    <div class="container mt-5">
+        <h2>ניהול שולחנות בחדרי אוכל</h2>
+        <button type="button" class="btn btn-success" id="addTableBtn">הוסף שולחן חדש</button>
+        <button type="button" class="btn btn-primary" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
 
-    <div class="dining-room" id="dining-room-1">
-        <h2>Dining Room 1</h2>
-        <div class="tables-container"></div>
+        <label for="filterDiningRoom">סנן לפי חדר אוכל:</label>
+        <select id="filterDiningRoom">
+            <option value="all">הצג הכל</option>
+            <option value="1">חדר אוכל 1</option>
+            <option value="2">חדר אוכל 2</option>
+        </select>
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>חדר אוכל</th>
+                    <th>מספר שולחן</th>
+                    <th>מספר סועדים</th>
+                    <th>קרוב לחלון</th>
+                    <th>קרוב לדלת</th>
+                    <th>ערוך</th>
+                </tr>
+            </thead>
+            <tbody id="tableList"></tbody>
+        </table>
     </div>
 
-    <div class="dining-room" id="dining-room-2">
-        <h2>Dining Room 2</h2>
-        <div class="tables-container"></div>
-    </div>
+    <!-- Add New Table Modal -->
+    <div id="addTableModal" style="display:none;">
+        <h4>הוסף שולחן חדש</h4>
+        <form id="addTableForm">
+            <label>מספר שולחן: <input type="number" id="tableNumber" required></label>
+            <label>מספר סועדים:
+                <select id="numberOfSeats">
+                    <!-- Options will be generated dynamically -->
+                </select>
+            </label>
+            <label>חדר אוכל:
+                <select id="diningRoom">
+                    <option value="1">חדר אוכל 1</option>
+                    <option value="2">חדר אוכל 2</option>
+                </select>
+            </label>
+            <label>קרוב לחלון: <input type="checkbox" id="nearWindow"></label>
+            <label>קרוב לדלת: <input type="checkbox" id="nearDoor"></label>
+            <button type="submit" class="btn btn-success">שמור שולחן</button>
+        </form>
 
+    </div>
 </body>
 
 </html>

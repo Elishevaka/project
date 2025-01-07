@@ -43,11 +43,11 @@ h1 {
 #buildingListContainer {
     margin-top: 20px;
 }
-#chooseBuildingBtn {
+/* #chooseBuildingBtn {
     background: linear-gradient(to right, #ff7e5f, #feb47b);
     border: none;
     color: white;
-}
+} */
 
 select,
 input[type="date"] {
@@ -58,63 +58,86 @@ input[type="date"] {
     border-radius: 8px;
     border: 1px solid #ddd;
 }
-/* 
-button {
-    font-size: 16px;
-    cursor: pointer;
-}
-
-#generateReportBtn {
+button#menu {
     background: linear-gradient(to right, #6a11cb, #2575fc);
     border: none;
     color: white;
 }
-
-#generateReportBtn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-#chooseBuildingBtn {
-    width: 50%;
-    font-size: 18px;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-    background: linear-gradient(to right, #ff512f, #dd2476);
+.btn-primary {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
     border: none;
     color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+
+/* 
+ body {
+    font-family: 'Arial', sans-serif;
+    background: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+}
+
+.container {
+    text-align: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 90%;
+    max-width: 90;
+    margin: 50px auto;
+}
+
+h1 {
+    font-size: 26px;
     font-weight: bold;
-    letter-spacing: 1px;
+    color: #007bff;
+    margin-bottom: 20px;
 }
 
-#chooseBuildingBtn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 10px;
+    text-align: right;
 }
 
-#chooseBuildingBtn:active {
-    transform: translateY(0);
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    text-align: right;
+}
+
+input:focus, select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
 }
 
 .btn-custom {
-    width: 50%;
     font-size: 18px;
     padding: 15px;
-    margin: 10px 0;
     border-radius: 30px;
     transition: all 0.3s ease;
-    background: linear-gradient(to right, #ff512f, #dd2476);
-    border: none;
-    color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
-    font-weight: bold;
-    letter-spacing: 1px;
+    width: 80%;
+    margin-bottom: 10px;
 }
 
 .btn-custom:hover {
@@ -122,14 +145,36 @@ button {
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
-.btn-custom:active {
-    transform: translateY(0);
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
-} */
- 
-button#menu {
+.btn-primary {
     background: linear-gradient(to right, #6a11cb, #2575fc);
     border: none;
     color: white;
 }
 
+.btn-success {
+    background: linear-gradient(to right, #38ef7d, #11998e);
+    border: none;
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+    border: none;
+    color: white;
+}
+
+select option {
+    padding: 10px;
+}
+
+#buildingListContainer,
+#clientListContainer,
+#allCustomersReportContainer,
+#orderListContainer,
+#dateSelectionContainer {
+    display: none;
+    margin-top: 20px;
+}
+
+
+ */

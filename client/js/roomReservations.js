@@ -51,13 +51,13 @@ $(function () {
                             <table class="table table-sm table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Select</th>
-                                        <th>Room Number</th>
-                                        <th>Number of Beds</th>
-                                        <th>Floor</th>
-                                        <th>Number of Rooms</th>
-                                        <th>Extra Mattresses</th>
-                                        <th>Baby Bed</th>
+                                        <th>בחר</th>
+                                        <th>מספר חדר</th>
+                                        <th>מספר מיטות</th>
+                                        <th>קומה</th>
+                                        <th>מספר חדרים בחדר</th>
+                                        <th>מזרונים נוספים</th>
+                                        <th>מיטת תינוק</th>
                                     </tr>
                                 </thead>
                                 <tbody id="roomDetails-${buildingName}">
