@@ -29,6 +29,7 @@ $(function () {
         $('#leavingDateSelectionContainer').hide();
         $('#revenueByDateContainer').hide();
         $('#revenueByPaymentTypeContainer').hide();
+        $('#diningRoomFilterContainer').hide();
     }
 
     function toggleContainer(containerId) {
@@ -352,6 +353,49 @@ $(function () {
                 const downloadLink = document.createElement('a');
                 downloadLink.href = data.fileUrl;
                 downloadLink.download = `Revenue_Report_By_Payment_${paymentType}.xlsx`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            },
+            error: function (error) {
+                alert('שגיאה ביצירת דוח. אנא נסה שוב.');
+                console.error(error);
+            }
+        });
+    });
+    $('#chooseDiningRoomBtn').click(function () {
+        toggleContainer('#diningRoomFilterContainer');
+    });
+
+    $('#generateDiningRoomReportBtn').click(function () {
+        const diningRoom = $('#diningRoomList').val();
+        const nearWindow = $('#nearWindow').is(':checked');
+        const nearDoor = $('#nearDoor').is(':checked');
+        const startDate = $('#startDate2').val();
+        const endDate = $('#endDate2').val();
+    
+        if (!diningRoom) {
+            alert('אנא בחר חדר אוכל.');
+            return;
+        }
+        
+                // Prepare query parameters
+        const params = {
+            diningRoom: diningRoom || undefined,
+            nearWindow: nearWindow || undefined,  // undefined if unchecked
+            nearDoor: nearDoor || undefined,      // undefined if unchecked
+            startDate: startDate || undefined,
+            endDate: endDate || undefined,
+        };
+        $.ajax({
+            url: '/api/reports/dining-room', // Backend endpoint
+            method: 'GET',
+            data: { params },
+            success: function (data) {
+                alert('הדוח נוצר בהצלחה!');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = data.fileUrl;
+                downloadLink.download = `Dining_Room_Report_${diningRoom}.xlsx`;
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);

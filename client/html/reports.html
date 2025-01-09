@@ -108,6 +108,9 @@
                 <button class="btn btn-custom btn-proj" id="chooseRevenueByDateBtn">לפי תאריך (הכנסות)</button>
                 <!-- By Revenue by Payment Type -->
                 <button class="btn btn-custom btn-proj" id="chooseRevenueByPaymentTypeBtn">לפי סוג תשלום (הכנסות)</button>
+                <!-- By DiningRoom Type -->
+                <button class="btn btn-custom btn-proj"id="chooseDiningRoomBtn">בחר חדר אוכל</button>
+
             </div>
         </div>
         <div class="content-container">
@@ -198,6 +201,24 @@
                 <input type="date" id="endDate1" />
                 <!-- Generate Report Button -->
                 <button class="btn btn-custom btn-proj btn-report" id="generateRevenueByPaymentTypeBtn">יצירת דוח הכנסות לפי סוג תשלום</button>
+            </div>
+
+            <div id="diningRoomFilterContainer" style="display: none;">
+                <select id="diningRoomList">
+                    <option value="">בחר חדר אוכל</option>
+                    <option value="all">כולם</option>
+                    <option value="1">חדר אוכל 1</option>
+                    <option value="2">חדר אוכל 2</option>
+                </select>
+                <label class="lbl" for="nearWindow">
+                    <input type="checkbox" id="nearWindow" /> קרוב לחלון
+                </label>
+                <label class="lbl" for="nearDoor">
+                    <input type="checkbox" id="nearDoor" /> קרוב לדלת
+                </label>
+                <input type="date" id="startDate2" />
+                <input type="date" id="endDate2" />
+                <button class="btn btn-custom btn-proj btn-report" id="generateDiningRoomReportBtn">צור דוח חדר אוכל</button>
             </div>
         </div>
 
