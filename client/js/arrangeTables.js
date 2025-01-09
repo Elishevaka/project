@@ -1,12 +1,7 @@
 $(document).ready(function () {
-    // $('#loadDataBtn').on('click', function () {
-    // const date = $('#date').val();
-    // if (!date) {
-    //     alert('אנא בחר תאריך');
-    //     return;
-    // }
     let date = sessionStorage.getItem('date');
-
+    console.log("date", date);
+    
     const startDate = new Date(date);
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 1); // Set endDate to the next day

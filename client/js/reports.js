@@ -371,26 +371,20 @@ $(function () {
         const diningRoom = $('#diningRoomList').val();
         const nearWindow = $('#nearWindow').is(':checked');
         const nearDoor = $('#nearDoor').is(':checked');
-        const startDate = $('#startDate2').val();
-        const endDate = $('#endDate2').val();
-    
-        if (!diningRoom) {
-            alert('אנא בחר חדר אוכל.');
+        const date = $('#date2').val();
+        
+        if (!diningRoom || ! startDate || !endDate) {
+            alert('אנא בחר חדר אוכל ותאריכים.');
             return;
         }
         
-                // Prepare query parameters
-        const params = {
-            diningRoom: diningRoom || undefined,
-            nearWindow: nearWindow || undefined,  // undefined if unchecked
-            nearDoor: nearDoor || undefined,      // undefined if unchecked
-            startDate: startDate || undefined,
-            endDate: endDate || undefined,
-        };
+        // const nearWindowText = nearWindow ? 'כן' : '';
+        // const nearDoorText = nearDoor ? 'כן' : '';
+        
         $.ajax({
             url: '/api/reports/dining-room', // Backend endpoint
             method: 'GET',
-            data: { params },
+            data: { diningRoom, nearWindow ,nearDoor, date },
             success: function (data) {
                 alert('הדוח נוצר בהצלחה!');
                 const downloadLink = document.createElement('a');
