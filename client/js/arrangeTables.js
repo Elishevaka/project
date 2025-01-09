@@ -1,7 +1,6 @@
 $(document).ready(function () {
     let date = sessionStorage.getItem('date');
-    console.log("date", date);
-    
+
     const startDate = new Date(date);
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 1); // Set endDate to the next day
@@ -15,6 +14,7 @@ $(document).ready(function () {
 
     const startDateFormatted = formatDate(startDate);
     const endDateFormatted = formatDate(endDate);
+    console.log(date, startDate, startDateFormatted);
 
     // Fetch all orders
     $.get(`/orders?startDate=${startDateFormatted}&endDate=${endDateFormatted}`, function (orders) {
@@ -66,48 +66,71 @@ $(document).ready(function () {
                     url: `/getReservationsForDate?date=${startDateFormatted}`,
                     type: 'GET',
                     success: function (reservations) {
+
                         let tablesFree = []; // Array to store available tables
+                        console.log("lala reservations\n", reservations)
+                        if (reservations.length === 0) {
+                            tablesFree = tables.filter(function (table) {
+                                let isOrdered = false;
+                                console.log(orders);
 
-                        // Loop through each table and check if it exists in the reservations or orders
-                        tables.forEach(function (table) {
-                            let isReserved = false;
-                            let isOrdered = false;
-
-                            // Check if table is reserved in reservations
-                            reservations.forEach(function (reservation) {
-                                if (table._id.toString() === reservation.diningTableId._id.toString()) {
-                                    isReserved = true; // Table is reserved
-                                    return; // No need to check further if already reserved
-                                }
-                            });
-                            // Check if table is ordered in all orders (including unassigned)
-                            orders.forEach(function (order) {
-                                order.tableIds.forEach(function (table) {
-                                    if (order.tableId != null) {
-                                        if (table._id.toString() === order.tableId.toString()) {
-                                            isOrdered = true; // Table is ordered
-                                            return; // No need to check further if already ordered
-                                        }
+                                // Check if table is ordered in all orders (including unassigned)
+                                orders.forEach(function (order) {
+                                    if (Array.isArray(order.tableIds)) {
+                                        order.tableIds.forEach(function (orderTable) {
+                                            if (order.tableId != null && orderTable._id.toString() === order.tableId.toString()) {
+                                                isOrdered = true; // Table is ordered
+                                                return; // No need to check further if already ordered
+                                            }
+                                        });
                                     }
                                 });
 
+                                return !isOrdered; // If not ordered, push to free tables
                             });
+                        } else {
+                            // Loop through each table and check if it exists in the reservations or orders
+                            tables.forEach(function (table) {
+                                let isReserved = false;
+                                let isOrdered = false;
 
-                            // If the table is neither reserved nor ordered, add it to the tablesFree array
-                            if (!isReserved && !isOrdered) {
-                                tablesFree.push(table);
-                            }
-                        });
+                                // Check if table is reserved in reservations
+                                reservations.forEach(function (reservation) {
+                                    if (table._id.toString() === reservation.diningTableId._id.toString()) {
+                                        isReserved = true; // Table is reserved
+                                        return; // No need to check further if already reserved
+                                    }
+                                });
+
+                                // Check if table is ordered in all orders (including unassigned)
+                                orders.forEach(function (order) {
+                                    if (Array.isArray(order.tableIds)) {
+                                        order.tableIds.forEach(function (orderTable) {
+                                            if (order.tableId != null && orderTable._id.toString() === order.tableId.toString()) {
+                                                isOrdered = true; // Table is ordered
+                                                return; // No need to check further if already ordered
+                                            }
+                                        });
+                                    }
+                                });
+
+                                // If the table is neither reserved nor ordered, add it to the tablesFree array
+                                if (!isReserved && !isOrdered) {
+                                    tablesFree.push(table);
+                                }
+                            });
+                        }
+                        console.log("tablesFree:", tablesFree);
 
                         // Clear the table before populating
                         $('#availableTablesTable tbody').empty();
 
                         if (tablesFree.length === 0) {
                             $('#availableTablesTable tbody').append(`
-                                    <tr>
-                                        <td colspan="6" style="text-align: center;">אין שולחנות פנויים להציג</td>
-                                    </tr>
-                                `);
+                            <tr>
+                                <td colspan="6" style="text-align: center;">אין שולחנות פנויים להציג</td>
+                            </tr>
+                        `);
                             return; // Stop if no available tables
                         }
 
@@ -115,15 +138,15 @@ $(document).ready(function () {
                         tablesFree.forEach(function (table) {
                             const displayedTableNumber = table.tableNumber.split('_')[1] || table.tableNumber;
                             $('#availableTablesTable tbody').append(`
-                                    <tr id="table-${table._id}">
-                                        <td class="diningRoom">${table.diningRoom}</td>
-                                        <td class="tableNumber">${displayedTableNumber}</td>
-                                        <td class="numberOfSeats">${table.numberOfSeats}</td>
-                                        <td class="nearWindow">${table.nearWindow ? 'כן' : 'לא'}</td>
-                                        <td class="nearDoor">${table.nearDoor ? 'כן' : 'לא'}</td>
-                                        <td><input type="checkbox" class="tableCheckbox" data-table-id="${table._id}"></td>
-                                    </tr>
-                                `);
+                            <tr id="table-${table._id}">
+                                <td class="diningRoom">${table.diningRoom}</td>
+                                <td class="tableNumber">${displayedTableNumber}</td>
+                                <td class="numberOfSeats">${table.numberOfSeats}</td>
+                                <td class="nearWindow">${table.nearWindow ? 'כן' : 'לא'}</td>
+                                <td class="nearDoor">${table.nearDoor ? 'כן' : 'לא'}</td>
+                                <td><input type="checkbox" class="tableCheckbox" data-table-id="${table._id}"></td>
+                            </tr>
+                        `);
                         });
                     },
                     error: function (xhr) {
@@ -170,7 +193,7 @@ $(document).ready(function () {
             return;
         }
 
-        const date = $('#date').val(); // Get the selected date
+        //const date = $('#date').val();
 
         $.ajax({
             url: `/assignTableToOrder`,
