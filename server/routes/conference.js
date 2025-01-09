@@ -470,26 +470,27 @@ module.exports = {
             res.status(500).json({ error: 'Error fetching reservations' });
         }
     },
-    BookRoom: async function (req, res) {
-        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber, extraMattresses, babyBed, payment, specialRequests, city, zipCode, address, price } = req.body;
 
-        if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0 || !startDate || !endDate || !guestName || !guestId || !phoneNumber || !price) {
+    BookRoom: async function (req, res) {
+        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber, extraMattresses, babyBed, payment, specialRequests, city, zipCode, address, tablePreferences } = req.body;
+    
+        if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0 || !startDate || !endDate || !guestName || !guestId || !phoneNumber || !tablePreferences) {
             return res.status(400).json({ error: 'Room IDs, dates, and guest details are required.' });
         }
         if (!payment || !['No payment', 'Credit', 'Check', 'Cash'].includes(payment)) {
             return res.status(400).json({ error: 'Invalid payment option selected.' });
         }
-
+    
         try {
-
-            // Parse dates
             const start = parseDateString(startDate);
             const end = parseDateString(endDate);
-
+            const numberOfNights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            console.log("numberOfNights:\n",numberOfNights);
+            
             if (start >= end) {
                 return res.status(400).json({ error: 'End date must be after start date.' });
             }
-            // Check availability for all rooms
+    
             const conflictingBookings = await RoomBooking.find({
                 roomId: { $in: roomIds },
                 $or: [
@@ -497,68 +498,89 @@ module.exports = {
                 ],
                 status: 'booked'
             });
-
+    
             if (conflictingBookings.length > 0) {
                 return res.status(400).json({
                     error: 'Some rooms are already booked within the selected date range.',
                     conflictingRooms: conflictingBookings.map(booking => booking.roomId)
                 });
             }
-            // Create or find the client
+    
             let client = await Client.findOne({ clientId: guestId });
-
+    
             if (!client) {
                 client = new Client({
                     clientId: guestId,
                     name: guestName,
                     email: guestEmail,
                     phoneNumber,
-                    city: city,
-                    zipCode: zipCode,
-                    address: address
+                    city,
+                    zipCode,
+                    address
                 });
                 await client.save();
             }
-
-            // Create a single order
+    
+            const rooms = await Room.find({ _id: { $in: roomIds } });
+            let totalPrice = extraMattresses * 100 * numberOfNights;
+            console.log("totalPrice1:\n",totalPrice);
+    
+            rooms.forEach(room => {
+                totalPrice += room.price * numberOfNights;
+            });
+            console.log("totalPrice2:\n",totalPrice);
+            console.log("tablePreferences:\n",tablePreferences);
+    
             const order = new Order({
                 clientId: guestId,
                 roomIds,
                 startDate: start,
                 endDate: end,
-                amount: extraMattresses*100, // Example amount calculation, adjust as needed
-                paymentBy: payment
+                amount: totalPrice,
+                paymentBy: payment,
+                tablePreferences
             });
             await order.save();
-            console.log("price: ", price);
-            
-            // Create bookings for all rooms
-            const bookings = roomIds.map(roomId => ({
-                roomId,
-                startDate: start,
-                endDate: end,
-                status: 'booked',
-                clientId: guestId,
-                orderId: order._id,
-                extraMattresses: extraMattresses || 0,
-                babyBed: babyBed || false,
-                specialRequests: specialRequests,
-                price: price
-            }));
-
+    
+            const bookings = roomIds.map(roomId => {
+                const room = rooms.find(r => r._id.toString() === roomId);
+                return {
+                    roomId,
+                    startDate: start,
+                    endDate: end,
+                    status: 'booked',
+                    clientId: guestId,
+                    orderId: order._id,
+                    extraMattresses: extraMattresses || 0,
+                    babyBed: babyBed || false,
+                    specialRequests: specialRequests,
+                    price: (room.price * numberOfNights) + (extraMattresses * 100 * numberOfNights)
+                };
+            });
+    
             await RoomBooking.insertMany(bookings);
 
-            res.status(200).json({
-                message: 'Rooms successfully booked!',
-                orderId: order._id,
-                bookings
-            });
+            const emailContent = `
+                <div style="direction: rtl; text-align: right;">
+                    <p>שלום ${guestName},</p>
+                    <p>תודה על ההזמנה באתר הנופש שלנו!</p>
+                    <p>מספר הזמנה: ${order._id}</p>
+                    <p>חדר/ים:</p>
+                    ${rooms.map(room => `<p>בניין: ${room.buildingName}, חדר מספר: ${room.roomNumber}</p>`).join('')}
+                    <p>מחיר הזמנה כולל: ${order.amount}</p>
+                    <p>תאריכים: ${startDate} - ${endDate}</p>
+                    <p>בברכה, צוות גבעת וושינגטון</p>
+                    <p>לשאלות ניתן ליצור קשר בטלפון: 025867013</p>
+                </div>
+            `;
+            console.log("Email Content:", emailContent);
+            res.status(200).json({ emailContent});
         } catch (error) {
-            console.error("Error booking rooms:", error);
+            console.error('Error booking rooms:', error);
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
     },
-
+    
     SendMail: async function (req, res) {
         const { recipientEmail, subject, html } = req.body;
         try {

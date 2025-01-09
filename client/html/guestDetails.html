@@ -75,6 +75,20 @@
                     <option value="Cash">מזומן</option>
                 </select>
             </div>
+            <!-- Table Preferences -->
+            <fieldset class="form-group">
+                <legend>העדפות שולחן:</legend>
+                <label><input type="radio" name="tablePreferences" value="noPreference" checked> ללא העדפה</label>
+                <label><input type="radio" name="tablePreferences" value="nearWindow"> ליד חלון</label>
+                <label><input type="radio" name="tablePreferences" value="nearDoor"> ליד דלת</label>
+            </fieldset>
+            
+            <fieldset class="form-group">
+                <legend>העדפת חדר אוכל:</legend>
+                <label><input type="radio" name="diningRoomPreference" value="noPreference" checked> ללא העדפה</label>
+                <label><input type="radio" name="diningRoomPreference" value="diningRoom1"> חדר אוכל 1</label>
+                <label><input type="radio" name="diningRoomPreference" value="diningRoom2"> חדר אוכל 2</label>
+            </fieldset>
             <div class="form-group">
                 <label for="specialRequests">בקשות מיוחדות:</label>
                 <textarea class="form-control" id="specialRequests" rows="3"></textarea>

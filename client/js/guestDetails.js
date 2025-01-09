@@ -18,6 +18,10 @@ $(function () {
     const extraMattresses = parseInt((selectedRooms.map(room => room.extraMattresses)));
     const hasBabyBed = selectedRooms.map(room => room.babyBed);
     const babyBed = hasBabyBed.some(value => value === true);
+    //const tablePreferencesValue = $("input[name='tablePreferences']:checked").val(); // "noPreference", "nearWindow", or "nearDoor"
+    //const diningRoomPreference = $("input[name='diningRoomPreference']:checked").val(); // "noPreference", "diningRoom1", or "diningRoom2"
+    //console.log("tablePreferences\n", tablePreferencesValue);
+    //console.log("diningRoomPreference\n", diningRoomPreference);
 
     // Display selected rooms and dates
     const roomList = $("#roomList");
@@ -65,6 +69,22 @@ $(function () {
             return;
         }
 
+        // Collect table preferences
+        let tablePreferencesValue = $("input[name='tablePreferences']:checked").val();
+        let tablePreferences = {
+            nearWindow: tablePreferencesValue === 'nearWindow',
+            nearDoor: tablePreferencesValue === 'nearDoor',
+            diningRoom: null // Will set based on dining room preference
+        };
+
+        // Collect dining room preferences
+        let diningRoomPreference = $("input[name='diningRoomPreference']:checked").val();
+        if (diningRoomPreference === 'diningRoom1') {
+            tablePreferences.diningRoom = 1;  // Dining Room 1
+        } else if (diningRoomPreference === 'diningRoom2') {
+            tablePreferences.diningRoom = 2;  // Dining Room 2
+        }
+
         const guestDetails = {
             guestName: guestName,
             guestId: $("#guestId").val(),
@@ -80,12 +100,8 @@ $(function () {
             endDate: endDate,
             extraMattresses: extraMattresses,
             babyBed: babyBed,
-            price: selectedRooms.map(room => room.price),
-
+            tablePreferences
         };
-        console.log("selectedRooms ", selectedRooms);
-        console.log("guestDetails.price: ", selectedRooms.price);
-
 
         const idPattern = /^\d{9}$/;
         if (!idPattern.test(guestDetails.guestId)) {
@@ -98,39 +114,6 @@ $(function () {
             roomDetails += `<p>Room Number: ${room.roomNumber}, Building: ${room.buildingName}</p>`;
         });
 
-        // const emailContent = `
-        // <div style="direction: rtl; text-align: right;">
-        //     <p>Dear ${guestDetails.guestName},</p>
-        //     <p>Your rooms have been booked!</p>
-        //     ${roomDetails}
-        //     <p>Dates: ${startDate} - ${endDate}</p>
-        //     <p>City: ${guestDetails.city}, Zip Code: ${guestDetails.zipCode}</p>
-        //     <p>Address: ${guestDetails.address}</p>
-        //     <p>Special Requests: ${guestDetails.specialRequests}</p>
-        //     <p>Thank you for choosing us!</p>
-        //     <p>Washington Hill Team</p>
-        // </div>
-        // `;
-        const emailContent = `
-<div style="direction: rtl; text-align: right;">
-    <p>שלום ${guestDetails.guestName},</p>
-    <p>החדרים שלך הוזמנו!</p>
-    ${roomDetails}
-    <p>תאריכים: ${startDate} - ${endDate}</p>
-    <p>עיר: ${guestDetails.city}, מיקוד: ${guestDetails.zipCode}</p>
-    <p>כתובת: ${guestDetails.address}</p>
-    <p>בקשות מיוחדות: ${guestDetails.specialRequests}</p>
-    <p>תודה שבחרת בנו!</p>
-    <p>צוות Washington Hill</p>
-</div>
-`;
-
-        const mailData = {
-            recipientEmail: guestDetails.guestEmail,
-            subject: "Booking Confirmation",
-            html: emailContent
-        };
-
         $('#loader').show();
 
         $.ajax({
@@ -138,15 +121,20 @@ $(function () {
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify(guestDetails),
-            success: function () {
-                //alert("חדרים הוזמנו בהצלחה!");
+            success: function (response) {
+                const emailContent = response.emailContent;
+
+                const mailData = {
+                    recipientEmail: guestDetails.guestEmail,
+                    subject: "אישור הזמנה באתר הנופש",
+                    html: emailContent
+                };
                 $.ajax({
                     url: "/api/sendMail",
                     method: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(mailData),
                     success: function (response) {
-                        //alert("מייל אישור נשלח!");
                         $('#loader').hide();
                         window.location.href = "/home";
                     },
