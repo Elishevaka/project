@@ -20,10 +20,34 @@ $(function () {
         });
     }
 
+    function closeAllContainers() {
+        $('#clientListContainer').hide();
+        $('#allCustomersReportContainer').hide();
+        $('#buildingListContainer').hide();
+        $('#orderListContainer').hide();
+        $('#enteringDateSelectionContainer').hide();
+        $('#leavingDateSelectionContainer').hide();
+        $('#revenueByDateContainer').hide();
+        $('#revenueByPaymentTypeContainer').hide();
+    }
+
+    function toggleContainer(containerId) {
+        if ($(containerId).is(':visible')) {
+            // אם ה-div פתוח, נסגור אותו
+            $(containerId).hide();
+        } else {
+            // אם ה-div סגור, נסגור את כל השאר ונפתח אותו
+            closeAllContainers();
+            $(containerId).show();
+        }
+    }
+
     // Show/hide the dropdown and fetch building data
     $('#chooseBuildingBtn').click(function () {
-        $('#buildingListContainer').toggle();
-        fetchBuildingList();
+        toggleContainer('#buildingListContainer');
+        if ($('#buildingListContainer').is(':visible')) {
+            fetchBuildingList();
+        }
     });
 
 
@@ -60,8 +84,10 @@ $(function () {
 
     // Toggle client list visibility and load clients
     $('#chooseClientBtn').click(function () {
-        $('#clientListContainer').toggle();
-        fetchClientList();
+        toggleContainer('#clientListContainer');
+        if ($('#clientListContainer').is(':visible')) {
+            fetchClientList();
+        }
     });
 
     // Fetch and display client options
@@ -124,7 +150,7 @@ $(function () {
 
     // Show/hide the date range container for all customers
     $('#chooseAllCustomersBtn').click(function () {
-        $('#allCustomersReportContainer').toggle();
+        toggleContainer('#allCustomersReportContainer');
     });
 
     // Generate report for all customers within the selected date range
@@ -159,8 +185,10 @@ $(function () {
 
     // Show/hide the order search container
     $('#chooseOrderBtn').click(function () {
-        $('#orderListContainer').toggle();
-        fetchOrderList(); // Fetch the order list
+        toggleContainer('#orderListContainer');
+        if ($('#orderListContainer').is(':visible')) {
+            fetchOrderList(); // Fetch the order list
+        }
     });
 
     // Fetch order list from backend
@@ -213,18 +241,22 @@ $(function () {
     ////
     // When clicking the "Rooms Entering" button, show the date input
     $('#enteringOnDateBtn').click(function () {
-        $('#dateSelectionContainer').show();
-        $('#generateReportDateBtn').off('click').on('click', function () {
-            generateReport('entering');
-        });
+        toggleContainer('#enteringDateSelectionContainer');
+        if ($('#enteringDateSelectionContainer').is(':visible')) {
+            $('#enteringGenerateReportDateBtn').off('click').on('click', function () {
+                generateReport('entering');
+            });
+        }
     });
 
     // When clicking the "Rooms Leaving" button, show the date input
     $('#leavingOnDateBtn').click(function () {
-        $('#dateSelectionContainer').show();
-        $('#generateReportDateBtn').off('click').on('click', function () {
-            generateReport('leaving');
-        });
+        toggleContainer('#leavingDateSelectionContainer');
+        if ($('#leavingDateSelectionContainer').is(':visible')) {
+            $('#leavingGenerateReportDateBtn').off('click').on('click', function () {
+                generateReport('leaving');
+            });
+        }
     });
 
     // Generate report based on the selected date and the report type
@@ -262,7 +294,7 @@ $(function () {
     }
     // Show/hide the date range container for revenue by date
     $('#chooseRevenueByDateBtn').click(function () {
-        $('#revenueByDateContainer').toggle();
+        toggleContainer('#revenueByDateContainer');
     });
 
     // Generate revenue by date report
@@ -297,7 +329,7 @@ $(function () {
 
     // Show/hide the payment type container for revenue by payment type
     $('#chooseRevenueByPaymentTypeBtn').click(function () {
-        $('#revenueByPaymentTypeContainer').toggle();
+        toggleContainer('#revenueByPaymentTypeContainer');
     });
 
     // Generate revenue by payment type report
@@ -335,4 +367,3 @@ $(function () {
         window.location.href = "/home";
     });
 });
-

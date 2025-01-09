@@ -12,6 +12,10 @@
     <script src="/js/diningRoom.js"></script>
 
     <style>
+        * {
+            color: #4C585B;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f8f9fa;
@@ -32,11 +36,15 @@
             width: 90%;
         }
 
-        h2 {
+        /* h2 {
             font-size: 26px;
             font-weight: bold;
             color: #007bff;
             margin-bottom: 20px;
+        } */
+        .header-page {
+            color: #4C585B;
+            margin-bottom: 30px;
         }
 
         label,
@@ -131,7 +139,7 @@
             border-radius: 5px;
         }
 
-        .btn-success {
+        /* .btn-success {
             background: linear-gradient(to right, #38ef7d, #11998e);
             border: none;
             color: white;
@@ -139,6 +147,24 @@
             border-radius: 30px;
             cursor: pointer;
             margin-top: 15px;
+        } */
+        .btn-proj {
+            background: none !important;
+            background-color: #4DA1A9 !important;
+            /* background-color: #4C585B !important; */
+            border-radius: 10px;
+            color: white;
+            height: 50px;
+            font-size: 15px;
+            width: 200px;
+
+            &:hover {
+                background-color: #fff !important;
+                color: #4DA1A9 !important;
+                border: 1px solid #4DA1A9 !important;
+
+            }
+
         }
 
         .btn-primary {
@@ -151,21 +177,27 @@
             margin-top: 15px;
         }
 
-        .btn:hover {
+        .lbl {
+            font-size: 20px;
+            float: right;
+            font-weight: bold;
+        }
+
+        /* .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-        }
+        } */
     </style>
 </head>
 
 <body>
     <div class="container mt-5">
-        <h2>ניהול שולחנות בחדרי אוכל</h2>
+        <h2 class="header-page">ניהול שולחנות בחדרי אוכל</h2>
         <button type="button" class="btn btn-primary" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
-        <button type="button" class="btn btn-success" id="addTableBtn">הוסף שולחן חדש</button>
-        <button type="button" class="btn btn-success" id="arrangeTablesBtn">סידור שולחנות</button>
+        <button type="button" class="btn btn-custom btn-proj" id="addTableBtn">הוסף שולחן חדש</button>
+        <button type="button" class="btn btn-custom btn-proj" id="arrangeTablesBtn">סידור שולחנות</button>
 
-        <label for="filterDiningRoom">סנן לפי חדר אוכל:</label>
+        <label class="lbl" for="filterDiningRoom">סנן לפי חדר אוכל:</label>
         <select id="filterDiningRoom">
             <option value="all">הצג הכל</option>
             <option value="1">חדר אוכל 1</option>
@@ -208,7 +240,7 @@
         </form>
 
     </div>
-    
+
 </body>
 
 </html>

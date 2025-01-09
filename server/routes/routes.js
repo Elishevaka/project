@@ -39,6 +39,7 @@ router.get('/api/reports/client-list', conferenceRoutes.GetClientList);
 router.get('/api/reports/client', conferenceRoutes.GetClientReportById);
 router.get('/api/reports/order-list', conferenceRoutes.GetOrderList);
 router.get('/api/reports/order', conferenceRoutes.GetOrderReportById);
+router.get('/api/reports/dining-room', conferenceRoutes.GetDiningRoomReport);
 
 // New routes to generate reports for rooms entering or leaving today
 router.get('/api/reports/entering-on-date', conferenceRoutes.GetEnteringOnDateReport);
