@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="/js/reports.js"></script>
-    
+
 </head>
 
 <body>
@@ -64,6 +64,31 @@
             <button id="generateReportDateBtn">יצירת דוח</button>
         </div>
 
+        <!-- By Revenue by Date -->
+        <button class="btn-custom" id="chooseRevenueByDateBtn">לפי תאריך (הכנסות)</button>
+        <div id="revenueByDateContainer" style="display: none;">
+            <input type="date" id="revenueStartDate" />
+            <input type="date" id="revenueEndDate" />
+            <button id="generateRevenueByDateBtn">יצירת דוח הכנסות לפי תאריך</button>
+        </div>
+
+        <!-- By Revenue by Payment Type -->
+        <button class="btn-custom" id="chooseRevenueByPaymentTypeBtn">לפי סוג תשלום (הכנסות)</button>
+        <div id="revenueByPaymentTypeContainer" style="display: none;">
+            <!-- Payment Type Dropdown -->
+            <select id="paymentTypeList">
+                <option value="">בחר סוג תשלום</option>
+                <option value="Credit">אשראי</option>
+                <option value="Cash">מזומן</option>
+                <option value="Check">שיק</option>
+                <option value="No payment">ללא תשלום</option>
+            </select>
+        
+            <input type="date" id="startDate1" />
+            <input type="date" id="endDate1" />
+            <!-- Generate Report Button -->
+            <button id="generateRevenueByPaymentTypeBtn">יצירת דוח הכנסות לפי סוג תשלום</button>
+        </div>
     </div>
 
 

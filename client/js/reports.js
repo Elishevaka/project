@@ -260,7 +260,76 @@ $(function () {
             }
         });
     }
+    // Show/hide the date range container for revenue by date
+    $('#chooseRevenueByDateBtn').click(function () {
+        $('#revenueByDateContainer').toggle();
+    });
 
+    // Generate revenue by date report
+    $('#generateRevenueByDateBtn').click(function () {
+        const startDate = $('#revenueStartDate').val();
+        const endDate = $('#revenueEndDate').val();
+
+        if (!startDate || !endDate) {
+            alert('אנא בחר טווח תאריכים.');
+            return;
+        }
+
+        $.ajax({
+            url: '/api/revenueByDate',
+            method: 'GET',
+            data: { startDate, endDate },
+            success: function (data) {
+                alert('הדוח נוצר בהצלחה!');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = data.fileUrl;
+                downloadLink.download = `Revenue_Report_${startDate}_to_${endDate}.xlsx`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            },
+            error: function (error) {
+                alert('שגיאה ביצירת דוח. אנא נסה שוב.');
+                console.error(error);
+            }
+        });
+    });
+
+    // Show/hide the payment type container for revenue by payment type
+    $('#chooseRevenueByPaymentTypeBtn').click(function () {
+        $('#revenueByPaymentTypeContainer').toggle();
+    });
+
+    // Generate revenue by payment type report
+    $('#generateRevenueByPaymentTypeBtn').click(function () {
+        const startDate = $('#startDate1').val();
+        const endDate = $('#endDate1').val();
+        const paymentType = $('#paymentTypeList').val();
+    
+        if (!paymentType || !startDate || !endDate) {
+            alert('אנא בחר סוג תשלום או תאיריכם.');
+            return;
+        }
+
+        $.ajax({
+            url: '/api/revenueByPaymentType',
+            method: 'GET',
+            data: { startDate, endDate, paymentType },
+            success: function (data) {
+                alert('הדוח נוצר בהצלחה!');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = data.fileUrl;
+                downloadLink.download = `Revenue_Report_By_Payment_${paymentType}.xlsx`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            },
+            error: function (error) {
+                alert('שגיאה ביצירת דוח. אנא נסה שוב.');
+                console.error(error);
+            }
+        });
+    });
     ///
     $('#menu').on('click', function () {
         window.location.href = "/home";

@@ -15,6 +15,8 @@ router.get('/getAllCustomers', conferenceRoutes.GetClients);
 router.get('/getAllTables', conferenceRoutes.GetAllTable);
 router.get('/getReservationsForDate', conferenceRoutes.GetReservationsForDate);
 router.get('/reports/download/:fileName', conferenceRoutes.DownloadFile);
+router.get('/api/revenueByDate', conferenceRoutes.RevenueByDates);
+router.get('/api/revenueByPaymentType', conferenceRoutes.RevenueByPaymentType);
 router.delete('/deleteRoom/:roomId', conferenceRoutes.DeleteRoom);
 router.delete('/deleteOrder/:id', conferenceRoutes.DeleteOrder);
 
