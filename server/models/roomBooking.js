@@ -73,6 +73,10 @@ const RoomBookingSchema = new Schema({
     specialRequests: {
         type: String,
         trim: true
+    },
+    price: {
+        type: Number,
+        required: true
     }
 }, { timestamps: true });
 

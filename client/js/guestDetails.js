@@ -79,8 +79,13 @@ $(function () {
             startDate: startDate,
             endDate: endDate,
             extraMattresses: extraMattresses,
-            babyBed: babyBed
+            babyBed: babyBed,
+            price: selectedRooms.map(room => room.price),
+
         };
+        console.log("selectedRooms ", selectedRooms);
+        console.log("guestDetails.price: ", selectedRooms.price);
+
 
         const idPattern = /^\d{9}$/;
         if (!idPattern.test(guestDetails.guestId)) {
@@ -93,19 +98,32 @@ $(function () {
             roomDetails += `<p>Room Number: ${room.roomNumber}, Building: ${room.buildingName}</p>`;
         });
 
+        // const emailContent = `
+        // <div style="direction: rtl; text-align: right;">
+        //     <p>Dear ${guestDetails.guestName},</p>
+        //     <p>Your rooms have been booked!</p>
+        //     ${roomDetails}
+        //     <p>Dates: ${startDate} - ${endDate}</p>
+        //     <p>City: ${guestDetails.city}, Zip Code: ${guestDetails.zipCode}</p>
+        //     <p>Address: ${guestDetails.address}</p>
+        //     <p>Special Requests: ${guestDetails.specialRequests}</p>
+        //     <p>Thank you for choosing us!</p>
+        //     <p>Washington Hill Team</p>
+        // </div>
+        // `;
         const emailContent = `
-        <div style="direction: rtl; text-align: right;">
-            <p>Dear ${guestDetails.guestName},</p>
-            <p>Your rooms have been booked!</p>
-            ${roomDetails}
-            <p>Dates: ${startDate} - ${endDate}</p>
-            <p>City: ${guestDetails.city}, Zip Code: ${guestDetails.zipCode}</p>
-            <p>Address: ${guestDetails.address}</p>
-            <p>Special Requests: ${guestDetails.specialRequests}</p>
-            <p>Thank you for choosing us!</p>
-            <p>Washington Hill Team</p>
-        </div>
-        `;
+<div style="direction: rtl; text-align: right;">
+    <p>שלום ${guestDetails.guestName},</p>
+    <p>החדרים שלך הוזמנו!</p>
+    ${roomDetails}
+    <p>תאריכים: ${startDate} - ${endDate}</p>
+    <p>עיר: ${guestDetails.city}, מיקוד: ${guestDetails.zipCode}</p>
+    <p>כתובת: ${guestDetails.address}</p>
+    <p>בקשות מיוחדות: ${guestDetails.specialRequests}</p>
+    <p>תודה שבחרת בנו!</p>
+    <p>צוות Washington Hill</p>
+</div>
+`;
 
         const mailData = {
             recipientEmail: guestDetails.guestEmail,

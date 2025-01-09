@@ -1,10 +1,10 @@
 $(function () {
     // Fetch orders based on date range
-    $('#fetchOrders').click(function () {
+    // $('#fetchOrders').click(function () {
         $('#orderTable').fadeIn();
-        const startDate = $('#startDate').val();
-        const endDate = $('#endDate').val();
-        alert(startDate + ", " + endDate);
+        const startDate = sessionStorage.getItem('startDate');
+        const endDate = sessionStorage.getItem('endDate');
+
         $.get(`/orders?startDate=${startDate}&endDate=${endDate}`, function (orders) {
             $('#orderTable tbody').empty();
             orders.forEach(order => {
@@ -35,7 +35,7 @@ $(function () {
                 `);
             });
         });
-    });
+    // });
 
     // Delete order
     $(document).on('click', '.deleteOrder', function () {

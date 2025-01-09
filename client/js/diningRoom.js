@@ -25,7 +25,7 @@ $(function () {
                 `);
                 } else {
                     filteredTables.forEach(function (table) {
-                        const displayedTableNumber = table.tableNumber.split('_')[0] || table.tableNumber;
+                        const displayedTableNumber = table.tableNumber.split('_')[1] || table.tableNumber;
 
                         $('#tableList').append(`
                         <tr id="table-${table._id}">
@@ -103,7 +103,7 @@ $(function () {
         console.log("row, tableId, tableNumber, numberOfSeats, diningRoom, nearWindow, nearDoor\n", row, tableId, tableNumber, numberOfSeats, diningRoom, nearWindow, nearDoor);
 
         // Remove the part after the "_" for displaying the table number
-        const tableNumberDisplay = tableNumber.split('_')[0];
+        const tableNumberDisplay = tableNumber.split('_')[1];
 
         row.find('.tableNumber').html(`<input type="number" class="form-control tableNumberInput" value="${tableNumberDisplay}">`);
 
@@ -169,5 +169,8 @@ $(function () {
     // Redirect to the home page when "עמוד הבית" is clicked
     $('#menu').click(function () {
         window.location.href = '/home'; // Replace with your homepage URL
+    });
+    $('#arrangeTablesBtn').click(function() {
+        window.location.href = '/pickDateToTables';
     });
 });

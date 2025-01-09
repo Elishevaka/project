@@ -5,6 +5,7 @@ const Building = require('../models/building.js')
 const Order = require('../models/order.js')
 const Login = require('../models/login.js');
 const DiningTable = require('../models/diningRoom.js');
+const TableReservation = require('../models/tableReservation.js');
 
 const nodemailer = require("nodemailer");
 const ExcelJS = require('exceljs');
@@ -21,15 +22,15 @@ module.exports = {
             const userDB = await Login.findOne({ username });
 
             if (!userDB) {
-                return res.status(401).json({ message: 'Invalid username or password' });
+                return res.status(401).json({ message: 'שם משתמש או סיסמא שגויים' });
             }
 
             if (password === userDB.password) {
                 // Authentication successful
-                return res.status(200).json({ message: 'Login successful' });
+                return res.status(200).json({ message: 'הכניסה הצליחה' });
             } else {
                 // Authentication failed
-                return res.status(401).json({ message: 'Invalid username or password' });
+                return res.status(401).json({ message: 'שם משתמש או סיסמא שגויים' });
             }
 
         } catch (error) {
@@ -96,11 +97,11 @@ module.exports = {
     CreateTable: async function (req, res) {
         const { tableNumber, diningRoom, numberOfSeats, nearWindow, nearDoor } = req.body;
         console.log("tableNumber, diningRoom, numberOfSeats, nearWindow, nearDoor\n", tableNumber, diningRoom, numberOfSeats, nearWindow, nearDoor);
-        
+
         try {
             const newTableNumber = `${diningRoom}_${tableNumber}`;
             console.log("newTableNumber\n", newTableNumber);
-            
+
             // Check if a table with this combined number already exists
             const existingDiningRoom = await DiningTable.findOne({ tableNumber: newTableNumber });
 
@@ -110,7 +111,7 @@ module.exports = {
             //     diningRoom: diningRoom
             // });
             if (existingDiningRoom) {
-                
+
                 // // Check if the table already exists in this dining room
                 // const existingTable = await DiningTable.findOne({
                 //     tableNumber,
@@ -118,7 +119,7 @@ module.exports = {
                 // });
 
                 // if (existingTable) {
-                    return res.status(400).json({ error: 'Table already exists in this dining room.' });
+                return res.status(400).json({ error: 'Table already exists in this dining room.' });
                 // }
 
                 // // Add new table to the existing dining room
@@ -153,7 +154,78 @@ module.exports = {
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
     },
+    GetTableData: async function (req, res) {
+        const { date } = req.query;
 
+        try {
+            const clients = await Client.find();
+            const searchDate = new Date(date);
+
+            // Fetch reservations where the reservation date matches the given date
+            const reservations = await TableReservation.find({
+                date: searchDate, // Check if the reservation date matches the provided date
+            }).populate('diningTableId');
+
+            const reservedTableIds = reservations.map(reservation => reservation.diningTableId._id.toString());
+            const availableTables = await DiningTable.find({ _id: { $nin: reservedTableIds } });
+
+            res.status(200).json({ clients, tables: availableTables });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            res.status(500).json({ error: 'Server error while fetching data' });
+        }
+    },
+    TableReservations: async function (req, res) {
+        const { clientId, tableNumber, startDate, endDate } = req.body;
+        try {
+            const table = await DiningTable.findOne({ tableNumber });
+            if (!table) return res.status(404).send('Table not found');
+
+            const reservation = new TableReservation({
+                clientId,
+                diningTableId: table._id,
+                startDate,
+                endDate
+            });
+            await reservation.save();
+            res.status(201).send('Table reservation created');
+        } catch (error) {
+            res.status(500).send('Error creating reservation');
+        }
+    },
+    ReserveTable: async function (req, res) {
+        const { clientId, tableNumber, diningRoom, startDate, endDate } = req.body;
+        try {
+            const table = await DiningTable.findOne({ tableNumber, diningRoom });
+            if (!table) {
+                return res.status(404).json({ error: 'Table not found' });
+            }
+
+            const existingReservation = await TableReservation.findOne({
+                diningTableId: table._id,
+                $or: [
+                    { startDate: { $lte: endDate }, endDate: { $gte: startDate } }
+                ]
+            });
+
+            if (existingReservation) {
+                return res.status(400).json({ error: 'Table already reserved for this date range' });
+            }
+
+            const reservation = new TableReservation({
+                clientId,
+                diningTableId: table._id,
+                startDate,
+                endDate
+            });
+            await reservation.save();
+
+            res.status(201).json({ message: 'Table reserved successfully!' });
+        } catch (error) {
+            console.error("Error reserving table:", error);
+            res.status(500).json({ error: 'Server error during reservation' });
+        }
+    },
     GetAllRooms: async function (req, res) {
         try {
             const rooms = await Room.find().populate('buildingId', 'buildingName'); // Only populate buildingName
@@ -161,6 +233,88 @@ module.exports = {
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Error fetching rooms.' });
+        }
+    },
+    AssignTableToOrder: async function (req, res) {
+        // const { orderId, tableId, date } = req.body;
+        // try {
+        //     // Find the order to get the clientId associated with it
+        //     const order = await Order.findById(orderId);
+        //     if (!order) {
+        //         return res.status(404).json({ error: 'Order not found' });
+        //     }
+
+        //     const client_id = order.clientId; // Get the clientId from the order
+        //     console.log("client_id\n", client_id);
+        //     console.log("TYPE - client_id\n", typeof(client_id));
+            
+        //     let client = await Client.findOne({ clientId: client_id });
+            
+        //     // await Order.findByIdAndUpdate(orderId, { tableId: tableId });
+
+        //     // Update or create the table reservation to mark it as occupied for the given date
+        //     const reservationUpdate = await TableReservation.updateOne(
+        //         { diningTableId: tableId, date: date },
+        //         {
+        //             $set: {
+        //                 clientId: client._id,  // Link the reservation to the client
+        //                 status: 'occupied'
+        //             }
+        //         },
+        //         { upsert: true } // Creates a new reservation if it doesn't exist for the date
+        //     );
+
+        //     if (reservationUpdate.modifiedCount > 0 || reservationUpdate.upsertedCount > 0) {
+        //         // Only update the order if the reservation was successful
+        //         await Order.findByIdAndUpdate(orderId, { tableId: tableId });
+        //         res.json({ message: 'Table assigned successfully!' });
+        //     } else {
+        //         res.status(400).json({ error: 'Failed to reserve the table.' });
+        //     }
+        // } catch (error) {
+        //     console.error(error);
+        //     res.status(500).json({ error: 'Error assigning table to order.' });
+        // }
+        const { orderId, tableIds, date } = req.body;
+        try {
+            // Find the order to get the clientId associated with it
+            const order = await Order.findById(orderId);
+            if (!order) {
+                return res.status(404).json({ error: 'Order not found' });
+            }
+
+            const client_id = order.clientId; // Get the clientId from the order
+            console.log("client_id\n", client_id);
+            console.log("TYPE - client_id\n", typeof(client_id));
+            
+            let client = await Client.findOne({ clientId: client_id });
+            
+            for (const tableId of tableIds) {
+                const reservationUpdate = await TableReservation.updateOne(
+                    { diningTableId: tableId, date: date },
+                    {
+                        $set: {
+                            clientId: client._id,  // Link the reservation to the client
+                            status: 'occupied'
+                        }
+                    },
+                    { upsert: true } // Creates a new reservation if it doesn't exist for the date
+                );
+    
+                // If any table update fails, send an error response
+                if (reservationUpdate.modifiedCount === 0 && reservationUpdate.upsertedCount === 0) {
+                    return res.status(400).json({ error: `Failed to reserve table with ID ${tableId}.` });
+                }
+            }
+    
+            // After updating table reservations, update the order with the tableIds
+            order.tableIds = tableIds;
+            await order.save();
+    
+            res.json({ message: 'Tables assigned and reserved successfully!' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error assigning table to order.' });
         }
     },
     DeleteRoom: async function (req, res) {
@@ -300,10 +454,26 @@ module.exports = {
             res.status(500).json({ error: error.message });
         }
     },
-    BookRoom: async function (req, res) {
-        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber, extraMattresses, babyBed, payment, specialRequests, city, zipCode, address } = req.body;
+    GetReservationsForDate: async function (req, res) {
+        const { date } = req.query;
+        console.log("date\n", date);
 
-        if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0 || !startDate || !endDate || !guestName || !guestId || !phoneNumber) {
+        try {
+            const reservations = await TableReservation.find({
+                date: new Date(date) // Filter reservations for the selected date
+            }).populate('diningTableId'); // Populate dining table details
+            console.log("reservations\n", reservations);
+
+            res.status(200).json(reservations);
+        } catch (error) {
+            console.error("Error fetching reservations:", error);
+            res.status(500).json({ error: 'Error fetching reservations' });
+        }
+    },
+    BookRoom: async function (req, res) {
+        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber, extraMattresses, babyBed, payment, specialRequests, city, zipCode, address, price } = req.body;
+
+        if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0 || !startDate || !endDate || !guestName || !guestId || !phoneNumber || !price) {
             return res.status(400).json({ error: 'Room IDs, dates, and guest details are required.' });
         }
         if (!payment || !['No payment', 'Credit', 'Check', 'Cash'].includes(payment)) {
@@ -356,11 +526,12 @@ module.exports = {
                 roomIds,
                 startDate: start,
                 endDate: end,
-                amount: roomIds.length * 1000, // Example amount calculation, adjust as needed
+                amount: extraMattresses*100, // Example amount calculation, adjust as needed
                 paymentBy: payment
             });
             await order.save();
-
+            console.log("price: ", price);
+            
             // Create bookings for all rooms
             const bookings = roomIds.map(roomId => ({
                 roomId,
@@ -371,7 +542,8 @@ module.exports = {
                 orderId: order._id,
                 extraMattresses: extraMattresses || 0,
                 babyBed: babyBed || false,
-                specialRequests: specialRequests
+                specialRequests: specialRequests,
+                price: price
             }));
 
             await RoomBooking.insertMany(bookings);
@@ -929,9 +1101,11 @@ module.exports = {
     OrdersByDates: async function (req, res) {
         const { startDate, endDate } = req.query;
         try {
+            console.log("startDate, endDate", startDate, endDate);
+
             const orders = await Order.find({
-                startDate: { $gte: new Date(startDate) },
-                endDate: { $lte: new Date(endDate) }
+                startDate: { $lt: endDate },
+                endDate: { $gt: startDate }
             });
             res.json(orders);
         } catch (error) {
@@ -959,7 +1133,7 @@ module.exports = {
         const { tableNumber, numberOfSeats, nearWindow, nearDoor, diningRoom } = req.body;
         console.log("tableId\n ", tableId);
         console.log("tableNumber, numberOfSeats, nearWindow, nearDoor, diningRoom\n ", tableNumber, numberOfSeats, nearWindow, nearDoor, diningRoom);
-        
+
         try {
             // Find the table and update its properties
             const updatedTable = await DiningTable.findByIdAndUpdate(

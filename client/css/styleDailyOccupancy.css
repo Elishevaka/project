@@ -5,13 +5,13 @@ body {
     padding: 0;
     text-align: center;
 }
-.container {
+.container_new {
     text-align: center;
     background: white;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 30px 20px;
-    width: 95%;
+    width: 80%;
     margin: 50px auto;
 }
 

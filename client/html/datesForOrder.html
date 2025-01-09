@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/js/orderMng.js"></script>
+    <script src="/js/datesForOrder.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -72,68 +72,23 @@
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
 
-        table th,
-        table td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: right;
-        }
-
-        table th {
-            background: #007bff;
-            color: white;
-        }
-
-        table tr:nth-child(even) {
-            background: #f2f2f2;
-        }
-
-        table tr:hover {
-            background: #e9f4ff;
-        }
-
-        #orderTable {
-            display: none;
-        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- <h1>ניהול הזמנות</h1>
+        <h1>ניהול הזמנות</h1>
         <label for="startDate">תאריך התחלה:</label>
         <input type="date" id="startDate">
 
         <label for="endDate">תאריך סיום:</label>
         <input type="date" id="endDate">
         <br>
-        <button class="btn btn-success" id="fetchOrders">חפש הזמנות</button> -->
+        <button class="btn btn-success" id="fetchOrders">חפש הזמנות</button>
         <button class="btn btn-primary" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
 
-        <table id="orderTable">
-            <thead>
-                <tr>
-                    <th>תעודת זהות לקוח</th>
-                    <th>תאריך התחלה</th>
-                    <th>תאריך סיום</th>
-                    <th>סכום</th>
-                    <th>תשלום ע"י</th>
-                    <th>ערוך</th>
-                    <th>מחק</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
     </div>
-    <script>
-
-    </script>
 </body>
 
 </html>

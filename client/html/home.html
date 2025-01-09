@@ -10,21 +10,128 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="/js/home.js"></script>
+    <style>
+        .main-header {
+            background: #007bff;
+            padding: 5px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
+        .navbar {
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-list li {
+            margin: 0 10px;
+        }
+
+        .nav-list a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+    </style>
 </head>
 
 <body>
+    <header class="main-header">
+        <nav class="navbar">
+            <ul class="nav-list">
+                <li><a href="/home">עמוד הבית</a></li>
+                <li><a href="/orderMng">ניהול הזמנות</a></li>
+                <li><a href="/diningRoom">ניהול שולחנות אוכל</a></li>
+                <li><a href="/clientMng">ניהול לקוחות</a></li>
+                <li><a href="/reports">דוחות</a></li>
+            </ul>
+        </nav>
+    </header>
     <div class="container">
         <h2>דף הבית</h2>
         <button class="btn btn-custom" id="RoomManager"><i class="fas fa-door-open"></i>ניהול חדרים</button>
         <button class="btn btn-custom" id="dailyOccupancy"><i class="fas fa-chart-bar"></i>אחוז תפוסה</button>
         <button class="btn btn-custom" id="RoomReservations"><i class="fas fa-calendar-alt"></i>הזמנת חדרים</button>
         <button class="btn btn-custom" id="Reports"><i class="fas fa-file-alt"></i>דוחות</button>
-        <button class="btn btn-custom" id="Client"><i class="fas fa-user"></i>לקוחות</button>
+        <button class="btn btn-custom" id="Client"><i class="fas fa-user"></i>ניהול לקוחות</button>
         <button class="btn btn-custom" id="Order"><i class="fas fa-receipt"></i>ניהול הזמנות</button>
-        <button class="btn btn-custom" id="DiningRoom"><i class="fas fa-utensils"></i>חדר אוכל</button>
+        <button class="btn btn-custom" id="DiningRoom"><i class="fas fa-utensils"></i>ניהול חדר אוכל</button>
 
     </div>
 </body>
 
 </html>
+<!-- <!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף הבית</title>
+    <link rel="stylesheet" type="text/css" href="css/styleHome.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/js/home.js"></script>
+    <style>
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            justify-items: center;
+            margin-top: 200px;
+            padding: 60px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 100px auto;
+        }
+
+        .container button {
+            width: 100%;
+            padding: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .container button:hover {
+            background-color: #0056b3;
+        }
+
+        .container button:nth-child(4),
+        .container button:nth-child(5),
+        .container button:nth-child(6) {
+            grid-column: span 1;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <div class="container">
+        <button class="btn btn-custom" id="RoomManager"><i class="fas fa-door-open"></i> ניהול חדרים</button>
+        <button class="btn btn-custom" id="dailyOccupancy"><i class="fas fa-chart-bar"></i> אחוז תפוסה</button>
+        <button class="btn btn-custom" id="RoomReservations"><i class="fas fa-calendar-alt"></i> הזמנת חדרים</button>
+        <button class="btn btn-custom" id="Reports"><i class="fas fa-file-alt"></i> דוחות</button>
+        <button class="btn btn-custom" id="Client"><i class="fas fa-user"></i> ניהול לקוחות</button>
+        <button class="btn btn-custom" id="Order"><i class="fas fa-receipt"></i> ניהול הזמנות</button>
+        <button class="btn btn-custom" id="DiningRoom"><i class="fas fa-utensils"></i> ניהול חדר אוכל</button>
+    </div>
+</body>
+
+</html> -->

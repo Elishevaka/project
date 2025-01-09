@@ -5,10 +5,15 @@ var router = express.Router();
 ////////////////////////////////////////////
 router.post('/addRoom', conferenceRoutes.AddRoom);
 router.post('/createTable', conferenceRoutes.CreateTable);
+router.get('/api/table-data', conferenceRoutes.GetTableData);
+router.post('/api/table-reservations', conferenceRoutes.TableReservations);
+router.post('/api/reserveTable', conferenceRoutes.ReserveTable);
+router.post('/assignTableToOrder', conferenceRoutes.AssignTableToOrder);
 
 router.get('/getAllRooms', conferenceRoutes.GetAllRooms);
 router.get('/getAllCustomers', conferenceRoutes.GetClients);
 router.get('/getAllTables', conferenceRoutes.GetAllTable);
+router.get('/getReservationsForDate', conferenceRoutes.GetReservationsForDate);
 router.get('/reports/download/:fileName', conferenceRoutes.DownloadFile);
 router.delete('/deleteRoom/:roomId', conferenceRoutes.DeleteRoom);
 router.delete('/deleteOrder/:id', conferenceRoutes.DeleteOrder);

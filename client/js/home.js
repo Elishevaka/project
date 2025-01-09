@@ -21,7 +21,7 @@ $(function() {
     });
 
     $('#Order').click(function () {
-        window.location.href = '/orderMng';
+        window.location.href = '/datesForOrder';
     });
 
     $('#DiningRoom').click(function () {

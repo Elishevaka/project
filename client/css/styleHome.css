@@ -49,25 +49,25 @@ h2 {
 }
 
 #Reports {
-    background: linear-gradient(to right, #ff512f, #dd2476); /* Customize gradient colors for the Reports button */
+    background: linear-gradient(to right, #ff512f, #dd2476); 
     border: none;
     color: white;
 }
 
 #Client {
-    background: linear-gradient(to right, #b8e565, #d6aa2f); /* Customize gradient colors for the Reports button */
+    background: linear-gradient(to right, #b8e565, #d6aa2f); 
     border: none;
     color: white;
 }
 
 #Order {
-    background: linear-gradient(to right, #bd489a, #350124); /* Customize gradient colors for the Reports button */
+    background: linear-gradient(to right, #bd489a, #350124); 
     border: none;
     color: white;
 }
 
 #DiningRoom {
-    background: linear-gradient(to right, #a47af1, #b21ae4); /* Customize gradient colors for the Reports button */
+    background: linear-gradient(to right, #a47af1, #b21ae4); 
     border: none;
     color: white;
 }

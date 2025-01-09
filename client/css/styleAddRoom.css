@@ -1,11 +1,23 @@
 /* Container styling */
-.container {
+.container_new {
+    text-align: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 80%;
+    max-width: 80%;
+    margin: 50px auto;
+}
+
+.lala {
     text-align: center;
     background: white;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 30px 20px;
     width: 400px;
+    max-width: 50%;
     margin: 50px auto;
 }
 
@@ -86,22 +98,4 @@ button#menu:hover {
 
 #message.error {
     color: #dc3545; /* Red for error */
-}
-
-/* Media Query for Responsive Design */
-@media (max-width: 480px) {
-    .container {
-        width: 90%;
-        padding: 20px;
-    }
-
-    input[type="text"],
-    input[type="number"] {
-        width: 100%;
-    }
-
-    button {
-        width: 100%;
-        margin-bottom: 10px;
-    }
 }
