@@ -61,6 +61,22 @@ const RoomBookingSchema = new Schema({
     orderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order' // Reference to Order schema
+    },
+    extraMattresses: {
+        type: Number,
+        default: 0
+    },
+    babyBed: {
+        type: Boolean,
+        default: false
+    },
+    specialRequests: {
+        type: String,
+        trim: true
+    },
+    price: {
+        type: Number,
+        required: true
     }
 }, { timestamps: true });
 

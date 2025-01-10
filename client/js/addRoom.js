@@ -1,15 +1,15 @@
 
-$(document).ready(function () {
-
+$(function() {
     $('#addRoom').click(function () {
         const buildingName = $('#buildingName').val();
         const roomNumber = $('#roomNumber').val();
         const numOfRooms = $('#numOfRooms').val() || 1; // Default to 1 if not provided
         const numBeds = $('#numBeds').val();
         const floor = $('#floor').val() || 1; // Default to 1 if not provided
+        const price = $('#price').val(); // New field
         //alert(floor)
         if (!buildingName || !roomNumber || !numBeds) {
-            alert("לא נבחר שם בניין או מספר חדר או מספר מיטות");
+            alert(" לא נבחר שם בניין או מספר חדר או מספר מיטות או מחיר לחדר");
             return
         }
         $.ajax({
@@ -21,10 +21,11 @@ $(document).ready(function () {
                 buildingName: buildingName,
                 numOfRooms: numOfRooms,
                 numBeds: numBeds,
-                floor: floor
+                floor: floor,
+                price: price
             }),
             success: function (response) {
-                alert(response.message);
+                alert('החדר הוסף בהצלחה');
                 window.location.href = "/roomMng";
 
             },

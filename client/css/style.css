@@ -1,79 +1,157 @@
-.body {
+* {
+    color: #4C585B;
+}
+
+body {
+    /* רקע תמונה */
+
+    background-image: url('images/pensee-royal-azur-tourist-resort-pools_1385-3079.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    background-blend-mode: overlay;
+    /* עד פה רקע תמונה */
+
+    
+    font-family: 'Arial', sans-serif;
+    /* background-color: #f8f9fa; */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: calc(100vh - 20px);
     margin: 0;
-    direction: rtl; /* Set overall direction to RTL */
-    text-align: right;
+    padding-top: 20px;
 }
 
 .container {
-    margin-top: 20px;
-    max-width: 100%;
-    background-color: white;
-    padding: 8px;
     text-align: right;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 90%;
 }
 
-#rooms {
-    display: flexbox;
+select,
+input[type="number"] {
+    font-size: 16px;
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
 }
 
-.room-btn {
-    margin-bottom: 10px;
-    margin: 5px; /* Add margin to create space between buttons */
-  }
-
-.btn-success {
-    background-color: rgb(36, 166, 8);
+.header-page,
+h1,
+h2 {
+    color: #4C585B;
+    margin-bottom: 30px;
+    font-weight: bold;
 }
 
-.btn-danger {
-    color: #fff;
-    background-color: #dc3545;
-    border-color: #dc3545;
+.btn {
+    font-size: 16px;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    i {
+        color: #fff;
+        margin: 0 5px;
+
+        &:hover {
+            color: #4DA1A9;
+        }
+    }
 }
 
-#map {
-    width: 600px;
-    height: 400px;
-    background-color: #f0f0f0;
-    position: relative;
+.btn-proj {
+    background: none !important;
+    background-color: #4DA1A9 !important;
+    height: 50px;
+    font-size: 15px;
+    width: 200px;
+    color: white !important;
+
+
+    &:hover {
+        background-color: #fff !important;
+        color: #4DA1A9 !important;
+        border: 1px solid #4DA1A9 !important;
+
+    }
+
 }
 
-.icon {
-    cursor: pointer;
-    margin-right: 10px;
+.btn-home {
+    height: 50px;
+    font-size: 15px;
+    width: 200px;
 }
 
-.btn-group {
+label {
+    font-size: 20px;
     float: right;
+    width: 100%;
+    font-weight: bold;
 }
 
-.table {
-    margin-left: auto;
-    margin-right: 0;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 15px;
 }
 
-#addRoomForm input {
-    text-align: right; /* Align input text to the right */
-}
-
-label, input {
-    display: inline-block;
+table th {
     text-align: right;
-    margin-bottom: 10px;
-}
-/*  *//*  *//*  *//*  *//*  */
-#dateDisplay {
-    text-align: right; /* Align text display for selected dates to the right */
-}
-
-#datepickerStart, #datepickerEnd, #numRoom {
-    text-align: right; /* Align text inside inputs to the right */
+    background-color: #4DA1A9;
+    color: white;
+    font-size: 16px;
+    padding: 12px;
 }
 
-#guestForm{
+table td {
     text-align: right;
+    padding: 12px;
+    border: 1px solid #ddd;
+
 }
 
-#datepicker2 {
-    display: none;
+table tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+table tr:hover {
+    background: #e9f4ff;
+}
+
+#tableList {
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.tbl {
+    .editTable {
+        background-color: #4C585B;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .saveTable {
+        border: #4C585B solid 1px;
+        color: #4C585B;
+        background-color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .fa-edit {
+        cursor: pointer;
+        color: #fff;
+    }
 }

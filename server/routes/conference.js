@@ -4,18 +4,14 @@ const Room = require('../models/room.js')
 const Building = require('../models/building.js')
 const Order = require('../models/order.js')
 const Login = require('../models/login.js');
+const DiningTable = require('../models/diningRoom.js');
+const TableReservation = require('../models/tableReservation.js');
 
 const nodemailer = require("nodemailer");
-
-// function isValidURL(str) {//function to check url
-//     try {
-//         const url = new URL(str);// Create a new URL object
-//         const searchParams = url.searchParams; // Use the searchParams property to check if the URL has any query parameters
-//         return true;// If no exception is thrown, the URL is valid
-//     } catch (error) {
-//         return false; // If an exception is thrown, the URL is not valid
-//     }
-// }
+const ExcelJS = require('exceljs');
+const XLSX = require('xlsx');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
 
@@ -26,15 +22,15 @@ module.exports = {
             const userDB = await Login.findOne({ username });
 
             if (!userDB) {
-                return res.status(401).json({ message: 'Invalid username or password' });
+                return res.status(401).json({ message: 'שם משתמש או סיסמא שגויים' });
             }
 
             if (password === userDB.password) {
                 // Authentication successful
-                return res.status(200).json({ message: 'Login successful' });
+                return res.status(200).json({ message: 'הכניסה הצליחה' });
             } else {
                 // Authentication failed
-                return res.status(401).json({ message: 'Invalid username or password' });
+                return res.status(401).json({ message: 'שם משתמש או סיסמא שגויים' });
             }
 
         } catch (error) {
@@ -43,7 +39,7 @@ module.exports = {
         }
     },
     AddRoom: async function (req, res) {
-        const { roomNumber, buildingName, numOfRooms, numBeds, floor } = req.body;
+        const { roomNumber, buildingName, numOfRooms, numBeds, floor, price } = req.body;
 
         try {
             // Check if the building exists by name
@@ -63,27 +59,12 @@ module.exports = {
                     buildingName: building.buildingName,
                     numOfRooms: numOfRooms,
                     numBeds: numBeds,
-                    floor: floor
+                    floor: floor,
+                    price: price
                 });
                 await newRoom.save();
                 building.numberOfRooms += 1;
                 await building.save();
-
-                // // Add initial RoomBooking entry marking room as 'free'
-                // const startDate = new Date();
-                // startDate.setUTCHours(0, 0, 0, 0);
-
-                // const endDate = new Date();
-                // endDate.setFullYear(endDate.getFullYear() + 1);
-                // endDate.setUTCHours(0, 0, 0, 0);
-
-                // const initialRoomBooking = new RoomBooking({
-                //     roomId: newRoom._id,
-                //     startDate,
-                //     endDate,
-                //     status: 'free'
-                // });
-                // await initialRoomBooking.save();
 
                 return res.status(200).json({ message: `Room ${roomNumber} added to ${buildingName} successfully!` });
 
@@ -101,28 +82,146 @@ module.exports = {
                     buildingName: newBuilding.buildingName,
                     numOfRooms,
                     numBeds,
-                    floor
+                    floor,
+                    price
                 });
                 await newRoom.save();
-
-                // // Add initial RoomBooking entry marking room as 'free'
-                // const startDate = new Date();
-                // const endDate = new Date();
-                // endDate.setFullYear(endDate.getFullYear() + 1);
-
-                // const initialRoomBooking = new RoomBooking({
-                //     roomId: newRoom._id,
-                //     startDate,
-                //     endDate,
-                //     status: 'free'
-                // });
-                // await initialRoomBooking.save();
 
                 return res.status(200).json({ message: `Building ${buildingName} and room ${roomNumber} created successfully!` });
             }
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+    CreateTable: async function (req, res) {
+        const { tableNumber, diningRoom, numberOfSeats, nearWindow, nearDoor } = req.body;
+
+        try {
+            const newTableNumber = `${diningRoom}_${tableNumber}`;
+
+            // Check if a table with this combined number already exists
+            const existingDiningRoom = await DiningTable.findOne({ tableNumber: newTableNumber });
+
+            // // Check if the dining room exists
+            // let existingDiningRoom = await DiningTable.findOne({
+            //     tableNumber: tableNumber,
+            //     diningRoom: diningRoom
+            // });
+            if (existingDiningRoom) {
+
+                // // Check if the table already exists in this dining room
+                // const existingTable = await DiningTable.findOne({
+                //     tableNumber,
+                //     diningRoom: existingDiningRoom._id
+                // });
+
+                // if (existingTable) {
+                return res.status(400).json({ error: 'Table already exists in this dining room.' });
+                // }
+
+                // // Add new table to the existing dining room
+                // const newTable = new DiningTable({
+                //     tableNumber,
+                //     numberOfSeats,
+                //     nearWindow,
+                //     nearDoor,
+                //     diningRoom: existingDiningRoom._id
+                // });
+                // await newTable.save();
+
+                // // Optional: Update table count in dining room
+                // existingDiningRoom.numberOfTables += 1;
+                // await existingDiningRoom.save();
+
+                // return res.status(200).json({ message: `Table ${tableNumber} added to ${diningRoom} successfully!` });
+            } else {
+                const newTable = new DiningTable({
+                    tableNumber: newTableNumber,
+                    numberOfSeats,
+                    nearWindow,
+                    nearDoor,
+                    diningRoom
+                });
+                await newTable.save();
+
+                return res.status(200).json({ message: `Dining room ${diningRoom} and table ${newTableNumber} created successfully!` });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+    GetTableData: async function (req, res) {
+        const { date } = req.query;
+
+        try {
+            const clients = await Client.find();
+            const searchDate = new Date(date);
+
+            // Fetch reservations where the reservation date matches the given date
+            const reservations = await TableReservation.find({
+                date: searchDate, // Check if the reservation date matches the provided date
+            }).populate('diningTableId');
+
+            const reservedTableIds = reservations.map(reservation => reservation.diningTableId._id.toString());
+            const availableTables = await DiningTable.find({ _id: { $nin: reservedTableIds } });
+
+            res.status(200).json({ clients, tables: availableTables });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            res.status(500).json({ error: 'Server error while fetching data' });
+        }
+    },
+    TableReservations: async function (req, res) {
+        const { clientId, tableNumber, startDate, endDate } = req.body;
+        try {
+            const table = await DiningTable.findOne({ tableNumber });
+            if (!table) return res.status(404).send('Table not found');
+
+            const reservation = new TableReservation({
+                clientId,
+                diningTableId: table._id,
+                startDate,
+                endDate
+            });
+            await reservation.save();
+            res.status(201).send('Table reservation created');
+        } catch (error) {
+            res.status(500).send('Error creating reservation');
+        }
+    },
+    ReserveTable: async function (req, res) {
+        const { clientId, tableNumber, diningRoom, startDate, endDate } = req.body;
+        try {
+            const table = await DiningTable.findOne({ tableNumber, diningRoom });
+            if (!table) {
+                return res.status(404).json({ error: 'Table not found' });
+            }
+
+            const existingReservation = await TableReservation.findOne({
+                diningTableId: table._id,
+                $or: [
+                    { startDate: { $lte: endDate }, endDate: { $gte: startDate } }
+                ]
+            });
+
+            if (existingReservation) {
+                return res.status(400).json({ error: 'Table already reserved for this date range' });
+            }
+
+            const reservation = new TableReservation({
+                clientId,
+                diningTableId: table._id,
+                startDate,
+                endDate
+            });
+            await reservation.save();
+
+            res.status(201).json({ message: 'Table reserved successfully!' });
+        } catch (error) {
+            console.error("Error reserving table:", error);
+            res.status(500).json({ error: 'Server error during reservation' });
         }
     },
     GetAllRooms: async function (req, res) {
@@ -132,6 +231,86 @@ module.exports = {
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Error fetching rooms.' });
+        }
+    },
+    AssignTableToOrder: async function (req, res) {
+        // const { orderId, tableId, date } = req.body;
+        // try {
+        //     // Find the order to get the clientId associated with it
+        //     const order = await Order.findById(orderId);
+        //     if (!order) {
+        //         return res.status(404).json({ error: 'Order not found' });
+        //     }
+
+        //     const client_id = order.clientId; // Get the clientId from the order
+        //     console.log("client_id\n", client_id);
+        //     console.log("TYPE - client_id\n", typeof(client_id));
+
+        //     let client = await Client.findOne({ clientId: client_id });
+
+        //     // await Order.findByIdAndUpdate(orderId, { tableId: tableId });
+
+        //     // Update or create the table reservation to mark it as occupied for the given date
+        //     const reservationUpdate = await TableReservation.updateOne(
+        //         { diningTableId: tableId, date: date },
+        //         {
+        //             $set: {
+        //                 clientId: client._id,  // Link the reservation to the client
+        //                 status: 'occupied'
+        //             }
+        //         },
+        //         { upsert: true } // Creates a new reservation if it doesn't exist for the date
+        //     );
+
+        //     if (reservationUpdate.modifiedCount > 0 || reservationUpdate.upsertedCount > 0) {
+        //         // Only update the order if the reservation was successful
+        //         await Order.findByIdAndUpdate(orderId, { tableId: tableId });
+        //         res.json({ message: 'Table assigned successfully!' });
+        //     } else {
+        //         res.status(400).json({ error: 'Failed to reserve the table.' });
+        //     }
+        // } catch (error) {
+        //     console.error(error);
+        //     res.status(500).json({ error: 'Error assigning table to order.' });
+        // }
+        const { orderId, tableIds, date } = req.body;
+        try {
+            // Find the order to get the clientId associated with it
+            const order = await Order.findById(orderId);
+            if (!order) {
+                return res.status(404).json({ error: 'Order not found' });
+            }
+
+            const client_id = order.clientId; // Get the clientId from the order
+
+            let client = await Client.findOne({ clientId: client_id });
+
+            for (const tableId of tableIds) {
+                const reservationUpdate = await TableReservation.updateOne(
+                    { diningTableId: tableId, date: date },
+                    {
+                        $set: {
+                            clientId: client._id,  // Link the reservation to the client
+                            status: 'occupied'
+                        }
+                    },
+                    { upsert: true } // Creates a new reservation if it doesn't exist for the date
+                );
+
+                // If any table update fails, send an error response
+                if (reservationUpdate.modifiedCount === 0 && reservationUpdate.upsertedCount === 0) {
+                    return res.status(400).json({ error: `Failed to reserve table with ID ${tableId}.` });
+                }
+            }
+
+            // After updating table reservations, update the order with the tableIds
+            order.tableIds = tableIds;
+            await order.save();
+
+            res.json({ message: 'Tables assigned and reserved successfully!' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error assigning table to order.' });
         }
     },
     DeleteRoom: async function (req, res) {
@@ -165,7 +344,7 @@ module.exports = {
     // Update Room
     UpdateRoom: async function (req, res) {
         const roomId = req.params.id;
-        const { roomNumber, numBeds, floor, numOfRooms } = req.body;
+        const { roomNumber, numBeds, floor, numOfRooms, price } = req.body;
 
         try {
             // Find the room and update it
@@ -173,7 +352,8 @@ module.exports = {
                 roomNumber,
                 numBeds,
                 floor,
-                numOfRooms
+                numOfRooms,
+                price
             }, { new: true });
 
             if (!updatedRoom) {
@@ -181,6 +361,34 @@ module.exports = {
             }
 
             res.status(200).json({ message: 'Room updated successfully', updatedRoom });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+    // Update Client
+    UpdateCustomer: async function (req, res) {
+        const _id = req.params.id;
+        const { clientId, name, email, phone, city, address, zipCode } = req.body;
+        //const { name, email, phone, city, address, zipCode } = req.body;
+
+        try {
+            // Find the customer and update it
+            const updatedCustomer = await Client.findByIdAndUpdate(_id, {
+                clientId,
+                name,
+                email,
+                phoneNumber: phone,
+                city,
+                address,
+                zipCode
+            }, { new: true }); // The `{ new: true }` option returns the updated document
+
+            if (!updatedCustomer) {
+                return res.status(404).json({ error: 'Customer not found' });
+            }
+
+            res.status(200).json({ message: 'Customer updated successfully', updatedCustomer });
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Server error, please try again later.' });
@@ -222,97 +430,59 @@ module.exports = {
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
     },
+    GetClients: async function (req, res) {
+        try {
+            // Fetch all clients
+            const clients = await Client.find();
 
-    // BookRoom: async function (req, res) {
-    //     const { roomId, startDate, endDate, guestName, guestEmail, guestId, phoneNumber } = req.body;
+            res.status(200).json(clients);
+        } catch (error) {
+            console.error("Error fetching clients:", error);
+            res.status(500).json({ error: 'Error fetching clients' });
+        }
+    },
+    GetAllTable: async function (req, res) {
+        try {
+            const tables = await DiningTable.find();
+            res.status(200).json(tables);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    GetReservationsForDate: async function (req, res) {
+        const { date } = req.query;
 
-    //     if (!roomId || !startDate || !endDate || !guestName || !guestId || !phoneNumber) {
-    //         return res.status(400).json({ error: 'Room ID, dates, and guest details are required.' });
-    //     }
+        try {
+            const reservations = await TableReservation.find({
+                date: new Date(date) // Filter reservations for the selected date
+            }).populate('diningTableId'); // Populate dining table details
 
-    //     try {
-    //         // Parse dates
-    //         const start = parseDateString(startDate);
-    //         const end = parseDateString(endDate);
+            res.status(200).json(reservations);
+        } catch (error) {
+            console.error("Error fetching reservations:", error);
+            res.status(500).json({ error: 'Error fetching reservations' });
+        }
+    },
 
-    //         if (start >= end) {
-    //             return res.status(400).json({ error: 'End date must be after start date.' });
-    //         }
-
-    //         // Check room availability
-    //         const conflictingBooking = await RoomBooking.findOne({
-    //             roomId,
-    //             $or: [
-    //                 { startDate: { $lt: end }, endDate: { $gt: start } }
-    //             ],
-    //             status: 'booked'
-    //         });
-
-    //         if (conflictingBooking) {
-    //             return res.status(400).json({ error: 'Room is already booked within the selected date range.' });
-    //         }
-
-    //         // Create or find the client
-    //         let client = await Client.findOne({ clientId: guestId });
-
-    //         if (!client) {
-    //             client = new Client({
-    //                 clientId: guestId,
-    //                 name: guestName,
-    //                 email: guestEmail,
-    //                 phoneNumber
-    //             });
-    //             await client.save();
-    //         }
-
-    //         let order = await Order.findOne({ roomId: roomId });
-    //         if (!order) {
-    //             // Create an order
-    //             order = new Order({
-    //                 clientId: guestId,
-    //                 roomId: roomId,
-    //                 startDate: start,
-    //                 endDate: end,
-    //                 amount: 1000, // Example amount, adjust as needed
-    //             });
-    //             await order.save();
-    //         }
-    //         // Create the booking
-    //         const newBooking = new RoomBooking({
-    //             roomId: roomId,
-    //             startDate: start,
-    //             endDate: end,
-    //             status: 'booked',
-    //             clientId: guestId,
-    //             orderId: order._id
-    //         });
-
-    //         await newBooking.save();
-
-
-    //         res.status(200).json({ message: 'Room successfully booked!', booking: newBooking });
-    //     } catch (error) {
-    //         console.error("Error booking room:", error);
-    //         res.status(500).json({ error: 'Server error, please try again later.' });
-    //     }
-    // },
     BookRoom: async function (req, res) {
-        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber } = req.body;
+        const { roomIds, startDate, endDate, guestName, guestEmail, guestId, phoneNumber, extraMattresses, babyBed, payment, specialRequests, city, zipCode, address, tablePreferences } = req.body;
 
-        if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0 || !startDate || !endDate || !guestName || !guestId || !phoneNumber) {
+        if (!roomIds || !Array.isArray(roomIds) || roomIds.length === 0 || !startDate || !endDate || !guestName || !guestId || !phoneNumber || !tablePreferences) {
             return res.status(400).json({ error: 'Room IDs, dates, and guest details are required.' });
+        }
+        if (!payment || !['No payment', 'Credit', 'Check', 'Cash'].includes(payment)) {
+            return res.status(400).json({ error: 'Invalid payment option selected.' });
         }
 
         try {
-            // Parse dates
             const start = parseDateString(startDate);
             const end = parseDateString(endDate);
+            const numberOfNights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
 
             if (start >= end) {
                 return res.status(400).json({ error: 'End date must be after start date.' });
             }
 
-            // Check availability for all rooms
             const conflictingBookings = await RoomBooking.find({
                 roomId: { $in: roomIds },
                 $or: [
@@ -328,7 +498,6 @@ module.exports = {
                 });
             }
 
-            // Create or find the client
             let client = await Client.findOne({ clientId: guestId });
 
             if (!client) {
@@ -336,126 +505,108 @@ module.exports = {
                     clientId: guestId,
                     name: guestName,
                     email: guestEmail,
-                    phoneNumber
+                    phoneNumber,
+                    city,
+                    zipCode,
+                    address
                 });
                 await client.save();
             }
 
-            // Create a single order
+            const rooms = await Room.find({ _id: { $in: roomIds } });
+            let totalPrice = extraMattresses * 100 * numberOfNights;
+
+            rooms.forEach(room => {
+                totalPrice += room.price * numberOfNights;
+            });
+
             const order = new Order({
                 clientId: guestId,
-                roomIds, // Store all room IDs in this order
+                roomIds,
                 startDate: start,
                 endDate: end,
-                amount: roomIds.length * 1000 // Example amount calculation, adjust as needed
+                amount: totalPrice,
+                paymentBy: payment,
+                tablePreferences
             });
             await order.save();
 
-            // Create bookings for all rooms
-            const bookings = roomIds.map(roomId => ({
-                roomId,
-                startDate: start,
-                endDate: end,
-                status: 'booked',
-                clientId: guestId,
-                orderId: order._id
-            }));
+            const bookings = roomIds.map(roomId => {
+                const room = rooms.find(r => r._id.toString() === roomId);
+                return {
+                    roomId,
+                    startDate: start,
+                    endDate: end,
+                    status: 'booked',
+                    clientId: guestId,
+                    orderId: order._id,
+                    extraMattresses: extraMattresses || 0,
+                    babyBed: babyBed || false,
+                    specialRequests: specialRequests,
+                    price: (room.price * numberOfNights) + (extraMattresses * 100 * numberOfNights)
+                };
+            });
 
             await RoomBooking.insertMany(bookings);
 
-            res.status(200).json({
-                message: 'Rooms successfully booked!',
-                orderId: order._id,
-                bookings
-            });
+            const emailContent = `
+                <div style="direction: rtl; text-align: right;">
+                    <p>שלום ${guestName},</p>
+                    <p>תודה על ההזמנה באתר הנופש שלנו!</p>
+                    <p>מספר הזמנה: ${order._id}</p>
+                    <p>חדר/ים:</p>
+                    ${rooms.map(room => `<p>בניין: ${room.buildingName}, חדר מספר: ${room.roomNumber}</p>`).join('')}
+                    <p>מחיר הזמנה כולל: ${order.amount}</p>
+                    <p>תאריכים: ${startDate} - ${endDate}</p>
+                    <p>בברכה, צוות גבעת וושינגטון</p>
+                    <p>לשאלות ניתן ליצור קשר בטלפון: 025867013</p>
+                </div>
+            `;
+            console.log("Email Content:", emailContent);
+            res.status(200).json({ emailContent });
         } catch (error) {
-            console.error("Error booking rooms:", error);
+            console.error('Error booking rooms:', error);
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
     },
-    // Function to send email
-    //SendMail: async function (req, res) {
-    //try {
-    //const { recipientEmail, subject, html } = req.body;
-    // } catch (err) {
-    //     console.error("Failed to send email", err);
-    //     res.status(500).send("Error sending email");
-    // }
-    //const { recipientEmail, subject, html } = req.body;
 
-    // if (!recipientEmail || !subject || !html) {
-    //     return res.status(400).json({ error: 'Recipient email, subject, and HTML content are required.' });
-    // }
-
-    // try {
-    //     // Replace with your EmailJS service ID, template ID, and public key
-    //     const serviceId = 'service_ed4tpfg';
-    //     const templateId = 'template_iwmknp6';
-    //     const publicKey = 'VOafZzbM22Bf_wp3c';
-
-    //     // Prepare email parameters
-    //     const emailParams = {
-    //         to_email: recipientEmail,
-    //         subject: subject,
-    //         message_html: html,
-    //     };
-
-    //     // Send email using EmailJS
-    //     const response = await emailjs.send(serviceId, templateId, emailParams, publicKey);
-
-    //     console.log('Email sent successfully:', response);
-    //     res.status(200).json({ message: 'Email sent successfully!', response });
-    // } catch (error) {
-    //     console.error('Error sending email:', error);
-    //     res.status(500).json({ error: 'Failed to send email. Please try again later.' });
-    // }
-    // }
     SendMail: async function (req, res) {
         const { recipientEmail, subject, html } = req.body;
-        //text = "hiiiii"
         try {
             // Create a transporter object with your email service credentials
             const transporter = nodemailer.createTransport({
-                service: 'Gmail', // or 'hotmail', 'yahoo', etc.
+                service: 'Gmail',
                 auth: {
-                    user: 'gw025867014@gmail.com', // Your email address
-                    pass: 'svbu njya mldf tlbq', // Your email password or app password
+                    user: 'gw025867014@gmail.com', // My email address
+                    pass: 'svbu njya mldf tlbq', // My email password or app password
                 },
             });
-            //console.log("recipientEmail", recipientEmail);
 
             //Email options
             const mailOptions = {
                 from: 'gw025867014@gmail.com', // Sender address
-                to: recipientEmail,                           // Recipient address
-                subject,                      // Subject of the email
-                //text,
-                html                       // HTML body (optional)
+                to: recipientEmail,            // Recipient address
+                subject,                       // Subject of the email
+                html                           // HTML body (optional)
             };
 
             // Send the email
             const info = await transporter.sendMail(mailOptions);
-            console.log(`Email sent: ${info.response}`);
-            return { success: true, message: 'Email sent successfully.' };
+            res.status(200).json(info.response);
         } catch (error) {
             console.error('Error sending email:', error);
-            return { success: false, error: error.message };
+            res.status(500).json({ error: 'Error sending email.' });
         }
     },
     GetDailyOccupancy: async function (req, res) {
         const { date } = req.body;
-        //console.log(date);
-        
+
         if (!date) {
             return res.status(400).json({ error: 'Date is required' });
         }
 
         try {
-            //console.log("date: ", date);
-           queryDate  = new Date(date);
-            //const queryDate = parseDateString(date);
-            console.log("lalalala:::  \n date: ", date , " queryDate: ", queryDate);
-
+            queryDate = new Date(date);
             const occupancyData = await RoomBooking.aggregate([
                 {
                     $match: {
@@ -482,31 +633,978 @@ module.exports = {
                         rooms: "$roomDetails"
                     }
                 }
-            ]);           
+            ]);
 
             // Inside the GetDailyOccupancy function:
             const totalRooms = await Room.find({}).countDocuments(); // Counts all rooms in the database
-           
+
             const response = {
                 date: queryDate,
                 occupiedCount: occupancyData[0] ? occupancyData[0].occupiedCount : 0,
                 totalRooms: totalRooms,
                 rooms: occupancyData[0] ? occupancyData[0].rooms : [] // Use rooms from the aggregation result
             };
-            console.log("response: lc: ", response);
 
             res.status(200).json(response);
-            //res.status(200).json(occupancyData);
         } catch (error) {
             console.error("Error generating daily occupancy data:", error);
             res.status(500).json({ error: 'Server error, please try again later.' });
         }
-        
-    }
 
-    
-    
+    },
+
+    GetReports: async function (req, res) {
+        try {
+            const { type } = req.query;  // 'type' could be used to specify different types of reports
+
+            if (!type) {
+                return res.status(400).json({ error: 'Report type is required.' });
+            }
+
+            // Generate different reports based on the 'type' query parameter
+            if (type === 'roomAvailability') {
+                // Report on rooms and their availability
+                const rooms = await Room.find();
+                const roomBookings = await RoomBooking.find();
+
+                const report = rooms.map(room => {
+                    const bookings = roomBookings.filter(booking => booking.roomId.toString() === room._id.toString());
+                    const bookingStatus = bookings.length > 0 ? 'Booked' : 'Available';
+                    return {
+                        roomNumber: room.roomNumber,
+                        buildingName: room.buildingName,
+                        floor: room.floor,
+                        status: bookingStatus
+                    };
+                });
+
+                return res.status(200).json({
+                    message: 'Room availability report generated successfully.',
+                    data: report
+                });
+
+            } else if (type === 'bookingSummary') {
+                // Report on all bookings made within a specific time frame (e.g., past month)
+                const startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 1);  // Start of last month
+                const endDate = new Date();  // Current date
+
+                const bookings = await RoomBooking.find({
+                    startDate: { $gte: startDate },
+                    endDate: { $lte: endDate },
+                }).populate('roomId').populate('clientId');
+
+                const report = bookings.map(booking => {
+                    return {
+                        roomNumber: booking.roomId.roomNumber,
+                        buildingName: booking.roomId.buildingName,
+                        startDate: booking.startDate,
+                        endDate: booking.endDate,
+                        guestName: booking.clientId.guestName,
+                        guestEmail: booking.clientId.guestEmail
+                    };
+                });
+
+                return res.status(200).json({
+                    message: 'Booking summary report generated successfully.',
+                    data: report
+                });
+
+            } else {
+                return res.status(400).json({ error: 'Invalid report type.' });
+            }
+
+        } catch (error) {
+            console.error("Error generating report:", error);
+            return res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+    GetBuildingList: async function (req, res) {
+        try {
+            const buildings = await Building.find(); // Fetch all buildings
+            res.status(200).json(buildings);
+        } catch (error) {
+            console.error("Error fetching buildings:", error);
+            res.status(500).json({ error: 'Error fetching buildings' });
+        }
+    },
+    GetClientList: async function (req, res) {
+        try {
+            const { searchQuery } = req.query;
+
+            // Search for clients by name or clientId if a search query is provided
+            const query = searchQuery
+                ? {
+                    $or: [
+                        { name: { $regex: searchQuery, $options: 'i' } }, // Case-insensitive name search
+                        { clientId: parseInt(searchQuery) || null } // Exact match for clientId
+                    ]
+                }
+                : {}; // If no search query, return all clients
+
+            const clients = await Client.find(query).limit(500); // Limit results to avoid performance issues
+
+            if (clients.length === 0) {
+                return res.status(404).json({ message: 'לא נמצאו לקוחות תואמים' });
+            }
+
+            // Return a list of clients with their name and clientId
+            res.status(200).json(clients.map(client => ({
+                clientId: client.clientId,
+                name: client.name
+            })));
+        } catch (error) {
+            console.error('Error fetching clients:', error);
+            res.status(500).json({ error: 'שגיאת שרת פנימית' });
+        }
+    },
+    GetBuildingListById: async function (req, res) {
+        try {
+            const { buildingId, reportDate } = req.query;
+
+            if (!buildingId || !reportDate) {
+                return res.status(400).json({ error: 'buildingId and reportDate are required' });
+            }
+
+            // Validate the date format (assuming YYYY-MM-DD format)
+            if (!Date.parse(reportDate)) {
+                return res.status(400).json({ error: 'Invalid date format' });
+            }
+
+            // Fetch the report data for the given building and date
+            const roomReports = await getRoomReportsForBuildingAndDate(buildingId, reportDate);
+            const buildingName = await getBuildingNameById(buildingId);
+
+            // Ensure the `reports` directory exists
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Room Report", {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'מספר חדר', key: 'roomNumber', width: 15 },
+                { header: 'שם האורח', key: 'guestName', width: 30 },
+                { header: 'מזרונים נוספים', key: 'extraMattresses', width: 15 },
+                { header: 'מיטת תינוק', key: 'babyBed', width: 15 },
+                { header: 'זמן צ׳ק-אין', key: 'checkInTime', width: 30 },
+                { header: 'זמן צ׳ק-אאוט', key: 'checkOutTime', width: 30 },
+                { header: 'סטטוס ההזמנה', key: 'bookingStatus', width: 30 },
+                { header: 'בקשות מיוחדות', key: 'specialRequests', width: 40 }
+            ];
+
+            roomReports.forEach(report => {
+                worksheet.addRow(report);
+            });
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const filePath = path.join(reportsDir, `${buildingId}_Report_${reportDate}.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            res.status(200).json({ fileUrl: `/reports/${buildingId}_Report_${reportDate}.xlsx`, buildingName });
+        } catch (error) {
+            console.error("Error generating building report:", error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+    GetAllCustomersReport: async function (req, res) {
+        const { startDate, endDate } = req.query;
+
+        try {
+            // Fetch orders within the specified date range
+            const orders = await Order.find({
+                startDate: { $gte: new Date(startDate) },
+                endDate: { $lte: new Date(endDate) }
+            });
+
+            // Populate the order details (like client name, building, room, etc.)
+            const orderReports = await generateOrderReport(orders);
+
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("All Customers Report", {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'מספר הזמנה', key: 'orderId', width: 35 },
+                { header: 'שם האורח', key: 'clientName', width: 30 },
+                { header: 'תעודת זהות אורח', key: 'clientId', width: 30 },
+                { header: 'שם בניין', key: 'buildingName', width: 15 },
+                { header: 'מספר חדר', key: 'roomNumbers', width: 15 },
+                { header: 'זמן צ׳ק-אין', key: 'startDate', width: 30 },
+                { header: 'זמן צ׳ק-אאוט', key: 'endDate', width: 30 },
+                { header: 'מחיר הזמנה', key: 'amount', width: 20 },
+                { header: 'שולם ע"י', key: 'paymentBy', width: 20 },
+                { header: 'בקשות מיוחדות', key: 'specialRequests', width: 40 }
+            ];
+
+            orderReports.forEach(order => {
+                worksheet.addRow(order);
+            });
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const filePath = path.join(reportsDir, `All_Customers_Report_${startDate}_to_${endDate}.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            res.status(200).json({ fileUrl: `/reports/All_Customers_Report_${startDate}_to_${endDate}.xlsx` });
+        } catch (error) {
+            console.error('Error generating all customers report:', error);
+            res.status(500).json({ success: false, message: 'Failed to generate all customers report.' });
+        }
+    },
+    GetClientReportById: async function (req, res) {
+        try {
+            const { clientId } = req.query;
+
+            if (!clientId) {
+                return res.status(400).json({ error: 'ClientId is required' });
+            }
+
+            const client = await Client.findOne({ clientId });
+            if (!client) {
+                return res.status(404).json({ error: 'Client not found' });
+            }
+
+            const orders = await RoomBooking.find({ clientId });
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Client Report", {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'שם לקוח', key: 'clientName', width: 30 },
+                { header: 'מספר טלפון', key: 'phoneNumber', width: 30 },
+                { header: 'דוא"ל', key: 'email', width: 40 },
+                { header: 'כתובת', key: 'address', width: 30 },
+                { header: 'מספר הזמנה', key: 'orderNumber', width: 30 },
+                { header: 'תאריך הזמנה', key: 'orderDate', width: 20 }
+            ];
+
+            orders.forEach(order => {
+                worksheet.addRow({
+                    clientName: client.name,
+                    phoneNumber: client.phoneNumber,
+                    email: client.email,
+                    address: client.address,
+                    orderNumber: order._id,
+                    orderDate: order.startDate
+                });
+            });
+
+            worksheet.getRow(1).font = { bold: true };
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            const filePath = path.join(reportsDir, `Client_Report_${clientId}.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            res.status(200).json({ fileUrl: `/reports/Client_Report_${clientId}.xlsx`, clientName: client.name });
+        } catch (error) {
+            console.error("Error generating client report:", error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+
+    GetOrderList: async function (req, res) {
+        try {
+            const orders = await Order.find();
+
+            // Populate the client name for each order by matching clientId with Client model
+            const ordersWithClientNames = await Promise.all(orders.map(async (order) => {
+                const client = await Client.findOne({ clientId: order.clientId });
+
+                return {
+                    _id: order._id,
+                    clientId: order.clientId,
+                    clientName: client ? client.name : 'Unknown', // If no client found, default to 'Unknown'
+                };
+            }));
+
+            res.json(ordersWithClientNames);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            res.status(500).json({ success: false, message: 'Failed to fetch orders.' });
+        }
+    },
+    GetOrderReportById: async function (req, res) {
+        const { orderId } = req.query;
+        try {
+            const order = await Order.findById(orderId);
+
+            if (!order) {
+                return res.status(404).json({ success: false, message: 'Order not found.' });
+            }
+
+            const orderReport = await generateOrderReport([order]); // Pass the order as an array for consistency
+            /////
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Order Report", {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'מספר הזמנה', key: 'orderId', width: 30 },
+                { header: 'שם האורח', key: 'clientName', width: 30 },
+                { header: 'תעודת זהות אורח', key: 'clientId', width: 30 },
+                { header: 'שם בניין', key: 'buildingName', width: 20 },
+                { header: 'מספר חדר', key: 'roomNumbers', width: 20 },
+                { header: 'זמן צ׳ק-אין', key: 'startDate', width: 20 },
+                { header: 'זמן צ׳ק-אאוט', key: 'endDate', width: 20 },
+                { header: 'מחיר הזמנה', key: 'amount', width: 15 },
+                { header: 'שולם ע"י', key: 'paymentBy', width: 20 },
+                { header: 'בקשות מיוחדות', key: 'specialRequests', width: 40 },
+                { header: 'עדיפות שולחן ליד חלון', key: 'nearWindow', width: 15 },
+                { header: 'עדיפות שולחן ליד דלת', key: 'nearDoor', width: 15 },
+                { header: 'עדיפות חדר אוכל', key: 'diningRoom', width: 15 }
+            ];
+
+            orderReport.forEach(order => {
+                worksheet.addRow(order);
+            });
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const filePath = path.join(reportsDir, `${orderId}_Report.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            res.status(200).json({ fileUrl: `/reports/${orderId}_Report.xlsx` });
+            ////
+            // res.json({ success: true, fileUrl: reportFileUrl, message: 'Order report generated successfully.' });
+        } catch (error) {
+            console.error('Error generating order report:', error);
+            res.status(500).json({ success: false, message: 'Failed to generate order report.' });
+        }
+    },
+    GetDiningRoomReport: async function (req, res) {
+        const { diningRoom, nearWindow, nearDoor, date } = req.query;
+        console.log(diningRoom, nearWindow, nearDoor, date);
+        
+        try {
+            const reservations = await TableReservation.find({
+                date: date
+            });
+
+            // console.log("reservations\n", reservations);
+
+            if (!reservations) {
+                return res.status(404).json({ success: false, message: 'No dining table reservations found for the given criteria.' });
+            }
+
+            const reservedTableIds = reservations.map(reservation => reservation.diningTableId.toString());
+            // console.log("reservedTableIds\n", reservedTableIds);
+
+            let availableTables = await DiningTable.find({ tableId: { $nin: reservedTableIds } });
+            // console.log("availableTables\n", availableTables);
+
+            if (diningRoom !== 'all') {
+                // console.log("diningRoom ", diningRoom);
+
+                availableTables = availableTables.filter(table => table.diningRoom === Number(diningRoom));
+            }
+
+            // If preferences are specified, filter the available tables accordingly
+            if (nearWindow !== '' && nearWindow !== undefined) {
+                availableTables = availableTables.filter(table => table.nearWindow === (nearWindow === 'true'));
+            }
+
+            if (nearDoor !== '' && nearDoor !== undefined) {
+                availableTables = availableTables.filter(table => table.nearDoor === (nearDoor === 'true'));
+            }
+            console.log("availableTables2\n", availableTables);
+
+            // Generate the report based on the filtered data
+            const diningRoomReport = await generateDiningRoomReport(availableTables, reservations, date);
+
+            // Prepare the directory to save the report
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            // Create the Excel report
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Dining Room Report', {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'מספר שולחן', key: 'tableNumber', width: 20 },
+                { header: 'מספר מקומות', key: 'numberOfSeats', width: 20 },
+                { header: 'עדיפות חלון', key: 'nearWindow', width: 15 },
+                { header: 'עדיפות דלת', key: 'nearDoor', width: 15 },
+                { header: 'חדר אוכל', key: 'diningRoom', width: 15 },
+                { header: 'תאריך הזמנה', key: 'date', width: 20 },
+                { header: 'שם האורח', key: 'clientName', width: 30 }
+            ];
+
+            // Add data rows
+            diningRoomReport.forEach(table => worksheet.addRow(table));
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            // Save the report as an Excel file
+            const filePath = path.join(reportsDir, `Dining_Room_Report_${diningRoom || 'All'}_${date}.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            // Send the file URL in the response
+            res.status(200).json({ fileUrl: `/reports/Dining_Room_Report_${diningRoom || 'All'}_${date}.xlsx` });
+        } catch (error) {
+            console.error('Error generating dining room report:', error);
+            res.status(500).json({ success: false, message: 'Failed to generate dining room report.' });
+        }
+    },
+
+
+    GetEnteringOnDateReport: async function (req, res) {
+        const { selectedDate } = req.query;
+        try {
+            const queryDate = new Date(selectedDate);
+
+            // Fetch all buildings
+            const allBuildings = await Building.find({});
+
+            let allRoomReports = [];
+
+            // Iterate over each building and fetch room reports
+            for (const building of allBuildings) {
+                const roomReports = await getRoomReportsForBuildingAndDate(building._id, queryDate);
+                const enteringTodayRooms = roomReports.filter(report => report.bookingStatus === 'נכנסים היום');
+                allRoomReports.push(...enteringTodayRooms);
+            }
+
+            // Ensure the `reports` directory exists
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Room Report", {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'שם בניין', key: 'buildingName', width: 15 },
+                { header: 'מספר חדר', key: 'roomNumber', width: 15 },
+                { header: 'שם האורח', key: 'guestName', width: 30 },
+                { header: 'מזרונים נוספים', key: 'extraMattresses', width: 15 },
+                { header: 'מיטת תינוק', key: 'babyBed', width: 15 },
+                { header: 'זמן צ׳ק-אין', key: 'checkInTime', width: 20 },
+                { header: 'זמן צ׳ק-אאוט', key: 'checkOutTime', width: 20 },
+                { header: 'סטטוס ההזמנה', key: 'bookingStatus', width: 15 },
+                { header: 'בקשות מיוחדות', key: 'specialRequests', width: 40 }
+            ];
+
+            allRoomReports.forEach(report => {
+                worksheet.addRow(report);
+            });
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const filePath = path.join(reportsDir, `נכנסים בתאריך${selectedDate}_דוח_.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            res.status(200).json({ fileUrl: `/reports/_Report_.xlsx` });
+        } catch (error) {
+            console.error("Error generating building report:", error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+    // Report for rooms leaving today (endDate is today)
+    GetLeavingOnDateReport: async function (req, res) {
+        const { selectedDate } = req.query;
+        try {
+            const queryDate = new Date(selectedDate);
+
+            // Fetch all buildings
+            const allBuildings = await Building.find({});
+
+            let allRoomReports = [];
+
+            // Iterate over each building and fetch room reports
+            for (const building of allBuildings) {
+                const roomReports = await getRoomReportsForBuildingAndDate(building._id, queryDate);
+                const enteringTodayRooms = roomReports.filter(report => report.bookingStatus === 'עוזבים היום');
+                allRoomReports.push(...enteringTodayRooms);
+            }
+
+            // Ensure the `reports` directory exists
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Room Report", {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'שם בניין', key: 'buildingName', width: 15 },
+                { header: 'מספר חדר', key: 'roomNumber', width: 15 },
+                { header: 'שם האורח', key: 'guestName', width: 30 },
+                { header: 'מזרונים נוספים', key: 'extraMattresses', width: 15 },
+                { header: 'מיטת תינוק', key: 'babyBed', width: 15 },
+                { header: 'זמן צ׳ק-אין', key: 'checkInTime', width: 20 },
+                { header: 'זמן צ׳ק-אאוט', key: 'checkOutTime', width: 20 },
+                { header: 'סטטוס ההזמנה', key: 'bookingStatus', width: 15 },
+                { header: 'בקשות מיוחדות', key: 'specialRequests', width: 40 }
+            ];
+
+            allRoomReports.forEach(report => {
+                worksheet.addRow(report);
+            });
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const filePath = path.join(reportsDir, `עוזבים_בתאריך${selectedDate}_דוח_.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            res.status(200).json({ fileUrl: `/reports/_Report_.xlsx` });
+        } catch (error) {
+            console.error("Error generating building report:", error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+    OrdersByDates: async function (req, res) {
+        const { startDate, endDate } = req.query;
+        try {
+
+            const orders = await Order.find({
+                startDate: { $lt: endDate },
+                endDate: { $gt: startDate }
+            });
+            res.json(orders);
+        } catch (error) {
+            res.status(500).json({ error: 'Error fetching orders' });
+        }
+    },
+    RevenueByDates: async function (req, res) {
+        // const { startDate, endDate } = req.query;
+
+        // try {
+        //     // Fetch orders within the specified date range
+        //     const orders = await Order.find({
+        //         startDate: { $gte: new Date(startDate) },
+        //         endDate: { $lte: new Date(endDate) }
+        //     });
+
+        //     // Aggregate revenue by date
+        //     const revenueByDate = {};
+        //     orders.forEach(order => {
+        //         const date = order.startDate.toISOString().split('T')[0]; // Get the date part of the start date
+        //         revenueByDate[date] = (revenueByDate[date] || 0) + order.amount;
+        //     });
+
+        //     // Create an array of report data
+        //     const revenueData = Object.keys(revenueByDate).map(date => ({
+        //         date: date,
+        //         totalRevenue: revenueByDate[date]
+        //     }));
+
+        //     const reportsDir = path.resolve(__dirname, 'reports');
+        //     if (!fs.existsSync(reportsDir)) {
+        //         fs.mkdirSync(reportsDir, { recursive: true });
+        //     }
+
+        //     const workbook = new ExcelJS.Workbook();
+        //     const worksheet = workbook.addWorksheet("Revenue by Date", {
+        //         views: [{ rightToLeft: true }]
+        //     });
+
+        //     worksheet.columns = [
+        //         { header: 'תאריך', key: 'date', width: 15 },
+        //         { header: 'הכנסות', key: 'totalRevenue', width: 20 }
+        //     ];
+
+        //     revenueData.forEach(row => {
+        //         worksheet.addRow(row);
+        //     });
+
+        //     worksheet.getRow(1).font = { bold: true };
+        //     worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+        //     const filePath = path.join(reportsDir, `Revenue_By_Date_${startDate}_to_${endDate}.xlsx`);
+        //     await workbook.xlsx.writeFile(filePath);
+
+        //     res.status(200).json({
+        //         fileUrl: `/reports/Revenue_By_Date_${startDate}_to_${endDate}.xlsx`
+        //     });
+        // } catch (error) {
+        //     console.error('Error generating revenue by date report:', error);
+        //     res.status(500).json({ success: false, message: 'Failed to generate revenue by date report.' });
+        // }
+        const { startDate, endDate } = req.query;
+
+        try {
+            // Fetch orders within the specified date range
+            const orders = await Order.find({
+                startDate: { $gte: new Date(startDate) },
+                endDate: { $lte: new Date(endDate) }
+            });
+
+            // Aggregate revenue by date
+            const revenueByDate = {};
+            const revenueData = [];
+
+            // orders.forEach(order => {
+            //     const date = order.startDate.toISOString().split('T')[0]; // Get the date part of the start date
+            //     const orderAmount = order.amount;
+            //     revenueByDate[date] = (revenueByDate[date] || 0) + orderAmount;
+
+            //     // Add order breakdown to the data array
+            //     revenueData.push({
+            //         date: date,
+            //         orderId: order._id,
+            //         clientName: order.clientName || 'לא זמין',
+            //         amount: orderAmount
+            //     });
+            // });
+            for (let order of orders) {
+
+                const date = order.startDate.toISOString().split('T')[0]; // Get the date part of the start date
+                const orderAmount = order.amount;
+                revenueByDate[date] = (revenueByDate[date] || 0) + orderAmount;
+                const client = await Client.find({ clientId: order.clientId });
+
+
+                // Add order breakdown to the data array
+                revenueData.push({
+                    date: date,
+                    paymentType: order.paymentBy,
+                    orderId: order._id,
+                    clientName: client[0].name,
+                    amount: orderAmount
+                });
+            }
+
+            // Create an array of report data for each date
+            const revenueTotal = Object.values(revenueByDate).reduce((sum, amount) => sum + amount, 0);
+
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Revenue by Date", {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'תאריך', key: 'date', width: 15 },
+                { header: 'סוג תשלום', key: 'paymentType', width: 30 },
+                { header: 'מספר הזמנה', key: 'orderId', width: 30 },
+                { header: 'שם האורח', key: 'clientName', width: 20 },
+                { header: 'הכנסה', key: 'amount', width: 15 }
+            ];
+
+            revenueData.forEach(row => {
+                worksheet.addRow(row);
+            });
+
+            // Add the total row
+            worksheet.addRow({
+                date: 'סה"כ',
+                orderId: '',
+                clientName: '',
+                amount: revenueTotal
+            });
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const filePath = path.join(reportsDir, `Revenue_By_Date_${startDate}_to_${endDate}.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            res.status(200).json({
+                fileUrl: `/reports/Revenue_By_Date_${startDate}_to_${endDate}.xlsx`
+            });
+        } catch (error) {
+            console.error('Error generating revenue by date report:', error);
+            res.status(500).json({ success: false, message: 'Failed to generate revenue by date report.' });
+        }
+    },
+    RevenueByPaymentType: async function (req, res) {
+        const { startDate, endDate, paymentType } = req.query;
+
+        try {
+            const paymentTypeTranslations = {
+                'No payment': 'ללא תשלום',
+                'Credit': 'אשראי',
+                'Check': 'צ׳ק',
+                'Cash': 'מזומן'
+            };
+            // Build the filter query
+            const filterQuery = {
+                startDate: { $gte: new Date(startDate) },
+                endDate: { $lte: new Date(endDate) }
+            };
+
+            // If paymentType is provided, filter by payment type as well
+            if (paymentType) {
+                filterQuery.paymentBy = paymentType;
+            }
+
+            // Fetch orders within the specified date range and payment type (if provided)
+            const orders = await Order.find(filterQuery);
+
+            // Aggregate revenue by payment type
+            const revenueByPaymentType = {};
+            const paymentTypeData = [];
+
+            //orders.forEach(order => {
+            for (let order of orders) {
+                const translatedPaymentType = paymentTypeTranslations[order.paymentBy] || order.paymentBy;
+                // const paymentType = order.paymentBy;
+                const orderAmount = order.amount;
+                const client = await Client.find({ clientId: order.clientId });
+
+                // Add the payment type to the revenue aggregate
+                revenueByPaymentType[paymentType] = (revenueByPaymentType[paymentType] || 0) + orderAmount;
+
+                // Add order breakdown to the data array
+                paymentTypeData.push({
+                    paymentType: translatedPaymentType,
+                    orderId: order._id,
+                    clientName: client[0].name,
+                    amount: orderAmount
+                });
+            }
+
+            // Add total revenue for this payment type
+            const totalRevenue = revenueByPaymentType[paymentType] || 0;
+
+            const reportsDir = path.resolve(__dirname, 'reports');
+            if (!fs.existsSync(reportsDir)) {
+                fs.mkdirSync(reportsDir, { recursive: true });
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Revenue by Payment Type", {
+                views: [{ rightToLeft: true }]
+            });
+
+            worksheet.columns = [
+                { header: 'סוג תשלום', key: 'paymentType', width: 30 },
+                { header: 'מספר הזמנה', key: 'orderId', width: 30 },
+                { header: 'שם האורח', key: 'clientName', width: 30 },
+                { header: 'הכנסה', key: 'amount', width: 20 }
+            ];
+
+            paymentTypeData.forEach(row => {
+                worksheet.addRow(row);
+            });
+
+            // Add the total revenue row for payment type
+            worksheet.addRow({
+                paymentType: 'סה"כ',
+                orderId: '',
+                clientName: '',
+                amount: totalRevenue
+            });
+
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+            const filePath = path.join(reportsDir, `Revenue_By_Payment_Type_${startDate}_to_${endDate}.xlsx`);
+            await workbook.xlsx.writeFile(filePath);
+
+            res.status(200).json({
+                fileUrl: `/reports/Revenue_By_Payment_Type_${startDate}_to_${endDate}.xlsx`
+            });
+        } catch (error) {
+            console.error('Error generating revenue by payment type report:', error);
+            res.status(500).json({ success: false, message: 'Failed to generate revenue by payment type report.' });
+        }
+    },
+    UpdateOrder: async function (req, res) {
+        const { id } = req.params;
+        const { clientId, roomIds, startDate, endDate, amount, paymentBy } = req.body;
+
+        try {
+            const updatedOrder = await Order.findByIdAndUpdate(
+                id,
+                { clientId, roomIds, startDate, endDate, amount, paymentBy },
+                { new: true }
+            );
+            res.json(updatedOrder);
+        } catch (error) {
+            res.status(500).json({ error: 'Error updating order' });
+        }
+    },
+    UpdateTable: async function (req, res) {
+        const tableId = req.params.id;
+        const { tableNumber, numberOfSeats, nearWindow, nearDoor, diningRoom } = req.body;
+
+        try {
+            // Find the table and update its properties
+            const updatedTable = await DiningTable.findByIdAndUpdate(
+                tableId,
+                {
+                    tableNumber,
+                    numberOfSeats,
+                    nearWindow,
+                    nearDoor,
+                    diningRoom
+                },
+                { new: true } // Return the updated document
+            );
+
+            if (!updatedTable) {
+                return res.status(404).json({ error: 'Table not found' });
+            }
+
+            res.status(200).json({ message: 'Table updated successfully', updatedTable });
+        } catch (error) {
+            console.error('Error updating table:', error);
+            res.status(500).json({ error: 'Server error, please try again later.' });
+        }
+    },
+    DeleteOrder: async function (req, res) {
+        const { id } = req.params;
+        try {
+            const deletedOrder = await Order.findByIdAndDelete(id);
+            res.json({ message: 'Order deleted successfully' });
+        } catch (error) {
+            res.status(500).json({ error: 'Error deleting order' });
+        }
+    },
+    DownloadFile: async function (req, res) {
+        const { fileName } = req.params;
+        const filePath = path.join(__dirname, 'reports', fileName);
+
+        // Check if the file exists
+        if (fs.existsSync(filePath)) {
+            res.download(filePath, fileName, (err) => {
+                if (err) {
+                    console.error('Error downloading file:', err);
+                    res.status(500).json({ error: 'Error downloading the file' });
+                }
+            });
+        } else {
+            res.status(404).json({ error: 'File not found' });
+        }
+    }
 };
+
+const getBuildingNameById = async (buildingId) => {
+    try {
+        const building = await Building.findById(buildingId);
+
+        if (!building) {
+            throw new Error('Building not found');
+        }
+
+        return building.buildingName;
+    } catch (error) {
+        console.error('Error fetching building name:', error);
+        throw error;
+    }
+};
+async function getRoomReportsForBuildingAndDate(buildingId, reportDate) {
+    try {
+        // Fetch all rooms for the given buildingId
+        const rooms = await Room.find({ buildingId });
+        //const roomMap = new Map(rooms.map(room => [room._id.toString(), room.roomNumber]));
+        const roomIds = rooms.map(room => room._id.toString());
+
+        if (roomIds.length === 0) {
+            return [];
+        }
+
+        reportDate = new Date(reportDate);
+        const roomBookings = await RoomBooking.find({
+            roomId: { $in: roomIds },
+            $or: [
+                { startDate: { $lte: reportDate }, endDate: { $gte: reportDate } }
+            ],
+            status: "booked"
+        });
+
+        // Get unique client IDs from bookings and fetch client data
+        const clientIds = [...new Set(roomBookings.map(booking => booking.clientId))];
+        const clients = await Client.find({ clientId: { $in: clientIds } });
+        const clientMap = new Map(clients.map(client => [client.clientId, client]));
+
+        // Map room bookings to a quick lookup structure
+        const bookingsByRoomId = new Map();
+        roomBookings.forEach(booking => {
+            bookingsByRoomId.set(booking.roomId.toString(), booking);
+        });
+
+        // Prepare the final report
+        const roomReports = rooms.map(room => {
+            const booking = bookingsByRoomId.get(room._id.toString());
+            if (booking) {
+                const client = clientMap.get(booking.clientId);
+                const hebrewBabyBed = booking.babyBed ? "כן" : "לא";
+                let bookingStatus = '';
+                if (booking.startDate < reportDate && booking.endDate > reportDate) {
+                    bookingStatus = 'נשארים'; // Guest stays on the report date
+                } else if (booking.endDate <= reportDate) {
+                    bookingStatus = 'עוזבים היום'; // Guest leaves before or on the report date
+                } else if (booking.startDate >= reportDate) {
+                    bookingStatus = 'נכנסים היום'; // Guest arrives on or after the report date
+                }
+
+                return {
+                    buildingName: room.buildingName,
+                    roomNumber: room.roomNumber,
+                    guestName: client?.name || "לא זמין",
+                    extraMattresses: booking.extraMattresses,
+                    babyBed: hebrewBabyBed,
+                    checkInTime: booking.startDate,
+                    checkOutTime: booking.endDate,
+                    bookingStatus,
+                    specialRequests: booking.specialRequests
+                };
+            } else {
+                // Room is available (no bookings on the report date)
+                return {
+                    buildingName: room.buildingName,
+                    roomNumber: room.roomNumber,
+                    guestName: null, // Available in Hebrew
+                    extraMattresses: null,
+                    babyBed: null,
+                    checkInTime: null,
+                    checkOutTime: null,
+                    bookingStatus: "פנוי" // Available in Hebrew
+                };
+            }
+        });
+
+        return roomReports;
+    } catch (error) {
+        console.error("Error fetching room reports:", error);
+        throw error;
+    }
+}
+
 function parseDateString(dateString) {
     const [day, month, year] = dateString.split('/').map(Number);
 
@@ -514,4 +1612,120 @@ function parseDateString(dateString) {
     return new Date(Date.UTC(year, month - 1, day)); // Month is zero-indexed
 }
 
+async function generateOrderReport(orders) {
+    const orderReports = [];
+    for (const order of orders) {
+        const client = await Client.findOne({ clientId: order.clientId });
+        const roomIds = order.roomIds.map(roomId => roomId.toString());
+        const rooms = await Room.find({ _id: { $in: roomIds } });
+        const nearWindow = order.tablePreferences.nearWindow ? 'כן' : (order.tablePreferences.nearWindow === false ? 'לא' : 'ללא העדפה');
+        const nearDoor = order.tablePreferences.nearDoor ? 'כן' : (order.tablePreferences.nearDoor === false ? 'לא' : 'ללא העדפה');
+        const diningRoom = order.tablePreferences.diningRoom ? `חדר אוכל ${order.tablePreferences.diningRoom}` : 'ללא העדפה';
+        // Prepare room numbers and buildings
+        const roomNumbers = rooms.map(room => room.roomNumber);
+        const buildingNames = rooms.map(room => room.buildingName);
 
+        // Loop through each building and room to create separate rows
+        for (let i = 0; i < roomNumbers.length; i++) {
+            const buildingName = buildingNames[i];
+            const roomNumber = roomNumbers[i];
+
+            // Create a row for each building and room
+            orderReports.push({
+                orderId: order._id,
+                clientName: client ? client.name : 'לא זמין',
+                clientId: order.clientId,
+                buildingName: buildingName,
+                roomNumbers: roomNumber,
+                startDate: order.startDate.toISOString().split('T')[0],
+                endDate: order.endDate.toISOString().split('T')[0],
+                amount: order.amount,
+                paymentBy: order.paymentBy,
+                specialRequests: order.specialRequests || 'לא קיימות בקשות מיוחדות',
+                nearWindow: nearWindow,
+                nearDoor: nearDoor,
+                diningRoom: diningRoom
+            });
+        }
+    }
+    return orderReports; // Return the generated report data
+}
+
+async function generateReportFile(reportData, reportType) {
+    try {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Report');
+
+        // Define columns for the worksheet
+        worksheet.columns = [
+            { header: 'Room ID', key: 'roomId', width: 30 },
+            { header: 'Client Name', key: 'clientName', width: 30 },
+            { header: 'Start Date', key: 'startDate', width: 30 },
+            { header: 'Extra Mattresses', key: 'extraMattresses', width: 30 },
+            { header: 'Baby Bed', key: 'babyBed', width: 15 },
+            { header: 'Special Requests', key: 'specialRequests', width: 40 },
+        ];
+
+        // Add rows to the worksheet
+        reportData.forEach((data) => {
+            worksheet.addRow({
+                roomId: data.roomId,
+                clientName: data.clientName,
+                startDate: data.startDate,
+                extraMattresses: data.extraMattresses,
+                babyBed: data.babyBed,
+                specialRequests: data.specialRequests,
+            });
+        });
+
+        // Define the file path for saving the report
+        const fileName = `${reportType}_Report_${new Date().toISOString()}.xlsx`;
+        const filePath = path.join(__dirname, 'reports', fileName);
+
+        // Ensure the 'reports' directory exists
+        if (!fs.existsSync(path.join(__dirname, 'reports'))) {
+            fs.mkdirSync(path.join(__dirname, 'reports'));
+        }
+
+        // Write the workbook to a file
+        await workbook.xlsx.writeFile(filePath);
+
+        // Return the file path (or URL) for downloading
+        return fileName;
+    } catch (error) {
+        console.error('Error generating the report file:', error);
+        throw new Error('Error generating report file.');
+    }
+}
+
+async function generateDiningRoomReport(availableTables, reservations, date) {
+    const diningRoomReport = [];
+    // console.log("availableTables \n", availableTables);
+
+    for (const table of availableTables) {
+        for (const reservation of reservations) {
+            // Find the reservation for the current table
+            let client = await Client.findOne({ _id: reservation.clientId });
+            console.log("client", client);
+            
+            if (reservation) {
+                console.log("Found reservation:", reservation);
+            } else {
+                console.log("No reservation for table:", table.tableNumber);
+            }
+
+            diningRoomReport.push({
+                tableNumber: table.tableNumber,
+                numberOfSeats: table.numberOfSeats,
+                nearWindow: table.nearWindow ? 'כן' : 'לא',
+                nearDoor: table.nearDoor ? 'כן' : 'לא',
+                diningRoom: table.diningRoom,
+                date: date,
+                clientName: client.name
+            });
+        }
+    }
+    // console.log("diningRoomReport \n", diningRoomReport);
+
+    return diningRoomReport;
+}

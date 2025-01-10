@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול שולחנות בחדרי אוכל</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script src="/js/diningRoom.js"></script>
+
+    <style>
+       
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="header-page">ניהול שולחנות בחדרי אוכל</h2>
+        <button type="button" class="btn btn-custom btn-proj" id="addTableBtn">הוסף שולחן חדש</button>
+        <button type="button" class="btn btn-custom btn-proj" id="arrangeTablesBtn">סידור שולחנות</button>
+        <button type="button" class="btn btn-custom btn-proj btn-home" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
+
+        <label class="lbl" for="filterDiningRoom">סנן לפי חדר אוכל:</label>
+        <select id="filterDiningRoom">
+            <option value="all">הצג הכל</option>
+            <option value="1">חדר אוכל 1</option>
+            <option value="2">חדר אוכל 2</option>
+        </select>
+        <table class="table mt-4 tbl">
+            <thead>
+                <tr>
+                    <th>חדר אוכל</th>
+                    <th>מספר שולחן</th>
+                    <th>מספר סועדים</th>
+                    <th>קרוב לחלון</th>
+                    <th>קרוב לדלת</th>
+                    <th>ערוך</th>
+                </tr>
+            </thead>
+            <tbody id="tableList"></tbody>
+        </table>
+    </div>
+
+    <!-- Add New Table Modal -->
+    <div id="addTableModal" style="display:none;">
+        <h4>הוסף שולחן חדש</h4>
+        <form id="addTableForm">
+            <label>מספר שולחן: <input type="number" id="tableNumber" required></label>
+            <label>מספר סועדים:
+                <select id="numberOfSeats">
+                    <!-- Options will be generated dynamically -->
+                </select>
+            </label>
+            <label>חדר אוכל:
+                <select id="diningRoom">
+                    <option value="1">חדר אוכל 1</option>
+                    <option value="2">חדר אוכל 2</option>
+                </select>
+            </label>
+            <label>קרוב לחלון: <input type="checkbox" id="nearWindow"></label>
+            <label>קרוב לדלת: <input type="checkbox" id="nearDoor"></label>
+            <button type="submit" class="btn btn-custom btn-proj">שמור שולחן</button>
+        </form>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ניהול הזמנות</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/orderMng.js"></script>
+    <style>
+      
+        input[type="date"] {
+            width: 70%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        #orderTable {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <button class="btn btn-proj btn-home" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
+
+        <h1>ניהול הזמנות</h1>
+        <!-- <label for="startDate">תאריך התחלה:</label>
+        <input type="date" id="startDate">
+
+        <label for="endDate">תאריך סיום:</label>
+        <input type="date" id="endDate">
+        <br>
+        <button class="btn btn-success" id="fetchOrders">חפש הזמנות</button> -->
+
+        <table id="orderTable">
+            <thead>
+                <tr>
+                    <th>תעודת זהות לקוח</th>
+                    <th>תאריך התחלה</th>
+                    <th>תאריך סיום</th>
+                    <th>סכום</th>
+                    <th>תשלום ע"י</th>
+                    <th>ערוך</th>
+                    <th>מחק</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+    <script>
+
+    </script>
+</body>
+
+</html>

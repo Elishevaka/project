@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
     $.ajax({
         url: '/getAllRooms', // Fetch all rooms and buildings from MongoDB
         type: 'GET',
@@ -30,12 +30,13 @@ $(document).ready(function () {
                             <table class="table table-sm table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Room Number</th>
-                                        <th>Number of Beds</th>
-                                        <th>Floor</th>
-                                        <th>Number of Rooms</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
+                                        <th>חדר מספר</th>
+                                        <th>מספר מיטות</th>
+                                        <th>קומה</th>
+                                        <th>מספר חדרים בחדר זה</th>
+                                        <th>מחיר ללילה</th>
+                                        <th>ערוך</th>
+                                        <th>מחק</th>
                                     </tr>
                                 </thead>
                                 <tbody id="roomDetails-${buildingName}">
@@ -45,9 +46,10 @@ $(document).ready(function () {
                                             <td class="numBeds">${room.numBeds}</td>
                                             <td class="floor">${room.floor}</td>
                                             <td class="numOfRooms">${room.numOfRooms}</td>
+                                            <td class="price">${room.price}</td>
                                             <td>
                                                 <span class="icon editRoom" data-room-id="${room._id}">
-                                                    <i class="fas fa-edit" title="Edit Room"></i>
+                                                    <i class="fas fa-edit editTable" title="Edit Room"></i>
                                                 </span>
                                             </td>
                                             <td>
@@ -77,18 +79,18 @@ $(document).ready(function () {
                 const row = $(this).closest('tr');
                 const roomId = $(this).data('room-id');
 
-                alert(roomId, " -roomId");
-                
                 // Convert cells to input fields
                 const roomNumber = row.find('.roomNumber').text();
                 const numBeds = row.find('.numBeds').text();
                 const floor = row.find('.floor').text();
                 const numOfRooms = row.find('.numOfRooms').text();
+                const price = row.find('.price').text();
 
                 row.find('.roomNumber').html(`<input type="text" class="form-control roomNumberInput" value="${roomNumber}">`);
                 row.find('.numBeds').html(`<input type="number" class="form-control numBedsInput" value="${numBeds}">`);
                 row.find('.floor').html(`<input type="number" class="form-control floorInput" value="${floor}">`);
                 row.find('.numOfRooms').html(`<input type="number" class="form-control numOfRoomsInput" value="${numOfRooms}">`);
+                row.find('.price').html(`<input type="number" class="form-control priceInput" value="${price}">`);
 
                 // Replace edit icon with save button
                 $(this).replaceWith(`<span class="icon saveRoom" data-room-id="${roomId}"><i class="fas fa-save" title="Save Room"></i></span>`);
@@ -99,7 +101,8 @@ $(document).ready(function () {
                         roomNumber: row.find('.roomNumberInput').val(),
                         numBeds: row.find('.numBedsInput').val(),
                         floor: row.find('.floorInput').val(),
-                        numOfRooms: row.find('.numOfRoomsInput').val()
+                        numOfRooms: row.find('.numOfRoomsInput').val(),
+                        price: row.find('.priceInput').val()
                     };
 
                     // Update room in the database
@@ -108,11 +111,11 @@ $(document).ready(function () {
                         type: 'PUT',
                         data: updatedRoomData,
                         success: function () {
-                            alert('Room updated successfully');
+                            alert('החדר עודכן בהצלחה');
                             location.reload();
                         },
                         error: function (xhr) {
-                            alert('Error updating room: ' + xhr.responseJSON.error);
+                            alert('שגיאה בעדכון החדר: ' + xhr.responseJSON.error);
                         }
                     });
                 });
@@ -121,23 +124,23 @@ $(document).ready(function () {
             // Delete room action
             $('.deleteRoom').click(function () {
                 const roomId = $(this).data('room-id');
-                if (confirm('Are you sure you want to delete this room?')) {
+                if (confirm('האם אתה בטוח שברצונך למחוק את החדר הזה?')) {
                     $.ajax({
                         url: `/deleteRoom/${roomId}`,
                         type: 'DELETE',
                         success: function (response) {
-                            alert('Room deleted successfully');
+                            alert('החדר נמחק בהצלחה');
                             location.reload(); // Reload the page to refresh the table
                         },
                         error: function (xhr) {
-                            alert('Error deleting room: ' + xhr.responseJSON.error);
+                            alert('שגיאה במחיקת חדר:' + xhr.responseJSON.error);
                         }
                     });
                 }
             });
         },
         error: function (xhr) {
-            alert('Error fetching rooms: ' + xhr.responseJSON.error);
+            alert('שגיאה באחזור חדרים:' + xhr.responseJSON.error);
         }
     });
 

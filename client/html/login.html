@@ -42,22 +42,90 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/js/login.js"></script>
+    <style>
+         * {
+      color: #4C585B;
+    }
+    .header-page {
+            color: #4C585B;
+            margin-bottom: 30px;
+        }
+    .btn-proj {
+           
+            background: none !important;
+            background-color: #4DA1A9 !important;
+            height: 50px;
+            font-size: 15px;
+            width: 200px;
+ color: white;
 
+            &:hover {
+                background-color: #fff !important;
+                color: #4DA1A9 !important;
+                border: 1px solid #4DA1A9 !important;
+
+            }
+
+        }
+
+    label {
+      font-size: 20px;
+      float: right;
+      font-weight: bold;
+    }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            max-width:50%;
+            margin: 50px auto;
+        }
+
+/*        
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        } */
+
+        .invalid-feedback {
+            text-align: right;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <form id="login-form" class="needs-validation" novalidate>
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username">שם משתמש</label>
                 <input type="text" class="form-control" id="username" name="username" required>
-                <div class="invalid-feedback">Please enter your username.</div>
+                <div class="invalid-feedback">בבקשה למלא את השם משתמש</div>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password">סיסמא</label>
                 <input type="password" class="form-control" id="password" name="password" required>
-                <div class="invalid-feedback">Please enter your password.</div>
+                <div class="invalid-feedback">בבקשה למלא את הסיסמא</div>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-custom btn-proj">היכנס</button>
             <div id="error-message" class="text-danger"></div>
         </form>
     </div>

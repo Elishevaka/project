@@ -1,0 +1,27 @@
+/* #roomTable {
+    margin-top: 20px;
+}
+
+#roomList {
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+#roomList td button {
+    font-size: 14px;
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+#roomList td .edit-btn {
+    background: #ffc107;
+}
+
+#roomList td .delete-btn {
+    background: #dc3545;
+} */

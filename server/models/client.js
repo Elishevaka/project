@@ -27,10 +27,21 @@ var ClientSchema = new Schema({
         type: String,
         required: true,
         //unique: true
+    },
+    city: {
+        type: String,
+        trim: true
+    },
+    zipCode: {
+        type: String,
+        trim: true
+    },
+    address: {
+        type: String,
+        trim: true
     }
 }, { timestamps: true }
 );
-
 
 const Client = mongoose.model('Client', ClientSchema);
 

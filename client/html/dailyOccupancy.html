@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Occupancy Percentage</title>
+    <title>אחוז תפוסה</title>
+    <link rel="stylesheet" type="text/css" href="css/styleDailyOccupancy.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- jQuery UI -->
@@ -12,44 +14,49 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <script src="/js/dailyOccupancy.js"></script>
-    <style>
-        .container {
-            margin-top: 20px;
-        }
-
-        #datepicker2 {
-            display: none;
-        }
-    </style>
+<style>
+    
+    .daily-by-one-date{
+        font-size: 25px;
+        padding: 10px;
+        width: 65%;
+        margin: auto;
+        border: 1px solid #4DA1A9;
+        color:  #4DA1A9;
+        border-radius: 10px;
+    }
+</style>
 </head>
 
 <body>
     <div class="container">
-        <h2>Check Room Occupancy</h2>
+        <h2 class="header-page">בדיקת תפוסת החדרים</h2>
         <form id="dateForm">
             <div class="mb-3">
-                <label for="dateOption" class="form-label">Select Date Option:</label>
+                <label for="dateOption" class="form-label">בחר אפשרות:</label>
                 <select id="dateOption" class="form-select">
-                    <option value="single">Single Date</option>
-                    <option value="range">Date Range</option>
+                    <option value="single">תאריך בודד</option>
+                    <option value="range">טווח תאריכים</option>
                 </select>
             </div>
             <div class="mb-3">
-                <label for="datepicker1" class="form-label">Start Date:</label>
-                <input type="text" id="datepicker1" class="form-control" placeholder="Select a start date">
+                <label for="datepicker1" class="form-label">בחר תאריך:</label>
+                <input type="text" id="datepicker1" class="form-control" placeholder="בחר תאריך">
             </div>
             <div class="mb-3" id="endDateContainer">
-                <label for="datepicker2" class="form-label">End Date:</label>
-                <input type="text" id="datepicker2" class="form-control" placeholder="Select an end date">
+                <label for="datepicker2" class="form-label">עד תאריך:</label>
+                <input type="text" id="datepicker2" class="form-control" placeholder="בחר תאריך סיום">
             </div>
-            <button type="button" id="selectDate" class="btn btn-primary">Check Occupancy</button>
-            <button type="button" id="menu" class="btn btn-secondary">Home</button>
+            <!-- Placeholder for dynamic content -->
+            <div id="dynamicContent"></div>
+            <button type="button" id="selectDate" class="btn btn-proj">בדיקת תפוסה</button>
+            <button type="button" id="menu" class="btn btn-proj btn-home"><i class="fas fa-home"></i>עמוד הבית</button>
         </form>
     </div>
-    <!-- Placeholder for dynamic content -->
-    <div id="dynamicContent"></div>
+
 
 </body>
 

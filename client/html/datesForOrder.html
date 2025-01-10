@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ניהול הזמנות</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styleReports.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/datesForOrder.js"></script>
+    <style>
+        input[type="date"] {
+            width: 70%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="header-page">ניהול הזמנות</h1>
+        <label for="startDate">תאריך התחלה:</label>
+        <input type="date" id="startDate">
+        <br>
+
+        <label for="endDate">תאריך סיום:</label>
+        <input type="date" id="endDate">
+        <br>
+        <button class="btn btn-proj" id="fetchOrders">חפש הזמנות</button>
+        <button class="btn btn-proj btn-home" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
+
+    </div>
+</body>
+
+</html>
