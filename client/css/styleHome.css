@@ -1,4 +1,14 @@
-
+body {
+    /* רקע תמונה */
+    background-image: url('images/pensee-royal-azur-tourist-resort-pools_1385-3079.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    background-blend-mode: overlay;
+    font-family: 'Arial', sans-serif;
+  
+}
 .container {
     text-align: center;
     background: white;
@@ -23,6 +33,17 @@ h2 {
     border-radius: 30px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    i {
+        color: #fff;
+
+    }
+
+    &:hover {
+        i {
+            color: #4DA1A9;
+        }
+    }
 }
 
 .btn-custom:hover {
@@ -49,28 +70,29 @@ h2 {
 }
 
 #Reports {
-    background: linear-gradient(to right, #ff512f, #dd2476); 
+    background: linear-gradient(to right, #ff512f, #dd2476);
     border: none;
     color: white;
 }
 
 #Client {
-    background: linear-gradient(to right, #b8e565, #d6aa2f); 
+    background: linear-gradient(to right, #b8e565, #d6aa2f);
     border: none;
     color: white;
 }
 
 #Order {
-    background: linear-gradient(to right, #bd489a, #350124); 
+    background: linear-gradient(to right, #bd489a, #350124);
     border: none;
     color: white;
 }
 
 #DiningRoom {
-    background: linear-gradient(to right, #a47af1, #b21ae4); 
+    background: linear-gradient(to right, #a47af1, #b21ae4);
     border: none;
     color: white;
 }
+
 .btn-custom i {
     margin-left: 10px;
 }

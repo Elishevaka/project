@@ -43,6 +43,36 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/js/login.js"></script>
     <style>
+         * {
+      color: #4C585B;
+    }
+    .header-page {
+            color: #4C585B;
+            margin-bottom: 30px;
+        }
+    .btn-proj {
+           
+            background: none !important;
+            background-color: #4DA1A9 !important;
+            height: 50px;
+            font-size: 15px;
+            width: 200px;
+ color: white;
+
+            &:hover {
+                background-color: #fff !important;
+                color: #4DA1A9 !important;
+                border: 1px solid #4DA1A9 !important;
+
+            }
+
+        }
+
+    label {
+      font-size: 20px;
+      float: right;
+      font-weight: bold;
+    }
         body {
             font-family: 'Arial', sans-serif;
             background: #f9f9f9;
@@ -61,15 +91,7 @@
             margin: 50px auto;
         }
 
-        h2 {
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            font-weight: bold;
-        }
-
+/*        
         .btn-primary {
             background: linear-gradient(to right, #6a11cb, #2575fc);
             border: none;
@@ -83,7 +105,7 @@
         .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-        }
+        } */
 
         .invalid-feedback {
             text-align: right;
@@ -103,7 +125,7 @@
                 <input type="password" class="form-control" id="password" name="password" required>
                 <div class="invalid-feedback">בבקשה למלא את הסיסמא</div>
             </div>
-            <button type="submit" class="btn btn-primary">היכנס</button>
+            <button type="submit" class="btn btn-custom btn-proj">היכנס</button>
             <div id="error-message" class="text-danger"></div>
         </form>
     </div>

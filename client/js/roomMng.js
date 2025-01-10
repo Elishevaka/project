@@ -49,7 +49,7 @@ $(function () {
                                             <td class="price">${room.price}</td>
                                             <td>
                                                 <span class="icon editRoom" data-room-id="${room._id}">
-                                                    <i class="fas fa-edit" title="Edit Room"></i>
+                                                    <i class="fas fa-edit editTable" title="Edit Room"></i>
                                                 </span>
                                             </td>
                                             <td>

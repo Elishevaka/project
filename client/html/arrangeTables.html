@@ -6,9 +6,15 @@
     <title>סידור שולחנות לפי תאריך</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
     <script src="/js/arrangeTables.js"></script>
     <style>
         /* General Styling */
+        /* * {
+            color: #4C585B;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             background: #f5f7fa;
@@ -16,11 +22,10 @@
             padding: 0;
             direction: rtl;
             text-align: right;
-            color: #333;
-        }
+        } */
 
         /* Centered Container */
-        .container {
+        /* .container {
             text-align: center;
             background: white;
             border-radius: 20px;
@@ -30,17 +35,17 @@
             max-width: 700px;
             margin: 50px auto;
             border: 1px solid #ddd;
-        }
+        } */
 
         /* Headers */
-        h1,
+        /* h1,
         h2 {
             font-size: 28px;
             font-weight: bold;
             color: #007bff;
             margin-bottom: 20px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
+        } */
 
         /* Date Input and Filters */
         input[type="date"],
@@ -62,7 +67,7 @@
         }
 
         /* Buttons Styling */
-        button {
+        /* button {
             font-size: 18px;
             padding: 12px 20px;
             border-radius: 30px;
@@ -71,7 +76,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
             margin: 10px 0;
-        }
+        } */
 
         #loadDataBtn {
             background: linear-gradient(135deg, #38ef7d, #11998e);
@@ -84,7 +89,7 @@
         }
 
         /* Tables Styling */
-        table {
+        /* table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
@@ -97,11 +102,12 @@
         table td {
             padding: 14px;
             border: 1px solid #ddd;
-            color: #333;
-        }
+        } */
 
-        table th {
-            background: linear-gradient(135deg, #007bff, #0056b3);
+        /* table th {
+         
+            background-color: #4DA1A9;
+
             color: white;
             font-size: 18px;
         }
@@ -113,7 +119,7 @@
         table tr:hover {
             background: #e6f7ff;
             transition: background 0.3s;
-        }
+        } */
 
         /* Client and Table Containers */
         #clientsContainer,
@@ -146,12 +152,16 @@
         }
 
         /* Filter Section Styling */
-        label {
+        /* label {
             font-weight: bold;
             font-size: 18px;
             margin-top: 10px;
             display: block;
-        }
+        } */
+        /* .header-page {
+            color: #4C585B;
+            margin-bottom: 30px;
+        } */
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -165,6 +175,7 @@
                 font-size: 24px;
             }
 
+
             button {
                 width: 100%;
                 font-size: 16px;
@@ -175,10 +186,13 @@
                 width: 100%;
             }
         }
+
         .selected {
-            background-color: yellow; /* Highlight selected rows */
+            background-color: yellow;
+            /* Highlight selected rows */
         }
-        .btn-success {
+
+        /* .btn-success {
             background: linear-gradient(to right, #38ef7d, #11998e);
             border: none;
             color: white;
@@ -196,16 +210,47 @@
             border-radius: 30px;
             cursor: pointer;
             margin-top: 15px;
-        }
+        } */
 
-        .btn:hover {
+        /* .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        } */
+        /* label {
+            font-size: 20px;
+            float: right;
+            font-weight: bold;
         }
+        .header-page {
+            color: #4C585B;
+            margin-bottom: 30px;
+        }
+        .btn-proj {
+            background: none !important;
+            background-color: #4DA1A9 !important;
+            
+            border-radius: 10px;
+            color: white;
+            height: 50px;
+            font-size: 15px;
+            width: 200px;
+
+            &:hover {
+                background-color: #fff !important;
+                color: #4DA1A9 !important;
+                border: 1px solid #4DA1A9 !important;
+
+            }
+
+        } */
     </style>
 </head>
 
-        <h2>הזמנות לתאריך זה שאין להם שולחן</h2>
+<body>
+    <div class="container">
+
+
+        <h2 class="header-page">הזמנות לתאריך זה שאין להם שולחן</h2>
         <table id="unassignedReservationsTable">
             <thead>
                 <tr>
@@ -217,26 +262,27 @@
             </thead>
             <tbody></tbody>
         </table>
-    
-        <h3>שולחנות לא תפוסים</h3>
-    <table id="availableTablesTable" border="1">
-        <thead>
-            <tr>
-                <th>חדר אוכל</th>
-                <th>מספר שולחן</th>
-                <th>מספר מושבים</th>
-                <th>קרוב לחלון</th>
-                <th>קרוב לדלת</th>
-                <th>שייך</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
-    <!-- Button to assign selected tables to the order -->
-    <button class="btn btn-success" id="assignTablesBtn">שיוך שולחנות להזמנה</button>
 
+        <h3>שולחנות לא תפוסים</h3>
+        <table id="availableTablesTable" border="1">
+            <thead>
+                <tr>
+                    <th>חדר אוכל</th>
+                    <th>מספר שולחן</th>
+                    <th>מספר מושבים</th>
+                    <th>קרוב לחלון</th>
+                    <th>קרוב לדלת</th>
+                    <th>שייך</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+        <!-- Button to assign selected tables to the order -->
+        <button class="btn btn-proj" id="assignTablesBtn">שיוך שולחנות להזמנה</button>
+        <button class="btn btn-proj btn-home" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
+    </div>
 </body>
 
 </html>

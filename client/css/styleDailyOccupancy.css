@@ -1,11 +1,11 @@
-body {
+/* body {
     font-family: 'Arial', sans-serif;
     background: #f9f9f9;
     margin: 0;
     padding: 0;
     text-align: center;
-}
-.container_new {
+} */
+/* .container_new {
     text-align: center;
     background: white;
     border-radius: 15px;
@@ -13,14 +13,14 @@ body {
     padding: 30px 20px;
     width: 80%;
     margin: 50px auto;
-}
+} */
 
-h2 {
+/* h2 {
     font-size: 24px;
     font-weight: bold;
     color: #007bff;
     margin-bottom: 20px;
-}
+} */
 
 input[type="text"]::-webkit-calendar-picker-indicator {
     display: none;
@@ -30,7 +30,6 @@ input[type="text"]::-webkit-calendar-picker-indicator {
     text-align: right;
     display: block;
     margin-bottom: 5px;
-    color: #333;
 }
 
 .form-select,
@@ -49,7 +48,7 @@ input[type="text"]::-webkit-calendar-picker-indicator {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     outline: none;
 }
-
+/* 
 .btn {
     font-size: 18px;
     padding: 10px 20px;
@@ -82,7 +81,7 @@ input[type="text"]::-webkit-calendar-picker-indicator {
 .btn:hover {
 transform: translateY(-3px);
 box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-}
+} */
 
 #datepicker2 {
     display: none;

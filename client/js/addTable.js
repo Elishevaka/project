@@ -35,6 +35,6 @@ $(document).ready(function() {
 
     // Redirect to the home page when "עמוד הבית" is clicked
     $('#menu').click(function() {
-        window.location.href = '/'; // Replace with your homepage URL
+        window.location.href = '/home'; // Replace with your homepage URL
     });
 });

@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
     crossorigin="anonymous"></script>
@@ -15,11 +16,14 @@
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="/js/addRoom.js"></script>
-
+  <style>
+   
+  </style>
 </head>
 
 <body>
   <div class="container_new">
+    <h2 class="header-page">הוספת חדר</h2>
     <form id="addRoomForm">
       <label for="buildingName">*שם הבניין:</label>
       <input type="text" id="buildingName" name="buildingName" required>
@@ -37,10 +41,10 @@
       <input type="number" id="floor" name="floor">
       <br>
       <label for="price">מחיר חדר*</label>
-      <input type="number" id="price" name = "price">
+      <input type="number" id="price" name="price">
 
-      <button type="button" class="btn btn-success" id="addRoom">הוסף חדר</button>
-      <button class="btn btn-primary" id="menu">עמוד הבית</button>
+      <button type="button" class="btn btn-custom btn-proj" id="addRoom">הוסף חדר</button>
+      <button class="btn btn-custom btn-proj btn-home" id="menu">עמוד הבית</button>
 
     </form>
 

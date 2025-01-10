@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>דף דוחות</title>
     <link rel="stylesheet" type="text/css" href="css/styleReports.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="/js/reports.js"></script>
     <style>
-        * {
+        /* * {
             color: #4C585B;
         }
 
@@ -19,11 +20,10 @@
             color: #4C585B;
             margin-bottom: 30px;
         }
-
+*/
         .container {
             display: flex;
             flex-direction: row;
-            height: 90vh;
         }
 
         .buttons-container {
@@ -38,35 +38,25 @@
             padding: 20px;
         }
 
-        .btn-proj {
+        .btn-report-big {
             height: 100px;
             width: 45%;
-            background: none !important;
-            background-color: #4DA1A9 !important;
             font-size: 25px;
-            border-radius: 10px;
-            color: white;
+
+        }
+
+        .btn-report {
+            height: 50px;
+            font-size: 15px;
+            width: 80%;
+            background-color: #4C585B !important;
 
             &:hover {
                 background-color: #fff !important;
-                color: #4DA1A9 !important;
-                border: 1px solid #4DA1A9 !important;
-
-            }
-
-            &.btn-report {
-                height: 50px;
-                font-size: 15px;
-                width: 80%;
-                background-color: #4C585B !important;
-
-                &:hover {
-                    background-color: #fff !important;
-                }
             }
         }
 
-        .lbl {
+        /* .lbl {
             font-size: 20px;
             float: right;
             font-weight: bold;
@@ -74,7 +64,7 @@
 
         .search-input {
             margin-bottom: 20px;
-        }
+        } */
     </style>
 </head>
 
@@ -82,34 +72,35 @@
 
     <div class="container">
         <div class="buttons-container">
-            <button class="btn-primary" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
+            <button class="btn btn-proj btn-home" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
             <h1 class="header-page">עמוד דוחות</h1>
 
             <div>
                 <!-- By Client -->
-                <button class="btn btn-custom btn-proj" id="chooseClientBtn">לפי לקוח</button>
+                <button class="btn btn-proj btn-report-big" id="chooseClientBtn">לפי לקוח</button>
                 <!-- By All Customers -->
-                <button class="btn btn-custom btn-proj" id="chooseAllCustomersBtn">לפי כל הלקוחות</button>
+                <button class="btn btn-proj btn-report-big" id="chooseAllCustomersBtn">לפי כל הלקוחות</button>
             </div>
             <div>
                 <!-- By Building -->
-                <button class="btn btn-custom btn-proj" id="chooseBuildingBtn">לפי בניין</button>
+                <button class="btn btn-proj btn-report-big" id="chooseBuildingBtn">לפי בניין</button>
                 <!-- By Order -->
-                <button class="btn btn-custom btn-proj" id="chooseOrderBtn">לפי הזמנה</button>
+                <button class="btn btn-proj btn-report-big" id="chooseOrderBtn">לפי הזמנה</button>
             </div>
             <div>
                 <!-- Entering Room By Date-->
-                <button class="btn btn-custom btn-proj" id="enteringOnDateBtn">חדרים שמתאכלסים לפי תאריך</button>
+                <button class="btn btn-proj btn-report-big" id="enteringOnDateBtn">חדרים שמתאכלסים לפי תאריך</button>
                 <!-- Leaving Room By Date-->
-                <button class="btn btn-custom btn-proj" id="leavingOnDateBtn">חדרים שמתפנים לפי תאריך</button>
+                <button class="btn btn-proj btn-report-big" id="leavingOnDateBtn">חדרים שמתפנים לפי תאריך</button>
             </div>
             <div>
                 <!-- By Revenue by Date -->
-                <button class="btn btn-custom btn-proj" id="chooseRevenueByDateBtn">לפי תאריך (הכנסות)</button>
+                <button class="btn btn-proj btn-report-big" id="chooseRevenueByDateBtn">לפי תאריך (הכנסות)</button>
                 <!-- By Revenue by Payment Type -->
-                <button class="btn btn-custom btn-proj" id="chooseRevenueByPaymentTypeBtn">לפי סוג תשלום (הכנסות)</button>
+                <button class="btn btn-proj btn-report-big" id="chooseRevenueByPaymentTypeBtn">לפי סוג תשלום
+                    (הכנסות)</button>
                 <!-- By DiningRoom Type -->
-                <button class="btn btn-custom btn-proj"id="chooseDiningRoomBtn">בחר חדר אוכל</button>
+                <button class="btn btn-proj btn-report-big" id="chooseDiningRoomBtn">בחר חדר אוכל</button>
 
             </div>
         </div>
@@ -123,7 +114,7 @@
                 <select id="clientList" size="10" style="width: 100%;">
                     <option value="">בחר לקוח</option>
                 </select>
-                <button class="btn btn-custom btn-proj btn-report" id="generateClientReportBtn">יצירת דוח ללקוח</button>
+                <button class="btn btn-proj btn-report" id="generateClientReportBtn">יצירת דוח ללקוח</button>
             </div>
 
             <!-- By All Customers -->
@@ -131,7 +122,7 @@
                 <label class="lbl" for="startDate">בחר תאריך התחלה ותאריך סיום</label>
                 <input type="date" id="startDate" />
                 <input type="date" id="endDate" />
-                <button class="btn btn-custom btn-proj btn-report" id="generateAllCustomersReportBtn">יצירת דוח לכל
+                <button class="btn btn-proj btn-report" id="generateAllCustomersReportBtn">יצירת דוח לכל
                     הלקוחות</button>
             </div>
 
@@ -143,7 +134,7 @@
                     <option value="">בחר בניין</option>
                 </select>
                 <input type="date" id="reportDate" />
-                <button class="btn btn-custom btn-proj btn-report" id="generateReportBtn">יצירת דוח</button>
+                <button class="btn btn-proj btn-report" id="generateReportBtn">יצירת דוח</button>
             </div>
 
             <!-- By Order -->
@@ -154,7 +145,7 @@
                 <select id="orderList" size="10" style="width: 100%;">
                     <option value="">בחר לקוח</option>
                 </select>
-                <button class="btn btn-custom btn-proj btn-report" id="generateOrderReportBtn">יצירת דוח להזמנה</button>
+                <button class="btn btn-proj btn-report" id="generateOrderReportBtn">יצירת דוח להזמנה</button>
             </div>
 
             <!-- Entering Room By Date-->
@@ -162,7 +153,7 @@
             <div id="enteringDateSelectionContainer" style="display: none;">
                 <label class="lbl" for="reportDate1">בחר תאריך אכלוס:</label>
                 <input type="date" id="reportDate1" class="form-control">
-                <button class="btn btn-custom btn-proj btn-report" id="enteringGenerateReportDateBtn">יצירת דוח אכלוס
+                <button class="btn btn-proj btn-report" id="enteringGenerateReportDateBtn">יצירת דוח אכלוס
                     לפי תאריך</button>
             </div>
 
@@ -171,7 +162,7 @@
             <div id="leavingDateSelectionContainer" style="display: none;">
                 <label class="lbl" for="reportDate2">בחר תאריך יציאה:</label>
                 <input type="date" id="reportDate2" class="form-control">
-                <button class="btn btn-custom btn-proj btn-report" id="leavingGenerateReportDateBtn">יצירת דוח יציאה לפי
+                <button class="btn btn-proj btn-report" id="leavingGenerateReportDateBtn">יצירת דוח יציאה לפי
                     תאריך</button>
             </div>
 
@@ -181,7 +172,8 @@
                 <label class="lbl" for="startDate">בחר תאריך התחלה ותאריך סיום</label>
                 <input type="date" id="revenueStartDate" />
                 <input type="date" id="revenueEndDate" />
-                <button class="btn btn-custom btn-proj btn-report" id="generateRevenueByDateBtn">יצירת דוח הכנסות לפי תאריך</button>
+                <button class="btn btn-proj btn-report" id="generateRevenueByDateBtn">יצירת דוח הכנסות לפי
+                    תאריך</button>
             </div>
 
             <!-- By Revenue by Payment Type -->
@@ -200,24 +192,26 @@
                 <input type="date" id="startDate1" />
                 <input type="date" id="endDate1" />
                 <!-- Generate Report Button -->
-                <button class="btn btn-custom btn-proj btn-report" id="generateRevenueByPaymentTypeBtn">יצירת דוח הכנסות לפי סוג תשלום</button>
+                <button class="btn btn-proj btn-report" id="generateRevenueByPaymentTypeBtn">יצירת דוח הכנסות לפי סוג
+                    תשלום</button>
             </div>
 
             <div id="diningRoomFilterContainer" style="display: none;">
+                <label class="lbl" for="diningRoomList">חדר אוכל</label>
                 <select id="diningRoomList">
                     <option value="">בחר חדר אוכל</option>
                     <option value="all">כולם</option>
                     <option value="1">חדר אוכל 1</option>
                     <option value="2">חדר אוכל 2</option>
                 </select>
+                <input type="date" id="date2" />
                 <label class="lbl" for="nearWindow">
                     <input type="checkbox" id="nearWindow" /> קרוב לחלון
                 </label>
                 <label class="lbl" for="nearDoor">
                     <input type="checkbox" id="nearDoor" /> קרוב לדלת
                 </label>
-                <input type="date" id="date2" />
-                <button class="btn btn-custom btn-proj btn-report" id="generateDiningRoomReportBtn">צור דוח חדר אוכל</button>
+                <button class="btn btn-proj btn-report" id="generateDiningRoomReportBtn">צור דוח חדר אוכל</button>
             </div>
         </div>
 

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>אחוז תפוסה</title>
     <link rel="stylesheet" type="text/css" href="css/styleDailyOccupancy.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- jQuery UI -->
@@ -16,12 +17,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <script src="/js/dailyOccupancy.js"></script>
-
+<style>
+    
+    .daily-by-one-date{
+        font-size: 25px;
+        padding: 10px;
+        width: 65%;
+        margin: auto;
+        border: 1px solid #4DA1A9;
+        color:  #4DA1A9;
+        border-radius: 10px;
+    }
+</style>
 </head>
 
 <body>
-    <div class="container_new">
-        <h2>בדיקת תפוסת החדרים</h2>
+    <div class="container">
+        <h2 class="header-page">בדיקת תפוסת החדרים</h2>
         <form id="dateForm">
             <div class="mb-3">
                 <label for="dateOption" class="form-label">בחר אפשרות:</label>
@@ -40,8 +52,8 @@
             </div>
             <!-- Placeholder for dynamic content -->
             <div id="dynamicContent"></div>
-            <button type="button" id="selectDate" class="btn btn-success">בדיקת תפוסה</button>
-            <button type="button" id="menu" class="btn btn-primary"><i class="fas fa-home"></i>עמוד הבית</button>
+            <button type="button" id="selectDate" class="btn btn-proj">בדיקת תפוסה</button>
+            <button type="button" id="menu" class="btn btn-proj btn-home"><i class="fas fa-home"></i>עמוד הבית</button>
         </form>
     </div>
 

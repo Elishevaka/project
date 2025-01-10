@@ -1353,6 +1353,12 @@ module.exports = {
         const { startDate, endDate, paymentType } = req.query;
 
         try {
+            const paymentTypeTranslations = {
+                'No payment': 'ללא תשלום',
+                'Credit': 'אשראי',
+                'Check': 'צ׳ק',
+                'Cash': 'מזומן'
+            };
             // Build the filter query
             const filterQuery = {
                 startDate: { $gte: new Date(startDate) },
@@ -1373,8 +1379,8 @@ module.exports = {
 
             //orders.forEach(order => {
             for (let order of orders) {
-
-                const paymentType = order.paymentBy;
+                const translatedPaymentType = paymentTypeTranslations[order.paymentBy] || order.paymentBy;
+                // const paymentType = order.paymentBy;
                 const orderAmount = order.amount;
                 const client = await Client.find({ clientId: order.clientId });
 
@@ -1383,7 +1389,7 @@ module.exports = {
 
                 // Add order breakdown to the data array
                 paymentTypeData.push({
-                    paymentType: paymentType,
+                    paymentType: translatedPaymentType,
                     orderId: order._id,
                     clientName: client[0].name,
                     amount: orderAmount

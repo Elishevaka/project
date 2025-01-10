@@ -51,7 +51,7 @@ $(function () {
                     
                     // Update only the content inside #dynamicContent without clearing the entire page
                     $("#dynamicContent").html(`
-                        <h2 style="font-size: 1rem; color: red;">בתאריך: ${startDate} אחוז התפוסה הוא: ${occupancyPercentage}%</h2>
+                        <h2 class="daily-by-one-date">בתאריך: ${startDate} אחוז התפוסה הוא: ${occupancyPercentage}%</h2>
                     `);
                 },
                 error: function (err) {
@@ -94,7 +94,7 @@ $(function () {
             container.innerHTML = `
                 <h3>אחוז תפוסה בין התאריכים:</h3>
                 <canvas id="occupancyChartRange" width="800" height="400"></canvas>
-                <button type="button" id="menu" class="btn btn-primary"><i class="fas fa-home"></i>עמוד הבית</button>
+                <button type="button" id="menu" class="btn btn-custom btn-proj btn-home"><i class="fas fa-home"></i>עמוד הבית</button>
 
             `;
             document.body.appendChild(container);

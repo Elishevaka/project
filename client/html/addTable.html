@@ -34,18 +34,51 @@
             border-radius: 8px;
         }
 
+        * {
+            color: #4C585B;
+        }
+
+        .header-page {
+            color: #4C585B;
+            margin-bottom: 30px;
+        }
+
+        .btn-proj {
+
+            background: none !important;
+            background-color: #4DA1A9 !important;
+            height: 50px;
+            font-size: 15px;
+            width: 200px;
+            color: white;
+
+            &:hover {
+                background-color: #fff !important;
+                color: #4DA1A9 !important;
+                border: 1px solid #4DA1A9 !important;
+
+            }
+
+        }
+
+        label {
+            font-size: 20px;
+            float: right;
+            font-weight: bold;
+        }
+
         /* Header styling */
-        h2 {
+        /* h2 {
             font-size: 24px;
             color: #343a40;
             margin-bottom: 20px;
-        }
+        } */
 
         /* Label styling */
-        label {
+        /* label {
             font-weight: bold;
             margin-top: 10px;
-        }
+        } */
 
         /* Input fields */
         input[type="text"],
@@ -61,30 +94,29 @@
 
         /* Checkbox styling */
         input[type="checkbox"] {
-            margin-top: 10px;
-            margin-bottom: 15px;
+            margin: 10px;
         }
 
         /* Button styling */
-        button {
+        /* button {
             width: 100%;
             padding: 12px;
             margin-top: 10px;
             border: none;
             border-radius: 4px;
             font-size: 16px;
-        }
+        } */
 
-        button#addTable {
+        /* button#addTable {
             background-color: #28a745;
             color: white;
-        }
+        } */
 
-        button#menu {
+        /* button#menu {
             background-color: #007bff;
             color: white;
             margin-top: 10px;
-        }
+        } */
 
         /* Message container */
         #message {
@@ -104,7 +136,7 @@
 
 <body>
     <div class="container">
-        <h2>הוסף שולחן</h2>
+        <h2 class="header-page">הוסף שולחן</h2>
         <form id="addTableForm">
             <label for="diningRoom">חדר אוכל*:</label>
             <select id="diningRoom" name="diningRoom">
@@ -112,7 +144,7 @@
                 <option value="2">חדר אוכל 2</option>
             </select>
             <br>
-            <label for="tableNumber">*מספר שולחן:</label>
+            <label for="tableNumber">מספר שולחן*:</label>
             <input type="text" id="tableNumber" name="tableNumber" required>
             <br>
             <!-- <label for="numberOfSeats">*מספר מקומות ישיבה:</label>
@@ -130,8 +162,9 @@
             <label for="nearDoor">שולחן ליד דלת?</label>
             <input type="checkbox" id="nearDoor" name="nearDoor">
             <br><br>
-            <button type="button" class="btn btn-success" id="addTable">הוסף שולחן</button>
-            <button type="button" class="btn btn-primary" id="menu"><i class="fas fa-home"></i>עמוד הבית</button>
+            <button type="button" class="btn btn-custom btn-proj" id="addTable">הוסף שולחן</button>
+            <button type="button" class="btn btn-custom btn-proj btn-home" id="menu"><i class="fas fa-home"></i>עמוד
+                הבית</button>
         </form>
     </div>
 
