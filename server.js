@@ -1,5 +1,6 @@
 const express = require('express')
 require('./server/db/mongoose')
+require('dotenv').config();
 path = require('path'),
 fs = require('fs'),
 cors = require('cors'),
@@ -14,6 +15,7 @@ app.use('/addTable', express.static(path.join(__dirname, 'client/html/addTable.h
 app.use('/pickDateToTables', express.static(path.join(__dirname, 'client/html/pickDateToTables.html')));
 app.use('/arrangeTables', express.static(path.join(__dirname, 'client/html/arrangeTables.html')));
 app.use('/reports', express.static(path.join(__dirname, 'client/html/reports.html')));
+app.use('/loginSetting', express.static(path.join(__dirname, 'client/html/loginSetting.html')));
 app.use('/dailyOccupancy', express.static(path.join(__dirname, 'client/html/dailyOccupancy.html')));
 app.use('/roomMng', express.static(path.join(__dirname, 'client/html/roomMng.html')));
 app.use('/roomReservations', express.static(path.join(__dirname, 'client/html/roomReservations.html')));

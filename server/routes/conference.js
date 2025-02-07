@@ -9,16 +9,43 @@ const TableReservation = require('../models/tableReservation.js');
 
 const nodemailer = require("nodemailer");
 const ExcelJS = require('exceljs');
-const XLSX = require('xlsx');
+// const XLSX = require('xlsx');
 const fs = require('fs');
+const moment = require('moment');
 const path = require('path');
+
+
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 module.exports = {
 
+    // LoginScript: async function (req, res) {
+    //     const { username, password } = req.body;
+    //     try {
+    //         // Find the user by username
+    //         const userDB = await Login.findOne({ username });
+
+    //         if (!userDB) {
+    //             return res.status(401).json({ message: 'שם משתמש או סיסמא שגויים' });
+    //         }
+
+    //         if (password === userDB.password) {
+    //             // Authentication successful
+    //             return res.status(200).json({ message: 'הכניסה הצליחה' });
+    //         } else {
+    //             // Authentication failed
+    //             return res.status(401).json({ message: 'שם משתמש או סיסמא שגויים' });
+    //         }
+
+    //     } catch (error) {
+    //         console.error(error);
+    //         return res.status(500).json({ message: 'Server error, please try again later.' });
+    //     }
+    // },
     LoginScript: async function (req, res) {
         const { username, password } = req.body;
         try {
-            // Find the user by username
             const userDB = await Login.findOne({ username });
 
             if (!userDB) {
@@ -26,16 +53,78 @@ module.exports = {
             }
 
             if (password === userDB.password) {
-                // Authentication successful
-                return res.status(200).json({ message: 'הכניסה הצליחה' });
+                // Generate a one-time password (OTP)
+                const otpReturn = crypto.randomInt(100000, 999999);  // Generate a 6-digit OTP
+                // console.log("otp:", otp);
+
+                // Send OTP to the user's email
+                // const mailOptions = {
+                //     from: 'gw025867014@gmail.com',
+                //     to: 'gw025867014@gmail.com',
+                //     subject: 'הסיסמה החד פעמית שלך (OTP)',
+                //     text: `הסיסמא החד פעמית שלך היא:\n ${otp}`
+                // };
+
+                // transporter.sendMail(mailOptions, (error, info) => {
+                //     if (error) {
+                //         // console.log('Error sending OTP email:', error);
+                //         return res.status(500).json({ message: 'שגיאה בשליחת דוא"ל עם OTP.' });
+                //     }
+
+                //     // console.log('OTP sent: ' + otp);
+
+                // res.status(200).json(otp);
+                const mailOptions = {
+                    from: 'gw025867014@gmail.com',
+                    to: userDB.emailToSendPassword, // Use the email stored in the database
+                    subject: 'הסיסמה החד פעמית שלך (OTP)',
+                    text: `הסיסמא החד פעמית שלך היא:\n ${otpReturn}`,
+                };
+                res.status(200).json({ otpReturn, mailOptions });
+                // });
             } else {
-                // Authentication failed
                 return res.status(401).json({ message: 'שם משתמש או סיסמא שגויים' });
             }
-
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Server error, please try again later.' });
+            return res.status(500).json({ message: 'שגיאת שרת, אנא נסה שוב מאוחר יותר.' });
+        }
+    },
+
+    ValidateOtp: async function (req, res) {
+        const { otpReturn, otpUser } = req.body;
+
+        // Validate OTP stored in the session
+        if (otpReturn === otpUser) {
+            res.status(200).json({ message: 'הסיסמא נכונה!' });
+        } else {
+            res.status(401).json({ message: 'הסיסמא לא נכונה, אנא נסה שוב' });
+        }
+    },
+    // app.post('/update-email', async (req, res) => {
+    UpdateMail: async function (req, res) {
+        const { newEmail } = req.body;
+
+        // Check if the email is in a valid format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+            return res.status(400).json({ message: 'Invalid email format.' });
+        }
+
+        try {
+            const userDB = await Login.findOneAndUpdate(
+                { username: 'elisheva' },  // Specify the username
+                { emailToSendPassword: newEmail }        // Update the email field
+            );
+
+            if (!userDB) {
+                return res.status(404).json({ message: 'User not found.' });
+            }
+
+            res.status(200).json({ message: 'Email updated successfully!' });
+        } catch (error) {
+            console.error('Error updating email:', error);
+            res.status(500).json({ message: 'Error updating email.' });
         }
     },
     AddRoom: async function (req, res) {
@@ -234,45 +323,6 @@ module.exports = {
         }
     },
     AssignTableToOrder: async function (req, res) {
-        // const { orderId, tableId, date } = req.body;
-        // try {
-        //     // Find the order to get the clientId associated with it
-        //     const order = await Order.findById(orderId);
-        //     if (!order) {
-        //         return res.status(404).json({ error: 'Order not found' });
-        //     }
-
-        //     const client_id = order.clientId; // Get the clientId from the order
-        //     console.log("client_id\n", client_id);
-        //     console.log("TYPE - client_id\n", typeof(client_id));
-
-        //     let client = await Client.findOne({ clientId: client_id });
-
-        //     // await Order.findByIdAndUpdate(orderId, { tableId: tableId });
-
-        //     // Update or create the table reservation to mark it as occupied for the given date
-        //     const reservationUpdate = await TableReservation.updateOne(
-        //         { diningTableId: tableId, date: date },
-        //         {
-        //             $set: {
-        //                 clientId: client._id,  // Link the reservation to the client
-        //                 status: 'occupied'
-        //             }
-        //         },
-        //         { upsert: true } // Creates a new reservation if it doesn't exist for the date
-        //     );
-
-        //     if (reservationUpdate.modifiedCount > 0 || reservationUpdate.upsertedCount > 0) {
-        //         // Only update the order if the reservation was successful
-        //         await Order.findByIdAndUpdate(orderId, { tableId: tableId });
-        //         res.json({ message: 'Table assigned successfully!' });
-        //     } else {
-        //         res.status(400).json({ error: 'Failed to reserve the table.' });
-        //     }
-        // } catch (error) {
-        //     console.error(error);
-        //     res.status(500).json({ error: 'Error assigning table to order.' });
-        // }
         const { orderId, tableIds, date } = req.body;
         try {
             // Find the order to get the clientId associated with it
@@ -562,7 +612,7 @@ module.exports = {
                     <p>לשאלות ניתן ליצור קשר בטלפון: 025867013</p>
                 </div>
             `;
-            console.log("Email Content:", emailContent);
+            // console.log("Email Content:", emailContent);
             res.status(200).json({ emailContent });
         } catch (error) {
             console.error('Error booking rooms:', error);
@@ -571,25 +621,9 @@ module.exports = {
     },
 
     SendMail: async function (req, res) {
-        const { recipientEmail, subject, html } = req.body;
+        // const { recipientEmail, subject, html } = req.body;
+        const mailOptions = req.body;
         try {
-            // Create a transporter object with your email service credentials
-            const transporter = nodemailer.createTransport({
-                service: 'Gmail',
-                auth: {
-                    user: 'gw025867014@gmail.com', // My email address
-                    pass: 'svbu njya mldf tlbq', // My email password or app password
-                },
-            });
-
-            //Email options
-            const mailOptions = {
-                from: 'gw025867014@gmail.com', // Sender address
-                to: recipientEmail,            // Recipient address
-                subject,                       // Subject of the email
-                html                           // HTML body (optional)
-            };
-
             // Send the email
             const info = await transporter.sendMail(mailOptions);
             res.status(200).json(info.response);
@@ -728,35 +762,53 @@ module.exports = {
             res.status(500).json({ error: 'Error fetching buildings' });
         }
     },
+    // GetClientList: async function (req, res) {
+    //     try {
+    //         const { searchQuery } = req.query;
+
+    //         // Search for clients by name or clientId if a search query is provided
+    //         const query = searchQuery
+    //             ? {
+    //                 $or: [
+    //                     { name: { $regex: searchQuery, $options: 'i' } }, // Case-insensitive name search
+    //                     { clientId: parseInt(searchQuery) || null } // Exact match for clientId
+    //                 ]
+    //             }
+    //             : {}; // If no search query, return all clients
+
+    //         const clients = await Client.find(query).limit(500); // Limit results to avoid performance issues
+
+    //         if (clients.length === 0) {
+    //             return res.status(404).json({ message: 'לא נמצאו לקוחות תואמים' });
+    //         }
+
+    //         // Return a list of clients with their name and clientId
+    //         res.status(200).json(clients.map(client => ({
+    //             clientId: client.clientId,
+    //             name: client.name
+    //         })));
+    //     } catch (error) {
+    //         console.error('Error fetching clients:', error);
+    //         res.status(500).json({ error: 'שגיאת שרת פנימית' });
+    //     }
+    // },
     GetClientList: async function (req, res) {
-        try {
-            const { searchQuery } = req.query;
+        const searchQuery = req.query.searchQuery || '';
+    
+    try {
+        // Assuming you have a 'clients' collection in MongoDB with 'name' and 'clientId'
+        const clients = await Client.find({
+            $or: [
+                { name: { $regex: searchQuery, $options: 'i' } }, // Case-insensitive search by name
+                { clientId: parseInt(searchQuery) || null }  // Case-insensitive search by clientId
+            ]
+        });
 
-            // Search for clients by name or clientId if a search query is provided
-            const query = searchQuery
-                ? {
-                    $or: [
-                        { name: { $regex: searchQuery, $options: 'i' } }, // Case-insensitive name search
-                        { clientId: parseInt(searchQuery) || null } // Exact match for clientId
-                    ]
-                }
-                : {}; // If no search query, return all clients
-
-            const clients = await Client.find(query).limit(500); // Limit results to avoid performance issues
-
-            if (clients.length === 0) {
-                return res.status(404).json({ message: 'לא נמצאו לקוחות תואמים' });
-            }
-
-            // Return a list of clients with their name and clientId
-            res.status(200).json(clients.map(client => ({
-                clientId: client.clientId,
-                name: client.name
-            })));
-        } catch (error) {
-            console.error('Error fetching clients:', error);
-            res.status(500).json({ error: 'שגיאת שרת פנימית' });
-        }
+        res.json(clients); // Send filtered clients back to the frontend
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching clients');
+    }
     },
     GetBuildingListById: async function (req, res) {
         try {
@@ -804,10 +856,10 @@ module.exports = {
             worksheet.getRow(1).font = { bold: true };
             worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
 
-            const filePath = path.join(reportsDir, `${buildingId}_Report_${reportDate}.xlsx`);
+            const filePath = path.join(reportsDir, `דוח_לבניין_${buildingName}_לתאריך_${reportDate}.xlsx`);
             await workbook.xlsx.writeFile(filePath);
 
-            res.status(200).json({ fileUrl: `/reports/${buildingId}_Report_${reportDate}.xlsx`, buildingName });
+            res.status(200).json("report download successfully");
         } catch (error) {
             console.error("Error generating building report:", error);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -856,34 +908,91 @@ module.exports = {
             worksheet.getRow(1).font = { bold: true };
             worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
 
-            const filePath = path.join(reportsDir, `All_Customers_Report_${startDate}_to_${endDate}.xlsx`);
+            const filePath = path.join(reportsDir, `דוח_כל_הלקוחות_בין_${startDate}_-_${endDate}.xlsx`);
             await workbook.xlsx.writeFile(filePath);
 
-            res.status(200).json({ fileUrl: `/reports/All_Customers_Report_${startDate}_to_${endDate}.xlsx` });
+            res.status(200).json("report download successfully");
         } catch (error) {
             console.error('Error generating all customers report:', error);
             res.status(500).json({ success: false, message: 'Failed to generate all customers report.' });
         }
     },
+    // GetClientReportById: async function (req, res) {
+    //     try {
+    //         const { clientId } = req.query;
+
+    //         if (!clientId) {
+    //             return res.status(400).json({ error: 'ClientId is required' });
+    //         }
+
+    //         const client = await Client.findOne({ clientId });
+    //         if (!client) {
+    //             return res.status(404).json({ error: 'Client not found' });
+    //         }
+
+    //         const orders = await RoomBooking.find({ clientId });
+    //         const workbook = new ExcelJS.Workbook();
+    //         const worksheet = workbook.addWorksheet("Client Report", {
+    //             views: [{ rightToLeft: true }]
+    //         });
+
+    //         worksheet.columns = [
+    //             { header: 'שם לקוח', key: 'clientName', width: 30 },
+    //             { header: 'מספר טלפון', key: 'phoneNumber', width: 30 },
+    //             { header: 'דוא"ל', key: 'email', width: 40 },
+    //             { header: 'כתובת', key: 'address', width: 30 },
+    //             { header: 'מספר הזמנה', key: 'orderNumber', width: 30 },
+    //             { header: 'תאריך הזמנה', key: 'orderDate', width: 20 }
+    //         ];
+
+    //         orders.forEach(order => {
+    //             worksheet.addRow({
+    //                 clientName: client.name,
+    //                 phoneNumber: client.phoneNumber,
+    //                 email: client.email,
+    //                 address: client.address,
+    //                 orderNumber: order._id,
+    //                 orderDate: order.startDate
+    //             });
+    //         });
+
+    //         worksheet.getRow(1).font = { bold: true };
+    //         const reportsDir = path.resolve(__dirname, 'reports');
+    //         if (!fs.existsSync(reportsDir)) {
+    //             fs.mkdirSync(reportsDir, { recursive: true });
+    //         }
+
+    //         const filePath = path.join(reportsDir, `Client_Report_${clientId}.xlsx`);
+    //         await workbook.xlsx.writeFile(filePath);
+
+    //         res.status(200).json({ fileUrl: `/reports/Client_Report_${clientId}.xlsx`, clientName: client.name });
+    //     } catch (error) {
+    //         console.error("Error generating client report:", error);
+    //         res.status(500).json({ error: 'Internal Server Error' });
+    //     }
+    // },
+
     GetClientReportById: async function (req, res) {
         try {
             const { clientId } = req.query;
-
+    
             if (!clientId) {
                 return res.status(400).json({ error: 'ClientId is required' });
             }
-
+    
+            // חיפוש לקוח לפי מזהה
             const client = await Client.findOne({ clientId });
             if (!client) {
                 return res.status(404).json({ error: 'Client not found' });
             }
-
+    
+            // מוצאים את ההזמנות של הלקוח
             const orders = await RoomBooking.find({ clientId });
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet("Client Report", {
                 views: [{ rightToLeft: true }]
             });
-
+    
             worksheet.columns = [
                 { header: 'שם לקוח', key: 'clientName', width: 30 },
                 { header: 'מספר טלפון', key: 'phoneNumber', width: 30 },
@@ -892,30 +1001,31 @@ module.exports = {
                 { header: 'מספר הזמנה', key: 'orderNumber', width: 30 },
                 { header: 'תאריך הזמנה', key: 'orderDate', width: 20 }
             ];
-
+    
+            // הוספת הנתונים לגיליון
             orders.forEach(order => {
                 worksheet.addRow({
                     clientName: client.name,
                     phoneNumber: client.phoneNumber,
                     email: client.email,
                     address: client.address,
-                    orderNumber: order._id,
+                    orderNumber: order._id.toString(),
                     orderDate: order.startDate
                 });
             });
-
+    
             worksheet.getRow(1).font = { bold: true };
             const reportsDir = path.resolve(__dirname, 'reports');
             if (!fs.existsSync(reportsDir)) {
                 fs.mkdirSync(reportsDir, { recursive: true });
             }
-
-            const filePath = path.join(reportsDir, `Client_Report_${clientId}.xlsx`);
+    
+            const filePath = path.join(reportsDir, `דוח_לפי_לקוח_${client.name}.xlsx`);
             await workbook.xlsx.writeFile(filePath);
-
-            res.status(200).json({ fileUrl: `/reports/Client_Report_${clientId}.xlsx`, clientName: client.name });
+    
+            res.status(200).json("report download successfully");
         } catch (error) {
-            console.error("Error generating client report:", error);
+            console.error("שגיאה ביצירת דוח ללקוח:", error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
@@ -998,14 +1108,11 @@ module.exports = {
     },
     GetDiningRoomReport: async function (req, res) {
         const { diningRoom, nearWindow, nearDoor, date } = req.query;
-        console.log(diningRoom, nearWindow, nearDoor, date);
-        
+
         try {
             const reservations = await TableReservation.find({
                 date: date
             });
-
-            // console.log("reservations\n", reservations);
 
             if (!reservations) {
                 return res.status(404).json({ success: false, message: 'No dining table reservations found for the given criteria.' });
@@ -1031,7 +1138,6 @@ module.exports = {
             if (nearDoor !== '' && nearDoor !== undefined) {
                 availableTables = availableTables.filter(table => table.nearDoor === (nearDoor === 'true'));
             }
-            console.log("availableTables2\n", availableTables);
 
             // Generate the report based on the filtered data
             const diningRoomReport = await generateDiningRoomReport(availableTables, reservations, date);
@@ -1065,11 +1171,10 @@ module.exports = {
             worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
 
             // Save the report as an Excel file
-            const filePath = path.join(reportsDir, `Dining_Room_Report_${diningRoom || 'All'}_${date}.xlsx`);
+            const filePath = path.join(reportsDir, `דוח_לפי_חדר_אוכל${diningRoom || 'הכל'}_${date}.xlsx`);
             await workbook.xlsx.writeFile(filePath);
 
-            // Send the file URL in the response
-            res.status(200).json({ fileUrl: `/reports/Dining_Room_Report_${diningRoom || 'All'}_${date}.xlsx` });
+            res.status(200).json("report download successfully");
         } catch (error) {
             console.error('Error generating dining room report:', error);
             res.status(500).json({ success: false, message: 'Failed to generate dining room report.' });
@@ -1124,10 +1229,10 @@ module.exports = {
             worksheet.getRow(1).font = { bold: true };
             worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
 
-            const filePath = path.join(reportsDir, `נכנסים בתאריך${selectedDate}_דוח_.xlsx`);
+            const filePath = path.join(reportsDir, `חדרים_שמתאכלסים_בתאריך_${selectedDate}_דוח.xlsx`);
             await workbook.xlsx.writeFile(filePath);
 
-            res.status(200).json({ fileUrl: `/reports/_Report_.xlsx` });
+            res.status(200).json("report download successfully");
         } catch (error) {
             console.error("Error generating building report:", error);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -1181,10 +1286,10 @@ module.exports = {
             worksheet.getRow(1).font = { bold: true };
             worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
 
-            const filePath = path.join(reportsDir, `עוזבים_בתאריך${selectedDate}_דוח_.xlsx`);
+            const filePath = path.join(reportsDir, `חדרים_שמתפנים_בתאריך_${selectedDate}_דוח.xlsx`);
             await workbook.xlsx.writeFile(filePath);
 
-            res.status(200).json({ fileUrl: `/reports/_Report_.xlsx` });
+            res.status(200).json("report download successfully");
         } catch (error) {
             console.error("Error generating building report:", error);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -1204,60 +1309,6 @@ module.exports = {
         }
     },
     RevenueByDates: async function (req, res) {
-        // const { startDate, endDate } = req.query;
-
-        // try {
-        //     // Fetch orders within the specified date range
-        //     const orders = await Order.find({
-        //         startDate: { $gte: new Date(startDate) },
-        //         endDate: { $lte: new Date(endDate) }
-        //     });
-
-        //     // Aggregate revenue by date
-        //     const revenueByDate = {};
-        //     orders.forEach(order => {
-        //         const date = order.startDate.toISOString().split('T')[0]; // Get the date part of the start date
-        //         revenueByDate[date] = (revenueByDate[date] || 0) + order.amount;
-        //     });
-
-        //     // Create an array of report data
-        //     const revenueData = Object.keys(revenueByDate).map(date => ({
-        //         date: date,
-        //         totalRevenue: revenueByDate[date]
-        //     }));
-
-        //     const reportsDir = path.resolve(__dirname, 'reports');
-        //     if (!fs.existsSync(reportsDir)) {
-        //         fs.mkdirSync(reportsDir, { recursive: true });
-        //     }
-
-        //     const workbook = new ExcelJS.Workbook();
-        //     const worksheet = workbook.addWorksheet("Revenue by Date", {
-        //         views: [{ rightToLeft: true }]
-        //     });
-
-        //     worksheet.columns = [
-        //         { header: 'תאריך', key: 'date', width: 15 },
-        //         { header: 'הכנסות', key: 'totalRevenue', width: 20 }
-        //     ];
-
-        //     revenueData.forEach(row => {
-        //         worksheet.addRow(row);
-        //     });
-
-        //     worksheet.getRow(1).font = { bold: true };
-        //     worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
-
-        //     const filePath = path.join(reportsDir, `Revenue_By_Date_${startDate}_to_${endDate}.xlsx`);
-        //     await workbook.xlsx.writeFile(filePath);
-
-        //     res.status(200).json({
-        //         fileUrl: `/reports/Revenue_By_Date_${startDate}_to_${endDate}.xlsx`
-        //     });
-        // } catch (error) {
-        //     console.error('Error generating revenue by date report:', error);
-        //     res.status(500).json({ success: false, message: 'Failed to generate revenue by date report.' });
-        // }
         const { startDate, endDate } = req.query;
 
         try {
@@ -1267,36 +1318,35 @@ module.exports = {
                 endDate: { $lte: new Date(endDate) }
             });
 
+            const paymentTypesHebrew = {
+                'No payment': 'ללא תשלום',
+                'Credit': 'אשראי',
+                'Check': 'צ׳ק',
+                'Cash': 'מזומן'
+            };
             // Aggregate revenue by date
             const revenueByDate = {};
             const revenueData = [];
 
-            // orders.forEach(order => {
-            //     const date = order.startDate.toISOString().split('T')[0]; // Get the date part of the start date
-            //     const orderAmount = order.amount;
-            //     revenueByDate[date] = (revenueByDate[date] || 0) + orderAmount;
 
-            //     // Add order breakdown to the data array
-            //     revenueData.push({
-            //         date: date,
-            //         orderId: order._id,
-            //         clientName: order.clientName || 'לא זמין',
-            //         amount: orderAmount
-            //     });
-            // });
             for (let order of orders) {
 
-                const date = order.startDate.toISOString().split('T')[0]; // Get the date part of the start date
+                //const date = order.startDate.toISOString().split('T')[0]; // Get the date part of the start date
+                //const dateOut = order.endDate.toISOString().split('T')[0]; // Get the date part of the start date
+                const date = moment(order.startDate).format('DD-MM-YY'); 
+                const dateOut = moment(order.endDate).format('DD-MM-YY');
                 const orderAmount = order.amount;
                 revenueByDate[date] = (revenueByDate[date] || 0) + orderAmount;
                 const client = await Client.find({ clientId: order.clientId });
+                const paymentTypeHebrew = paymentTypesHebrew[order.paymentBy] || order.paymentBy;
 
 
                 // Add order breakdown to the data array
                 revenueData.push({
                     date: date,
-                    paymentType: order.paymentBy,
-                    orderId: order._id,
+                    dateOut: dateOut,
+                    paymentType: paymentTypeHebrew,
+                    orderId: order._id.toString(),
                     clientName: client[0].name,
                     amount: orderAmount
                 });
@@ -1316,7 +1366,8 @@ module.exports = {
             });
 
             worksheet.columns = [
-                { header: 'תאריך', key: 'date', width: 15 },
+                { header: 'תאריך כניסה:', key: 'date', width: 15 },
+                { header: 'תאריך יציאה:', key: 'dateOut', width: 15 },
                 { header: 'סוג תשלום', key: 'paymentType', width: 30 },
                 { header: 'מספר הזמנה', key: 'orderId', width: 30 },
                 { header: 'שם האורח', key: 'clientName', width: 20 },
@@ -1338,12 +1389,10 @@ module.exports = {
             worksheet.getRow(1).font = { bold: true };
             worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
 
-            const filePath = path.join(reportsDir, `Revenue_By_Date_${startDate}_to_${endDate}.xlsx`);
+            const filePath = path.join(reportsDir, `דוח_מתאריך_${startDate}_ל_${endDate}.xlsx`);
             await workbook.xlsx.writeFile(filePath);
 
-            res.status(200).json({
-                fileUrl: `/reports/Revenue_By_Date_${startDate}_to_${endDate}.xlsx`
-            });
+            res.status(200).json("report download successfully");
         } catch (error) {
             console.error('Error generating revenue by date report:', error);
             res.status(500).json({ success: false, message: 'Failed to generate revenue by date report.' });
@@ -1390,7 +1439,7 @@ module.exports = {
                 // Add order breakdown to the data array
                 paymentTypeData.push({
                     paymentType: translatedPaymentType,
-                    orderId: order._id,
+                    orderId: order._id.toString(),
                     clientName: client[0].name,
                     amount: orderAmount
                 });
@@ -1431,12 +1480,10 @@ module.exports = {
             worksheet.getRow(1).font = { bold: true };
             worksheet.getRow(1).alignment = { horizontal: 'center', vertical: 'middle' };
 
-            const filePath = path.join(reportsDir, `Revenue_By_Payment_Type_${startDate}_to_${endDate}.xlsx`);
+            const filePath = path.join(reportsDir, `דוח_לפי_סוג_תשלום_מתאריך_${startDate}_ל_${endDate}.xlsx`);
             await workbook.xlsx.writeFile(filePath);
 
-            res.status(200).json({
-                fileUrl: `/reports/Revenue_By_Payment_Type_${startDate}_to_${endDate}.xlsx`
-            });
+            res.status(200).json("report download successfully");
         } catch (error) {
             console.error('Error generating revenue by payment type report:', error);
             res.status(500).json({ success: false, message: 'Failed to generate revenue by payment type report.' });
@@ -1614,6 +1661,12 @@ function parseDateString(dateString) {
 
 async function generateOrderReport(orders) {
     const orderReports = [];
+    const paymentTypesHebrew = {
+        'No payment': 'ללא תשלום',
+        'Credit': 'אשראי',
+        'Check': 'צ׳ק',
+        'Cash': 'מזומן'
+    };
     for (const order of orders) {
         const client = await Client.findOne({ clientId: order.clientId });
         const roomIds = order.roomIds.map(roomId => roomId.toString());
@@ -1624,6 +1677,7 @@ async function generateOrderReport(orders) {
         // Prepare room numbers and buildings
         const roomNumbers = rooms.map(room => room.roomNumber);
         const buildingNames = rooms.map(room => room.buildingName);
+        const paymentTypeHebrew = paymentTypesHebrew[order.paymentBy] || order.paymentBy;
 
         // Loop through each building and room to create separate rows
         for (let i = 0; i < roomNumbers.length; i++) {
@@ -1632,7 +1686,7 @@ async function generateOrderReport(orders) {
 
             // Create a row for each building and room
             orderReports.push({
-                orderId: order._id,
+                orderId: order._id.toString(),
                 clientName: client ? client.name : 'לא זמין',
                 clientId: order.clientId,
                 buildingName: buildingName,
@@ -1640,7 +1694,7 @@ async function generateOrderReport(orders) {
                 startDate: order.startDate.toISOString().split('T')[0],
                 endDate: order.endDate.toISOString().split('T')[0],
                 amount: order.amount,
-                paymentBy: order.paymentBy,
+                paymentBy: paymentTypeHebrew,
                 specialRequests: order.specialRequests || 'לא קיימות בקשות מיוחדות',
                 nearWindow: nearWindow,
                 nearDoor: nearDoor,
@@ -1706,8 +1760,8 @@ async function generateDiningRoomReport(availableTables, reservations, date) {
         for (const reservation of reservations) {
             // Find the reservation for the current table
             let client = await Client.findOne({ _id: reservation.clientId });
-            console.log("client", client);
-            
+            // console.log("client", client);
+
             if (reservation) {
                 console.log("Found reservation:", reservation);
             } else {
@@ -1729,3 +1783,15 @@ async function generateDiningRoomReport(availableTables, reservations, date) {
 
     return diningRoomReport;
 }
+function isStrongPassword(password) {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+}
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,  // Use the email from environment variable
+        pass: process.env.EMAIL_PASS   // Use the password from environment variable
+    }
+});

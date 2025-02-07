@@ -27,5 +27,9 @@ $(function() {
     $('#DiningRoom').click(function () {
         window.location.href = '/diningRoom';
     });
+
+    $('#LoginMail').click(function () {
+        window.location.href = '/loginSetting';
+    });
 });
 

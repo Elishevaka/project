@@ -129,11 +129,17 @@ $(function () {
                     subject: "אישור הזמנה באתר הנופש",
                     html: emailContent
                 };
+                const mailOptions = {
+                    from: 'gw025867014@gmail.com', // Sender address
+                    to: guestDetails.guestEmail,            // Recipient address
+                    subject: "אישור הזמנה באתר הנופש", // Subject of the email
+                    html: emailContent                           // HTML body (optional)
+                };
                 $.ajax({
                     url: "/api/sendMail",
                     method: "POST",
                     contentType: "application/json",
-                    data: JSON.stringify(mailData),
+                    data: JSON.stringify(mailOptions),
                     success: function (response) {
                         $('#loader').hide();
                         window.location.href = "/home";

@@ -75,6 +75,12 @@ h2 {
     color: white;
 }
 
+#LoginMail {
+    background: linear-gradient(to right, #ff512f, #dd2476);
+    border: none;
+    color: white;
+}
+
 #Client {
     background: linear-gradient(to right, #b8e565, #d6aa2f);
     border: none;

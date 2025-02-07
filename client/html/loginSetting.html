@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/styleRoomMng.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <script src="/js/loginSetting.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h3>Change Email for OTP</h3>
+        <form id="change-email-form">
+            <div class="form-group">
+                <label for="new-email">New Email:</label>
+                <input type="email" id="new-email" class="form-control" placeholder="Enter new email" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Change Email</button>
+        </form>
+        <p id="error-message" style="color: red;"></p>
+        <p id="success-message" style="color: green;"></p>
+    </div>
+
+</body>
+
+</html>

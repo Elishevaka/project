@@ -67,14 +67,9 @@ $(function () {
             url: '/api/reports/building', // Adjusted route
             method: 'GET',
             data: { buildingId, reportDate }, // Sending both buildingId and date
-            success: function (data) {
+            success: function () {
                 alert('הדוח נוצר בהצלחה!');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.fileUrl;
-                downloadLink.download = `${data.buildingName}_Report_${reportDate}.xlsx`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                window.location.href = "/reports";
             },
             error: function (error) {
                 alert('שגיאה ביצירת דוח. אנא נסה שוב.');
@@ -88,6 +83,16 @@ $(function () {
         toggleContainer('#clientListContainer');
         if ($('#clientListContainer').is(':visible')) {
             fetchClientList();
+        }
+    });
+
+    // Client search functionality
+    $('#clientSearch').on('input', function () {
+        let searchQuery = $(this).val().trim(); // Getting the input value
+        if (searchQuery.length > 0) {
+            fetchClientList(searchQuery); // Trigger the search with the input value
+        } else {
+            $('#clientList').empty().append('<option value="">בחר לקוח</option>'); // Clear the list if search is empty
         }
     });
 
@@ -112,15 +117,6 @@ $(function () {
         });
     }
 
-    // Client search functionality
-    $('#clientSearch').on('input', function () {
-        let searchValue = $(this).val().toLowerCase();
-        $('#clientList option').each(function () {
-            const clientText = $(this).text().toLowerCase();
-            $(this).toggle(clientText.includes(searchValue));
-        });
-    });
-
     // Generate report by client
     $('#generateClientReportBtn').click(function () {
         const clientId = $('#clientList').val();
@@ -133,14 +129,10 @@ $(function () {
             url: `/api/reports/client`,
             method: 'GET',
             data: { clientId },
-            success: function (data) {
+            success: function () {
                 alert('הדוח נוצר בהצלחה!');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.fileUrl;
-                downloadLink.download = `Client_Report_${data.clientName}.xlsx`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                window.location.href = "/reports";
+
             },
             error: function (error) {
                 alert('שגיאה ביצירת דוח. אנא נסה שוב.');
@@ -168,14 +160,8 @@ $(function () {
             url: '/api/reports/all-customers', // New endpoint for fetching report
             method: 'GET',
             data: { startDate, endDate }, // Sending date range for filtering
-            success: function (data) {
+            success: function () {
                 alert('הדוח נוצר בהצלחה!');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.fileUrl;
-                downloadLink.download = `All_Customers_Report_${startDate}_to_${endDate}.xlsx`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
             },
             error: function (error) {
                 alert('שגיאה ביצירת דוח. אנא נסה שוב.');
@@ -224,14 +210,9 @@ $(function () {
             url: `/api/reports/order`, // Adjusted route for generating order report
             method: 'GET',
             data: { orderId },
-            success: function (data) {
+            success: function () {
                 alert('הדוח נוצר בהצלחה!');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.fileUrl;
-                downloadLink.download = `Order_Report_${orderId}.xlsx`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                window.location.href = "/reports";
             },
             error: function (error) {
                 alert('שגיאה ביצירת דוח. אנא נסה שוב.');
@@ -278,14 +259,10 @@ $(function () {
             url: url,
             method: 'GET',
             data: { selectedDate },
-            success: function (data) {
+            success: function () {
                 alert('הדוח נוצר בהצלחה!');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.fileUrl;
-                downloadLink.download = `Rooms_${reportType.charAt(0).toUpperCase() + reportType.slice(1)}_${selectedDate}_Report.xlsx`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                window.location.href = "/report";
+
             },
             error: function (error) {
                 alert('שגיאה ביצירת דוח. אנא נסה שוב.');
@@ -312,14 +289,9 @@ $(function () {
             url: '/api/revenueByDate',
             method: 'GET',
             data: { startDate, endDate },
-            success: function (data) {
+            success: function () {
                 alert('הדוח נוצר בהצלחה!');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.fileUrl;
-                downloadLink.download = `Revenue_Report_${startDate}_to_${endDate}.xlsx`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                window.location.href = "/reports";
             },
             error: function (error) {
                 alert('שגיאה ביצירת דוח. אנא נסה שוב.');
@@ -338,7 +310,7 @@ $(function () {
         const startDate = $('#startDate1').val();
         const endDate = $('#endDate1').val();
         const paymentType = $('#paymentTypeList').val();
-    
+
         if (!paymentType || !startDate || !endDate) {
             alert('אנא בחר סוג תשלום או תאיריכם.');
             return;
@@ -348,14 +320,9 @@ $(function () {
             url: '/api/revenueByPaymentType',
             method: 'GET',
             data: { startDate, endDate, paymentType },
-            success: function (data) {
+            success: function () {
                 alert('הדוח נוצר בהצלחה!');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.fileUrl;
-                downloadLink.download = `Revenue_Report_By_Payment_${paymentType}.xlsx`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                window.location.href = "/reports";
             },
             error: function (error) {
                 alert('שגיאה ביצירת דוח. אנא נסה שוב.');
@@ -372,27 +339,22 @@ $(function () {
         const nearWindow = $('#nearWindow').is(':checked');
         const nearDoor = $('#nearDoor').is(':checked');
         const date = $('#date2').val();
-        
-        if (!diningRoom || ! startDate || !endDate) {
+
+        if (!diningRoom || !startDate || !endDate) {
             alert('אנא בחר חדר אוכל ותאריכים.');
             return;
         }
-        
+
         // const nearWindowText = nearWindow ? 'כן' : '';
         // const nearDoorText = nearDoor ? 'כן' : '';
-        
+
         $.ajax({
             url: '/api/reports/dining-room', // Backend endpoint
             method: 'GET',
-            data: { diningRoom, nearWindow ,nearDoor, date },
-            success: function (data) {
+            data: { diningRoom, nearWindow, nearDoor, date },
+            success: function () {
                 alert('הדוח נוצר בהצלחה!');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.fileUrl;
-                downloadLink.download = `Dining_Room_Report_${diningRoom}.xlsx`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                window.location.href = "/reports";
             },
             error: function (error) {
                 alert('שגיאה ביצירת דוח. אנא נסה שוב.');

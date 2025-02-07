@@ -51,5 +51,7 @@ router.get('/orders', conferenceRoutes.OrdersByDates);
 
 // Add route for handling login form submission
 router.post('/login', conferenceRoutes.LoginScript);
+router.post('/validate-otp', conferenceRoutes.ValidateOtp);
+router.post('/update-email', conferenceRoutes.UpdateMail);
 
 module.exports = router;
