@@ -17,32 +17,123 @@ $(document).ready(function () {
     console.log(date, startDate, startDateFormatted);
 
     // Fetch all orders
-    $.get(`/orders?startDate=${startDateFormatted}&endDate=${endDateFormatted}`, function (orders) {
-        console.log("all orders\n", orders);
-        $('#unassignedReservationsTable tbody').empty();
-        //const unassignedOrders = orders.filter(order => order.tableId == null); // Orders with no assigned tables
-        const unassignedOrders = orders.filter(order => !order.tableIds || order.tableIds.length === 0);
-        console.log("unassignedOrders\n", unassignedOrders);
+    // $.get(`/orders?startDate=${startDateFormatted}&endDate=${endDateFormatted}`, function (orders) {
+    //     console.log("all orders\n", orders);
+    //     $('#unassignedReservationsTable tbody').empty();
+    //     //const unassignedOrders = orders.filter(order => order.tableId == null); // Orders with no assigned tables
+    //     const unassignedOrders = orders.filter(order => !order.tableIds || order.tableIds.length === 0);
+    //     console.log("unassignedOrders\n", unassignedOrders);
 
-        if (unassignedOrders.length === 0) {
-            $('#unassignedReservationsTable tbody').append(`
+    //     if (unassignedOrders.length === 0) {
+    //         $('#unassignedReservationsTable tbody').append(`
+    //                 <tr>
+    //                     <td colspan="4" class="text-center">אין הזמנות להצגה</td>
+    //                 </tr>
+    //             `);
+    //     } else {
+    //         // Display unassigned orders
+    //         unassignedOrders.forEach(order => {
+    //             // $('#unassignedReservationsTable tbody').append(`
+    //             //     <tr>
+    //             //         <td>${order.clientId}</td>
+    //             //         <td>${new Date(order.startDate).toLocaleDateString()} - ${new Date(order.endDate).toLocaleDateString()}</td>
+    //             //         <td>${JSON.stringify(order.tablePreferences)}</td>
+    //             //         <td><button class="associateOrderBtn" data-order-id="${order._id}">בחר הזמנה</button></td>
+    //             //     </tr>
+    //             // `);
+    //             const tablePreferences = order.tablePreferences;
+
+    //             // המרת העדפות שולחן לעברית
+    //             const nearWindowText = tablePreferences.nearWindow ? "קרוב לחלון" : "לא קרוב לחלון";
+    //             const nearDoorText = tablePreferences.nearDoor ? "קרוב לדלת" : "לא קרוב לדלת";
+    //             const diningRoomText = tablePreferences.diningRoom ? `חדר אוכל ${tablePreferences.diningRoom}` : " אין העדפה לחדר אוכל";
+    //             const clientName = order.client ? `${order.client.clientName}` : "לא ידוע";
+    //             const clientId = order.clientId;
+
+    //             $('#unassignedReservationsTable tbody').append(`
+    //     <tr>
+    //         <td>${clientName} (${clientId})</td>
+    //         <td>${new Date(order.startDate).toLocaleDateString()} - ${new Date(order.endDate).toLocaleDateString()}</td>
+    //         <td>${nearWindowText}, ${nearDoorText}, ${diningRoomText}</td>
+    //         <td><button class="associateOrderBtn" data-order-id="${order._id}">בחר הזמנה</button></td>
+    //     </tr>
+    // `);
+    //         });
+        // }
+
+        // $.get(`/orders?startDate=${startDateFormatted}&endDate=${endDateFormatted}`, function (orders) {
+        //     console.log("all orders\n", orders);
+        //     $('#unassignedReservationsTable tbody').empty();
+        
+        //     const unassignedOrders = orders.filter(order => !order.tableIds || order.tableIds.length === 0);
+        //     console.log("unassignedOrders\n", unassignedOrders);
+        
+        //     if (unassignedOrders.length === 0) {
+        //         $('#unassignedReservationsTable tbody').append(`
+        //             <tr>
+        //                 <td colspan="4" class="text-center">אין הזמנות להצגה</td>
+        //             </tr>
+        //         `);
+        //     } else {
+        //         unassignedOrders.forEach(order => {
+        //             const tablePreferences = order.tablePreferences;
+        
+        //             // המרת העדפות שולחן לעברית
+        //             const nearWindowText = tablePreferences.nearWindow ? "קרוב לחלון" : "לא קרוב לחלון";
+        //             const nearDoorText = tablePreferences.nearDoor ? "קרוב לדלת" : "לא קרוב לדלת";
+        //             const diningRoomText = tablePreferences.diningRoom ? `חדר אוכל ${tablePreferences.diningRoom}` : "אין העדפה לחדר אוכל";
+        
+        //             // שם ותעודת זהות של הלקוח
+        //             const clientName = order.client ? order.client.clientName : "לא ידוע";
+        //             const clientId = order.client ? order.client.clientId : "לא ידוע";
+        
+        //             $('#unassignedReservationsTable tbody').append(`
+        //                 <tr>
+        //                     <td>${clientName} (${clientId})</td>
+        //                     <td>${new Date(order.startDate).toLocaleDateString()} - ${new Date(order.endDate).toLocaleDateString()}</td>
+        //                     <td>${nearWindowText}, ${nearDoorText}, ${diningRoomText}</td>
+        //                     <td><button class="associateOrderBtn" data-order-id="${order._id}">בחר הזמנה</button></td>
+        //                 </tr>
+        //             `);
+        //         });
+        //     }
+        $.get(`/orders?startDate=${startDateFormatted}&endDate=${endDateFormatted}`, function (orders) {
+            console.log("all orders\n", orders);
+            $('#unassignedReservationsTable tbody').empty();
+        
+            const unassignedOrders = orders.filter(order => !order.tableIds || order.tableIds.length === 0);
+            console.log("unassignedOrders\n", unassignedOrders);
+        
+            if (unassignedOrders.length === 0) {
+                $('#unassignedReservationsTable tbody').append(`
                     <tr>
                         <td colspan="4" class="text-center">אין הזמנות להצגה</td>
                     </tr>
                 `);
-        } else {
-            // Display unassigned orders
-            unassignedOrders.forEach(order => {
-                $('#unassignedReservationsTable tbody').append(`
-                    <tr>
-                        <td>${order.clientId}</td>
-                        <td>${new Date(order.startDate).toLocaleDateString()} - ${new Date(order.endDate).toLocaleDateString()}</td>
-                        <td>${JSON.stringify(order.tablePreferences)}</td>
-                        <td><button class="associateOrderBtn" data-order-id="${order._id}">בחר הזמנה</button></td>
-                    </tr>
-                `);
-            });
-        }
+            } else {
+                unassignedOrders.forEach(order => {
+                    const tablePreferences = order.tablePreferences;
+        
+                    // המרת העדפות שולחן לעברית
+                    const nearWindowText = tablePreferences.nearWindow ? "קרוב לחלון" : "לא קרוב לחלון";
+                    const nearDoorText = tablePreferences.nearDoor ? "קרוב לדלת" : "לא קרוב לדלת";
+                    const diningRoomText = tablePreferences.diningRoom ? `חדר אוכל ${tablePreferences.diningRoom}` : "אין העדפה לחדר אוכל";
+        
+                    // חילוץ שם הלקוח נכון
+                    const clientName = order.client ? order.client.name : "לא ידוע"; 
+                    const clientId = order.client ? order.client.clientId : "לא ידוע";
+        
+                    $('#unassignedReservationsTable tbody').append(`
+                        <tr>
+                            <td>${clientName} (${clientId})</td>
+                            <td>${new Date(order.startDate).toLocaleDateString()} - ${new Date(order.endDate).toLocaleDateString()}</td>
+                            <td>${nearWindowText}, ${nearDoorText}, ${diningRoomText}</td>
+                            <td><button class="associateOrderBtn" data-order-id="${order._id}">בחר הזמנה</button></td>
+                        </tr>
+                    `);
+                });
+            }
+        
         // Save unassigned orders for later use
         window.unassignedOrders = unassignedOrders;
 

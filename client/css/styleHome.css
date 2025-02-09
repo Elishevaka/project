@@ -1,11 +1,13 @@
 body {
-    /* רקע תמונה */
     background-image: url('images/pensee-royal-azur-tourist-resort-pools_1385-3079.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     background-color: rgba(255, 255, 255, 0.5) !important;
     background-blend-mode: overlay;
+    background-attachment: fixed; 
+    height: 100vh; 
+    margin: 0;
     font-family: 'Arial', sans-serif;
   
 }

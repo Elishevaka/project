@@ -1295,15 +1295,39 @@ module.exports = {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
+    // OrdersByDates: async function (req, res) {
+    //     const { startDate, endDate } = req.query;
+    //     try {
+
+    //         const orders = await Order.find({
+    //             startDate: { $lt: endDate },
+    //             endDate: { $gt: startDate }
+    //         });
+    //         res.json(orders);
+    //     } catch (error) {
+    //         res.status(500).json({ error: 'Error fetching orders' });
+    //     }
+    // },
     OrdersByDates: async function (req, res) {
         const { startDate, endDate } = req.query;
         try {
-
             const orders = await Order.find({
                 startDate: { $lt: endDate },
                 endDate: { $gt: startDate }
             });
-            res.json(orders);
+    
+            // הבאת פרטי הלקוח לכל הזמנה
+            const ordersWithClients = await Promise.all(orders.map(async (order) => {
+                const client = await Client.findOne({ clientId: order.clientId }); // חיפוש לקוח לפי `clientId`
+                return {
+                    ...order.toObject(),
+                    client: client ? client : null, // הוספת מידע הלקוח להזמנה
+                };
+            }));
+    
+            console.log("ordersWithClients, ", ordersWithClients);
+            
+            res.json(ordersWithClients);
         } catch (error) {
             res.status(500).json({ error: 'Error fetching orders' });
         }
